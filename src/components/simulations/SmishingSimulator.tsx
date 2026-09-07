@@ -1,0 +1,893 @@
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/Button";
+import { Pill } from "@/components/ui/primitives";
+import { celebrate } from "@/lib/celebrate";
+
+interface SmishingSimulatorProps {
+  onComplete: (score: number, meta: Record<string, unknown>) => void;
+}
+
+type Act =
+  | "sms_arrives"
+  | "inspect_sms"
+  | "fake_portal"
+  | "otp_trick"
+  | "money_drained"
+  | "fraud_blocked"
+  | "fake_helpline"
+  | "how_smishing_works"
+  | "final_score";
+
+export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
+  const navigate = useNavigate();
+
+  // State machine
+  const [act, setAct] = useState<Act>("sms_arrives");
+  const [activeView, setActiveView] = useState<"split" | "phone" | "scammer">("split");
+  const [inspectedSender, setInspectedSender] = useState(false);
+  const [inspectedLink, setInspectedLink] = useState(false);
+  const [fakeCustId, setFakeCustId] = useState("98410294");
+  const [fakePin, setFakePin] = useState("");
+  const [fakeOtp, setFakeOtp] = useState("");
+  const [userChoice, setUserChoice] = useState<"block" | "pay" | "call" | null>(null);
+  const [scoreReported, setScoreReported] = useState(false);
+
+  // Scammer Syndicate Dashboard Logs
+  const getScammerLogs = () => {
+    const logs = [
+      "[*] GSM Bulk SMS Gateway v4.8 connected via SIM Farm",
+      "[*] Spoofed Header: 'VK-HDFCBK' (Alpha-numeric mask)",
+      "[*] Blast Target: +91 98765-XXXXX (High-Value Savings Account)",
+      "[*] Payload: 'Urgent Unauthorized ₹48,999 Debit Alert'",
+    ];
+
+    if (act === "inspect_sms") {
+      logs.push(
+        "[>] SMS DELIVERED to victim smartphone at 9:15 PM",
+        "[>] Psychological Hook: Fear of sudden unapproved debit of ₹48,999"
+      );
+    }
+
+    if (inspectedSender || inspectedLink) {
+      logs.push(
+        "[!] ALERT: Victim is inspecting the link and header! Suspicion high."
+      );
+    }
+
+    if (act === "fake_portal") {
+      logs.push(
+        "[+] VICTIM TOOK THE BAIT: Opened 'hdfc-fraud-cancel.secure-portal.net'",
+        `[KEYLOGGER] Customer ID: ${fakeCustId || "98410294"}`,
+        fakePin
+          ? `[KEYLOGGER] LIVE PIN/PASSWORD CAPTURED: ${"*".repeat(fakePin.length)}`
+          : "[KEYLOGGER] Awaiting victim NetBanking PIN entry..."
+      );
+    }
+
+    if (act === "otp_trick") {
+      logs.push(
+        "[★] CREDENTIALS STOLEN: Scammer bot logged into genuine bank backend!",
+        "[>] Scammer initiated wire transfer of ₹48,999 to Crypto Mule Wallet",
+        "[!] Bank generated legitimate 2FA OTP and sent to victim phone",
+        "[SPOOF TRICK] Labeling genuine debit OTP as 'FRAUD CANCELLATION OTP' on fake site..."
+      );
+      if (fakeOtp) {
+        logs.push(`[★] LIVE OTP CAPTURE: ${fakeOtp}`);
+      }
+    }
+
+    if (act === "money_drained") {
+      logs.push(
+        "[$$$] VICTIM ENTERED OTP: 841920!",
+        "[SUCCESS] Wire Transfer Completed: ₹48,999 debited from victim account!",
+        "[★] Funds immediately laundered into Monero/USDT cryptocurrency across 4 wallets",
+        "[-] Transaction irreversible. Scammer payout complete."
+      );
+    }
+
+    if (act === "fraud_blocked") {
+      logs.push(
+        "[-] VICTIM STOPPED! Read the real OTP message: 'Debit for ₹48,999'",
+        "[-] Victim called official toll-free on back of debit card",
+        "[-] Official bank card frozen. Phishing portal reported to CERT-In / Cyber Crime 1930",
+        "[-] ZERO FUNDS STOLEN. Scam campaign busted!"
+      );
+    }
+
+    if (act === "fake_helpline") {
+      logs.push(
+        "[📞 CALL INTERCEPTED] Victim dialed fake helpline 1800-420-9912!",
+        "[VOIP CALL CENTER] Scammer operator 'Agent Vikram' answered impersonating Bank Fraud Manager",
+        "[SOCIAL ENG] Coercing victim over the phone to read out the 6-digit OTP..."
+      );
+    }
+
+    return logs;
+  };
+
+  const handleOpenFakePortal = () => {
+    setAct("fake_portal");
+  };
+
+  const handleSubmitCredentials = () => {
+    if (!fakePin) {
+      setFakePin("8492");
+    }
+    setAct("otp_trick");
+  };
+
+  const handleSubmitOtp = () => {
+    if (!fakeOtp) {
+      setFakeOtp("841920");
+    }
+    setUserChoice("pay");
+    setAct("money_drained");
+  };
+
+  const handleBlockScam = () => {
+    setUserChoice("block");
+    setAct("fraud_blocked");
+    celebrate();
+  };
+
+  const handleCallFakeHelpline = () => {
+    setUserChoice("call");
+    setAct("fake_helpline");
+  };
+
+  const calculateScore = () => {
+    if (userChoice === "block") {
+      return inspectedSender && inspectedLink ? 100 : 90;
+    }
+    if (userChoice === "call") {
+      return 50;
+    }
+    return 30;
+  };
+
+  const handleFinish = () => {
+    const finalScore = calculateScore();
+    if (!scoreReported) {
+      setScoreReported(true);
+      onComplete(finalScore, {
+        action: "smishing_simulation_completed",
+        score: finalScore,
+        inspected_sender: inspectedSender,
+        inspected_link: inspectedLink,
+        blocked_fraud: userChoice === "block",
+      });
+    }
+    setAct("final_score");
+  };
+
+  const handleReset = () => {
+    setAct("sms_arrives");
+    setInspectedSender(false);
+    setInspectedLink(false);
+    setFakePin("");
+    setFakeOtp("");
+    setUserChoice(null);
+    setScoreReported(false);
+  };
+
+  const score = calculateScore();
+  const scammerLogs = getScammerLogs();
+
+  return (
+    <div className="space-y-6 max-w-6xl mx-auto">
+      {/* ── TOP MISSION HUD ── */}
+      <div className="p-5 rounded-2xl bg-surface border border-primary/20 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-500 font-mono">
+                Threat Sandbox: Mobile Smishing &amp; OTP Fraud
+              </span>
+              <span className="text-[11px] px-2 py-0.5 rounded-full bg-surface-elevated border border-border text-text-ash">
+                Dual-Perspective Investigation
+              </span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-text-pure">
+              The Panic at 9:15 PM: Anatomy of a Bank Smishing Scam
+            </h1>
+            <p className="text-xs sm:text-sm text-text-fog mt-0.5">
+              Experience the psychological trap of fake bank debit SMS alerts. Watch both the victim&apos;s phone and the scammer&apos;s syndicate console in real time!
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            {/* View Mode Switcher */}
+            <div className="p-1 rounded-xl bg-surface-elevated border border-border flex items-center gap-1 text-xs">
+              <button
+                onClick={() => setActiveView("split")}
+                className={`px-2.5 py-1 rounded-lg font-medium transition cursor-pointer ${
+                  activeView === "split" ? "bg-primary text-white shadow-sm" : "text-text-fog hover:text-text-pure"
+                }`}
+              >
+                <i className="ti ti-columns mr-1" /> Dual Split Screen
+              </button>
+              <button
+                onClick={() => setActiveView("phone")}
+                className={`px-2.5 py-1 rounded-lg font-medium transition cursor-pointer ${
+                  activeView === "phone" ? "bg-primary text-white shadow-sm" : "text-text-fog hover:text-text-pure"
+                }`}
+              >
+                <i className="ti ti-device-mobile mr-1" /> Your Phone
+              </button>
+              <button
+                onClick={() => setActiveView("scammer")}
+                className={`px-2.5 py-1 rounded-lg font-medium transition cursor-pointer ${
+                  activeView === "scammer" ? "bg-danger text-white shadow-sm" : "text-text-fog hover:text-text-pure"
+                }`}
+              >
+                <i className="ti ti-terminal mr-1" /> Scammer Syndicate
+              </button>
+            </div>
+
+            <button
+              onClick={handleReset}
+              className="px-3 py-1.5 text-xs font-medium rounded-xl bg-surface-elevated border border-border text-text-fog hover:text-text-pure transition flex items-center gap-1.5 cursor-pointer"
+            >
+              <i className="ti ti-rotate-clockwise" /> Reset Simulation
+            </button>
+          </div>
+        </div>
+
+        {/* Phase Progress Bar */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 border-t border-border text-xs">
+          <div className={`p-2 rounded-xl border text-center font-medium ${
+            act === "sms_arrives" || act === "inspect_sms"
+              ? "bg-primary/15 border-primary text-primary"
+              : "bg-surface text-text-fog border-border"
+          }`}>
+            <span className="block text-[10px] text-text-ash">ACT 1</span>
+            The Fake Debit SMS
+          </div>
+          <div className={`p-2 rounded-xl border text-center font-medium ${
+            act === "fake_portal"
+              ? "bg-danger/15 border-danger text-danger font-bold animate-pulse"
+              : "bg-surface text-text-fog border-border"
+          }`}>
+            <span className="block text-[10px] text-text-ash">ACT 2</span>
+            Cloned Bank Portal
+          </div>
+          <div className={`p-2 rounded-xl border text-center font-medium ${
+            act === "otp_trick" || act === "fake_helpline"
+              ? "bg-danger/15 border-danger text-danger font-bold animate-pulse"
+              : "bg-surface text-text-fog border-border"
+          }`}>
+            <span className="block text-[10px] text-text-ash">ACT 3</span>
+            The &quot;Cancel OTP&quot; Trap
+          </div>
+          <div className={`p-2 rounded-xl border text-center font-medium ${
+            act === "fraud_blocked" || act === "money_drained"
+              ? "bg-emerald-500/15 border-emerald-500 text-emerald-500"
+              : "bg-surface text-text-fog border-border"
+          }`}>
+            <span className="block text-[10px] text-text-ash">ACT 4</span>
+            Crisis Decision &amp; Outcome
+          </div>
+          <div className={`p-2 rounded-xl border text-center font-medium ${
+            act === "how_smishing_works" || act === "final_score"
+              ? "bg-primary/15 border-primary text-primary"
+              : "bg-surface text-text-fog border-border"
+          }`}>
+            <span className="block text-[10px] text-text-ash">ACT 5</span>
+            4 Anti-Smishing Rules
+          </div>
+        </div>
+      </div>
+
+      {/* ── CORE PLAYGROUND: SMARTPHONE VS SCAMMER SYNDICATE ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        
+        {/* ── LEFT: VICTIM'S SMARTPHONE ── */}
+        <div className={`${
+          activeView === "split" ? "lg:col-span-6" : activeView === "phone" ? "lg:col-span-12 max-w-md mx-auto" : "hidden"
+        } flex flex-col items-center`}>
+          
+          <div className="w-full flex items-center justify-between px-2 mb-2">
+            <span className="text-xs font-bold text-text-pure flex items-center gap-1.5">
+              <i className="ti ti-device-mobile text-primary text-sm" />
+              YOUR SMARTPHONE (Victim View)
+            </span>
+            <span className="text-[11px] text-text-ash font-mono">Tuesday &bull; 9:15 PM</span>
+          </div>
+
+          {/* Smartphone Chassis */}
+          <div className="w-full max-w-[340px] rounded-[44px] border-4 border-zinc-700/80 bg-zinc-950 shadow-2xl p-3 text-white overflow-hidden relative min-h-[640px] flex flex-col justify-between">
+            
+            {/* Dynamic Island Notch */}
+            <div className="relative z-20">
+              <div className="w-28 h-4.5 bg-black rounded-full mx-auto mb-2 flex items-center justify-between px-3 border border-white/10">
+                <span className="w-2.5 h-2.5 rounded-full bg-zinc-800" />
+                <span className="w-10 h-1 rounded-full bg-zinc-800" />
+              </div>
+
+              {/* Status Bar */}
+              <div className="flex items-center justify-between px-3 text-[11px] text-zinc-300 font-medium">
+                <span>9:15 PM</span>
+                <div className="flex items-center gap-1.5">
+                  <i className="ti ti-wifi text-xs text-zinc-300" />
+                  <span className="text-[10px]">5G</span>
+                  <i className="ti ti-battery-3 text-xs text-zinc-300" />
+                </div>
+              </div>
+            </div>
+
+            {/* SCREEN VIEWPORT */}
+            <div className="flex-1 my-3 rounded-[32px] bg-zinc-900 border border-white/5 overflow-hidden flex flex-col relative text-zinc-100 p-4">
+              <AnimatePresence mode="wait">
+
+                {/* ── ACT 1: PANIC SMS IN INBOX ── */}
+                {(act === "sms_arrives" || act === "inspect_sms") && (
+                  <motion.div
+                    key="sms"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex-1 flex flex-col justify-between space-y-3"
+                  >
+                    <div className="space-y-3">
+                      {/* Scenario Hook Banner */}
+                      <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs flex items-start gap-2 text-zinc-200">
+                        <i className="ti ti-bell-ringing text-amber-400 text-base shrink-0 mt-0.5" />
+                        <div>
+                          <strong>Tuesday, 9:15 PM:</strong> You just finished dinner. Your phone buzzes with a high-priority bank debit alert!
+                        </div>
+                      </div>
+
+                      {/* SMS Chat Card */}
+                      <div className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2.5 shadow-md">
+                        <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-7 h-7 rounded-full bg-primary/20 text-primary border border-primary/30 flex items-center justify-center font-bold text-xs">
+                              🏦
+                            </div>
+                            <div>
+                              <div className="text-xs font-bold text-white flex items-center gap-1">
+                                VK-HDFCBK
+                                <span className="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.2 rounded">
+                                  SMS
+                                </span>
+                              </div>
+                              <div className="text-[10px] text-zinc-400">Official Sender Mask</div>
+                            </div>
+                          </div>
+                          <span className="text-[10px] text-zinc-400">9:15 PM</span>
+                        </div>
+
+                        {/* Message Bubble */}
+                        <div className="p-3 rounded-xl bg-zinc-800/90 text-xs text-zinc-200 leading-relaxed space-y-2">
+                          <div className="font-bold text-red-400 text-[11px] flex items-center gap-1">
+                            <i className="ti ti-alert-triangle" /> DEBIT ALERT: ₹48,999.00
+                          </div>
+                          <p className="text-[11px]">
+                            Rs 48,999.00 has been debited from your A/c XX4102 via Flipkart Online.
+                          </p>
+                          <p className="text-[11px] font-semibold text-amber-300">
+                            If this was NOT done by you, immediately CANCEL the transaction within 10 minutes at:
+                          </p>
+                          <div className="p-2 rounded-lg bg-zinc-900 border border-zinc-700 font-mono text-[10px] text-primary break-all">
+                            http://hdfc-fraud-cancel.secure-portal.net
+                          </div>
+                          <p className="text-[10px] text-zinc-400">
+                            Or call Toll-Free Helpline: 1800-420-9912
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Clue Inspection Controls */}
+                      <div className="space-y-1.5">
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setInspectedSender(!inspectedSender)}
+                            className={`flex-1 py-1.5 px-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1 ${
+                              inspectedSender
+                                ? "bg-primary text-white border-primary"
+                                : "bg-zinc-800 text-primary border-primary/30"
+                            }`}
+                          >
+                            <i className="ti ti-search" />
+                            {inspectedSender ? "Header Inspected" : "🔍 Inspect Sender ID"}
+                          </button>
+                          <button
+                            onClick={() => setInspectedLink(!inspectedLink)}
+                            className={`flex-1 py-1.5 px-2 rounded-lg border text-[11px] font-semibold transition cursor-pointer flex items-center justify-center gap-1 ${
+                              inspectedLink
+                                ? "bg-primary text-white border-primary"
+                                : "bg-zinc-800 text-primary border-primary/30"
+                            }`}
+                          >
+                            <i className="ti ti-link" />
+                            {inspectedLink ? "URL Inspected" : "🔗 Inspect URL Domain"}
+                          </button>
+                        </div>
+
+                        {/* Inspector Clues */}
+                        {inspectedSender && (
+                          <div className="p-2 rounded-lg bg-red-500/15 border border-red-500/30 text-[10px] text-red-300">
+                            🚩 <strong>Sender Spoofing:</strong> Criminals lease bulk SMS gateways to send SMS with names like &quot;VK-HDFCBK&quot;! Just because the name says your bank does NOT mean it is genuine.
+                          </div>
+                        )}
+
+                        {inspectedLink && (
+                          <div className="p-2 rounded-lg bg-amber-500/15 border border-amber-500/30 text-[10px] text-amber-300 font-mono">
+                            🚩 <strong>Fake Domain:</strong> Look at the root: <code>secure-portal.net</code>! The real bank website is <code>hdfcbank.com</code>.
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* What to do next? */}
+                    <div className="space-y-2 pt-2">
+                      <p className="text-[10px] text-center text-zinc-400 italic">
+                        You didn&apos;t spend ₹48,999! You are panicking to stop the money loss.
+                      </p>
+
+                      <button
+                        onClick={handleOpenFakePortal}
+                        className="w-full py-2.5 px-3 rounded-xl bg-red-600 hover:bg-red-500 text-white font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow-md"
+                      >
+                        <i className="ti ti-world" /> Tap Link to Cancel ₹48,999 Charge &rarr;
+                      </button>
+
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleCallFakeHelpline}
+                          className="flex-1 py-1.5 px-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-[11px] font-medium border border-zinc-700 transition cursor-pointer"
+                        >
+                          📞 Call Number in SMS
+                        </button>
+                        <button
+                          onClick={handleBlockScam}
+                          className="flex-1 py-1.5 px-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold transition cursor-pointer"
+                        >
+                          🛑 Turn Card Over &amp; Call Real Bank
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ── ACT 2: CLONED MOBILE BANKING PORTAL ── */}
+                {act === "fake_portal" && (
+                  <motion.div
+                    key="portal"
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex-1 flex flex-col justify-between space-y-3"
+                  >
+                    <div className="space-y-3">
+                      <div className="text-center">
+                        <div className="w-8 h-8 rounded-lg bg-primary text-white font-bold text-xs flex items-center justify-center mx-auto mb-1">
+                          HDFC
+                        </div>
+                        <h2 className="text-xs font-bold text-white">Emergency Fraud Cancellation</h2>
+                        <p className="text-[10px] text-zinc-400">Cancel Unauthorized Transactions</p>
+                      </div>
+
+                      {/* Fake Login Form */}
+                      <div className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-3">
+                        <div>
+                          <label className="text-[10px] text-zinc-400 block mb-1">Customer ID / Registered Mobile</label>
+                          <input
+                            type="text"
+                            value={fakeCustId}
+                            onChange={(e) => setFakeCustId(e.target.value)}
+                            className="w-full h-8 px-2.5 rounded-lg bg-zinc-900 border border-zinc-700 text-xs font-mono text-white"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="text-[10px] text-zinc-400 block mb-1">4-Digit ATM PIN / Password</label>
+                          <input
+                            type="password"
+                            placeholder="••••"
+                            maxLength={4}
+                            value={fakePin}
+                            onChange={(e) => setFakePin(e.target.value)}
+                            className="w-full h-8 px-2.5 rounded-lg bg-zinc-900 border border-red-500/80 text-xs font-mono text-white tracking-widest text-center"
+                          />
+                        </div>
+
+                        <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-[10px] text-red-400">
+                          👀 <strong>Look at the Scammer Terminal on the right!</strong> Your customer ID and PIN are being captured live.
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-2">
+                      <Button
+                        variant="primary"
+                        onClick={handleSubmitCredentials}
+                        className="w-full text-xs font-bold py-2 bg-primary hover:bg-primary-hover"
+                      >
+                        Submit to Reverse ₹48,999 Charge &rarr;
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ── ACT 3: THE DEVASTATING "CANCELLATION OTP" TRAP ── */}
+                {act === "otp_trick" && (
+                  <motion.div
+                    key="otp_trick"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex-1 flex flex-col justify-between space-y-3"
+                  >
+                    <div className="space-y-3">
+                      {/* Real SMS Notification Pops down */}
+                      <motion.div
+                        initial={{ y: -20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        className="p-3 rounded-xl bg-zinc-950 border-2 border-amber-500/70 shadow-xl space-y-1"
+                      >
+                        <div className="flex items-center justify-between text-[10px] font-bold text-amber-400">
+                          <span>🔔 REAL BANK SMS JUST ARRIVED</span>
+                          <span>9:17 PM</span>
+                        </div>
+                        <p className="text-[11px] text-white leading-tight font-mono">
+                          &quot;OTP is <strong>841920</strong> for DEBIT of <strong>Rs 48,999.00</strong> to Binance Crypto. NEVER share OTP with anyone.&quot;
+                        </p>
+                      </motion.div>
+
+                      {/* Fake Web Form Asking for "Reversal OTP" */}
+                      <div className="p-3.5 rounded-2xl bg-zinc-950 border border-zinc-800 space-y-2.5 text-center">
+                        <div className="text-xs font-bold text-white">Enter OTP to CANCEL Transfer</div>
+                        <p className="text-[10px] text-zinc-400">
+                          Enter the 6-digit code received on your phone to reverse the transaction.
+                        </p>
+
+                        <input
+                          type="text"
+                          maxLength={6}
+                          placeholder="841920"
+                          value={fakeOtp}
+                          onChange={(e) => setFakeOtp(e.target.value)}
+                          className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-danger text-center text-lg font-mono font-bold tracking-widest text-white"
+                        />
+
+                        <div className="p-2 rounded-lg bg-amber-500/15 border border-amber-500/30 text-[10px] text-amber-300 text-left space-y-1">
+                          <strong>⚠️ SPOT THE FATAL TRICK:</strong>
+                          <p className="text-[10px]">
+                            Look at the real SMS above: The OTP is to <strong>AUTHORIZE</strong> a transfer, not cancel it! The website lied. Banks NEVER send an OTP to cancel or receive money!
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* The Critical Decision */}
+                    <div className="space-y-2 pt-2">
+                      <button
+                        onClick={handleBlockScam}
+                        className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow-md"
+                      >
+                        <i className="ti ti-shield-check" /> 🛑 STOP! Don&apos;t Enter OTP &bull; Fraud Detected!
+                      </button>
+
+                      <button
+                        onClick={handleSubmitOtp}
+                        className="w-full py-1.5 px-3 rounded-xl bg-red-950/60 border border-red-800 text-red-400 text-[11px] transition cursor-pointer"
+                      >
+                        Enter 841920 to &quot;Cancel&quot; (Fell for Trap)
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ── ACT 4A: MONEY DRAINED ── */}
+                {act === "money_drained" && (
+                  <motion.div
+                    key="drained"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex-1 flex flex-col justify-between space-y-3 text-center pt-3"
+                  >
+                    <div className="space-y-3">
+                      <div className="w-16 h-16 rounded-full bg-red-500/20 text-red-500 border-2 border-red-500 mx-auto flex items-center justify-center text-3xl animate-pulse">
+                        <i className="ti ti-alert-triangle" />
+                      </div>
+                      <h2 className="text-base font-bold text-danger">₹48,999 DEBITED FROM YOUR ACCOUNT!</h2>
+
+                      <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 text-left text-xs space-y-2 text-zinc-200">
+                        <p className="font-bold text-red-400">
+                          How the Smishing Trap Succeeded:
+                        </p>
+                        <ul className="list-disc list-inside text-[11px] text-zinc-300 space-y-1">
+                          <li>The initial ₹48,999 debit SMS was completely fake—it was just bait to make you panic.</li>
+                          <li>When you entered your Customer ID &amp; PIN, the scammers logged into your real bank.</li>
+                          <li>The scammers initiated a REAL transfer of ₹48,999.</li>
+                          <li>When you typed the OTP into the fake site, you approved their real transfer!</li>
+                        </ul>
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="primary"
+                      onClick={() => setAct("how_smishing_works")}
+                      className="w-full text-xs font-bold py-2.5"
+                    >
+                      Why Did This Happen &amp; How to Prevent It? &rarr;
+                    </Button>
+                  </motion.div>
+                )}
+
+                {/* ── ACT 4B: FRAUD BLOCKED (HERO OUTCOME) ── */}
+                {act === "fraud_blocked" && (
+                  <motion.div
+                    key="blocked"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex-1 flex flex-col justify-between space-y-3 text-center pt-3"
+                  >
+                    <div className="space-y-3">
+                      <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-500 border-2 border-emerald-500 mx-auto flex items-center justify-center text-3xl">
+                        <i className="ti ti-shield-check" />
+                      </div>
+                      <h2 className="text-base font-bold text-emerald-400">FRAUD PREVENTED 100%!</h2>
+
+                      <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-left text-xs space-y-2 text-zinc-200">
+                        <p className="font-bold text-emerald-400">
+                          🛡️ Brilliant Cybersecurity Reflexes!
+                        </p>
+                        <p className="text-[11px] leading-relaxed">
+                          You remembered the golden rule: <strong>Banks NEVER require an OTP to cancel a transaction!</strong>
+                        </p>
+                        <div className="p-2.5 rounded-xl bg-zinc-950 border border-emerald-500/20 text-[11px] text-zinc-300">
+                          <strong>Immediate Action Taken:</strong> You called the official number printed on your physical debit card, locked online transactions, and reported the fake SMS to Cyber Crime (1930).
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="primary"
+                      onClick={() => setAct("how_smishing_works")}
+                      className="w-full text-xs font-bold py-2.5"
+                    >
+                      Continue to Golden Anti-Smishing Rules &rarr;
+                    </Button>
+                  </motion.div>
+                )}
+
+                {/* ── ACT 4C: FAKE HELPLINE CALL TRAP ── */}
+                {act === "fake_helpline" && (
+                  <motion.div
+                    key="fake_call"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex-1 flex flex-col justify-between space-y-3 text-center pt-2"
+                  >
+                    <div className="space-y-3">
+                      <div className="w-14 h-14 rounded-full bg-amber-500/20 text-amber-400 border-2 border-amber-500 mx-auto flex items-center justify-center text-2xl animate-pulse">
+                        <i className="ti ti-phone-call" />
+                      </div>
+                      <h2 className="text-sm font-bold text-white">Call Connected: 1800-420-9912</h2>
+
+                      <div className="p-3.5 rounded-2xl bg-zinc-950 border border-amber-500/30 text-left text-xs space-y-2 text-zinc-200">
+                        <div className="font-bold text-amber-400">
+                          🎭 &quot;Agent Vikram&quot; (Scammer Operator):
+                        </div>
+                        <p className="text-[11px] italic bg-zinc-900 p-2.5 rounded-xl border border-zinc-800">
+                          &quot;Sir, I can see a suspicious debit of ₹48,999 on your debit card right now! Don&apos;t worry, I am canceling it. I just sent an SMS with a cancellation code. Please read out the 6-digit OTP to reverse it immediately...&quot;
+                        </p>
+                        <p className="text-[10px] text-red-400 font-semibold">
+                          ⚠️ Never call the phone number inside an unverified SMS! Scammers run their own fake call centers with friendly operators.
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleBlockScam}
+                      className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow-md"
+                    >
+                      <i className="ti ti-phone-off" /> Hang Up &amp; Call Real Bank Number on Debit Card
+                    </button>
+                  </motion.div>
+                )}
+
+                {/* ── ACT 5 & 6: FORENSIC MODE ── */}
+                {(act === "how_smishing_works" || act === "final_score") && (
+                  <motion.div
+                    key="forensic_view"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="flex-1 flex flex-col justify-center items-center text-center space-y-3"
+                  >
+                    <div className="w-14 h-14 rounded-2xl bg-primary/20 text-primary flex items-center justify-center text-3xl">
+                      <i className="ti ti-shield-check" />
+                    </div>
+                    <div className="text-sm font-bold text-white">Investigation Complete</div>
+                    <p className="text-xs text-zinc-400 max-w-[220px]">
+                      Check the right panel for the technical breakdown and your final security score!
+                    </p>
+                  </motion.div>
+                )}
+
+              </AnimatePresence>
+            </div>
+
+            {/* Bottom Home Bar */}
+            <div className="w-32 h-1 bg-zinc-600 rounded-full mx-auto" />
+          </div>
+        </div>
+
+        {/* ── RIGHT: SCAMMER SYNDICATE C2 & TECHNICAL FORENSICS ── */}
+        <div className={`${
+          activeView === "split" ? "lg:col-span-6" : activeView === "scammer" ? "lg:col-span-12" : "hidden"
+        } space-y-4`}>
+          
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-bold text-danger flex items-center gap-1.5 font-mono">
+              <i className="ti ti-terminal-2 text-danger text-base animate-pulse" />
+              SCAMMER SYNDICATE BOT (Bulk SMS &amp; OTP Harvester)
+            </span>
+            <span className="text-[11px] font-mono text-text-muted">Tool: SmishMaster v4.8</span>
+          </div>
+
+          {/* Scammer Terminal Window */}
+          <div className="rounded-2xl border-2 border-danger/40 bg-zinc-950 shadow-2xl overflow-hidden text-xs font-mono">
+            {/* Terminal Title Bar */}
+            <div className="bg-zinc-900 px-4 py-2.5 flex items-center justify-between border-b border-zinc-800">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />
+                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block" />
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+                <span className="text-[11px] text-zinc-400 ml-2">root@smish-bot:~# ./listen_harvest</span>
+              </div>
+              <span className="text-[10px] text-danger font-bold uppercase tracking-wider">
+                {userChoice === "block" ? "SCAM ABORTED" : "LISTENING"}
+              </span>
+            </div>
+
+            {/* Terminal Logs */}
+            <div className="p-4 space-y-2 h-[260px] overflow-y-auto bg-black/90 text-[11px] leading-relaxed scrollbar-thin">
+              {scammerLogs.map((log, i) => (
+                <div
+                  key={i}
+                  className={`${
+                    log.includes("PREVENTED") || log.includes("BLOCKED")
+                      ? "text-emerald-400 font-bold"
+                      : log.includes("$$$") || log.includes("STOLEN")
+                      ? "text-red-400 font-extrabold bg-red-950/40 p-1 rounded"
+                      : log.includes("KEYLOGGER") || log.includes("BAIT") || log.includes("OTP")
+                      ? "text-amber-300 font-bold"
+                      : "text-zinc-400"
+                  }`}
+                >
+                  {log}
+                </div>
+              ))}
+            </div>
+
+            {/* Telemetry Footer */}
+            <div className="p-3 bg-zinc-900/90 border-t border-zinc-800 grid grid-cols-2 gap-2 text-[10px]">
+              <div>
+                <span className="text-zinc-500 block">SENDER MASK:</span>
+                <span className="text-amber-400 font-bold">VK-HDFCBK (Spoofed)</span>
+              </div>
+              <div>
+                <span className="text-zinc-500 block">HARVESTED OTP:</span>
+                <span className="text-zinc-300">{fakeOtp || "None"}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* ── EDUCATIONAL DEBRIEF: HOW SMISHING ACTUALLY WORKS ── */}
+          {act === "how_smishing_works" && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-2xl border border-primary/30 bg-surface p-5 space-y-4"
+            >
+              <div className="flex items-center gap-2 text-primary font-bold text-sm">
+                <i className="ti ti-bulb text-lg" />
+                HOW DOES MOBILE SMISHING ACTUALLY WORK?
+              </div>
+
+              <div className="text-xs text-text-low leading-relaxed space-y-3">
+                <div className="p-3 rounded-xl bg-surface-elevated border border-border space-y-1">
+                  <strong className="text-text-high block text-xs">1. The Fake Sender ID (Header Spoofing)</strong>
+                  <p className="text-[11px]">
+                    Scammers use international bulk SMS gateways that allow custom alphanumeric sender IDs. Even if your phone groups it with your genuine bank SMS, the message can be forged!
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-surface-elevated border border-border space-y-1">
+                  <strong className="text-text-high block text-xs">2. The &quot;Cancellation OTP&quot; Trap</strong>
+                  <p className="text-[11px]">
+                    Banks generate OTPs for <strong>ONE PURPOSE ONLY: to APPROVE a transaction</strong>. There is no such thing as an &quot;OTP to cancel a debit&quot; or an &quot;OTP to receive a refund&quot;.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-surface-elevated border border-border space-y-1">
+                  <strong className="text-text-high block text-xs">3. The Fake Call Center</strong>
+                  <p className="text-[11px]">
+                    Scammers include toll-free numbers in SMS messages. Calling them connects you straight to a scam call center where operators use smooth, persuasive scripts to coax your OTP.
+                  </p>
+                </div>
+              </div>
+
+              <Button
+                variant="primary"
+                onClick={handleFinish}
+                className="w-full text-xs font-bold py-2.5"
+              >
+                Claim Score &amp; Anti-Smishing Rules &rarr;
+              </Button>
+            </motion.div>
+          )}
+
+          {/* ── FINAL SCORECARD & SURVIVAL RULES ── */}
+          {act === "final_score" && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="rounded-2xl border border-primary/30 bg-surface p-6 shadow-md space-y-5"
+            >
+              <div className="text-center space-y-2">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-3xl text-primary">
+                  <i className={`ti ${score >= 70 ? "ti-shield-check" : "ti-alert-triangle"}`} />
+                </div>
+                <h2 className="text-xl font-bold text-text-high">SMISHING DEFENSE COMPLETE</h2>
+                <div className="text-4xl font-black text-primary font-mono">
+                  Score: {score}/100
+                </div>
+                <div className="flex justify-center gap-2 pt-1">
+                  <Pill tone="primary" size="md">+{score} XP Earned</Pill>
+                  <Pill tone={score >= 70 ? "emerald" : "danger"} size="md">
+                    {score >= 70 ? "🛡️ Mobile Awareness: EXCELLENT" : "⚠️ Compromised: Needs Practice"}
+                  </Pill>
+                </div>
+              </div>
+
+              {/* Actionable Rules */}
+              <div className="space-y-2 pt-2 border-t border-border">
+                <div className="text-xs font-bold text-text-high">
+                  🛡️ 4 Golden Rules to Defeat Mobile Smishing:
+                </div>
+                <div className="grid gap-2 sm:grid-cols-2 text-[11px] text-text-low">
+                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
+                    <strong className="text-text-pure block mb-0.5">1. Never Share OTP to Cancel:</strong>
+                    OTPs only approve debits. If anyone asks for an OTP to &quot;cancel&quot; a charge, it is 100% fraud!
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
+                    <strong className="text-text-pure block mb-0.5">2. Read the SMS Body Carefully:</strong>
+                    Always look at the words in the bank OTP text: it will clearly say &quot;Debiting Rs XX&quot;!
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
+                    <strong className="text-text-pure block mb-0.5">3. Call the Number on Your Card:</strong>
+                    Never call the phone number inside an SMS. Turn over your physical debit card and call the official toll-free number.
+                  </div>
+                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
+                    <strong className="text-text-pure block mb-0.5">4. Report to Cyber Crime (1930):</strong>
+                    Forward scam SMS messages to 1909 (TRAI) and call national cyber helpline 1930 to freeze fraudulent accounts.
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2 pt-3">
+                <Button variant="secondary" onClick={handleReset} className="flex-1 text-xs">
+                  <i className="ti ti-rotate-clockwise mr-1.5" /> Replay Scenario
+                </Button>
+                <Button variant="primary" onClick={() => navigate("/simulations")} className="flex-1 text-xs">
+                  More Threat Sandboxes <i className="ti ti-arrow-right ml-1.5" />
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+        </div>
+      </div>
+    </div>
+  );
+}

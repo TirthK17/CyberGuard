@@ -1,0 +1,580 @@
+@import "tailwindcss";
+
+:root {
+  /* ── macOS Light Palette (Clean, Precision, Apple High Sierra/Sonoma) ── */
+  --color-canvas:            #fbfbfd;
+  --color-canvas-subtle:     #f4f4f7;
+  --color-surface:           #ffffff;
+  --color-surface-elevated:  #f0f0f4;
+  --color-surface-hover:     #e8e8ee;
+  
+  --color-carbon:            #ffffff;
+  --color-obsidian:          #f6f6f9;
+  --color-steel:             #e5e5eb;
+  --color-steel-hover:       #dadbe2;
+
+  --color-border:            rgba(0, 0, 0, 0.08);
+  --color-border-strong:     rgba(0, 0, 0, 0.16);
+  --color-glass-edge:        rgba(0, 0, 0, 0.07);
+  --color-glass-edge-strong: rgba(0, 0, 0, 0.14);
+  --color-border-focus:      #0071e3;
+  --color-gridline:          rgba(0, 0, 0, 0.03);
+
+  /* Single Signature Accent: macOS Precision Blue */
+  --color-primary:           #0071e3;
+  --color-primary-hover:     #0077ed;
+  --color-primary-subtle:    rgba(0, 113, 227, 0.08);
+  --color-primary-glow:      rgba(0, 113, 227, 0.2);
+
+  /* Aliases for seamless backward-compatibility */
+  --color-void-violet:       #0071e3;
+  --color-void-violet-hover: #0077ed;
+  --color-void-violet-glow:  rgba(0, 113, 227, 0.2);
+  --color-acid-lime:         #10b981;
+  --color-acid-lime-subtle:  rgba(16, 185, 129, 0.1);
+  --color-signal-teal:       #0071e3;
+  --color-signal-blue:       #0071e3;
+  --color-cyan:              #0071e3;
+  --color-cyan-dim:          #005bb5;
+
+  /* Semantics */
+  --color-luminous-fill:     rgba(0, 0, 0, 0.03);
+  --color-success:           #10b981;
+  --color-danger:            #ef4444;
+  --color-warn:              #f59e0b;
+  --color-info:              #0071e3;
+
+  /* Typography */
+  --color-text-pure:         #1d1d1f;
+  --color-text-ice:          #1d1d1f;
+  --color-text-frost:        #2d2d30;
+  --color-text-moon:         #424245;
+  --color-text-fog:          #6e6e73;
+  --color-text-ash:          #86868b;
+  --color-text-faint:        #a1a1a6;
+  --color-frost-glow:        #0071e3;
+
+  --color-bg:                var(--color-canvas);
+  --color-bg-elevated:       var(--color-surface-elevated);
+  --color-text:              var(--color-text-ice);
+  --color-text-dim:          var(--color-text-fog);
+
+  --shadow-macos-window:     0 20px 50px rgba(0, 0, 0, 0.09), 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-macos-card:       0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+  /* ── macOS Dark Palette (Sleek Obsidian, Translucent Glass) ── */
+  --color-canvas:            #09090b;
+  --color-canvas-subtle:     #0d0d11;
+  --color-surface:           #131317;
+  --color-surface-elevated:  #1b1b22;
+  --color-surface-hover:     #23232c;
+
+  --color-carbon:            #121216;
+  --color-obsidian:          #181820;
+  --color-steel:             #22222c;
+  --color-steel-hover:       #2b2b37;
+
+  --color-border:            rgba(255, 255, 255, 0.08);
+  --color-border-strong:     rgba(255, 255, 255, 0.16);
+  --color-glass-edge:        rgba(255, 255, 255, 0.08);
+  --color-glass-edge-strong: rgba(255, 255, 255, 0.16);
+  --color-border-focus:      #0071e3;
+  --color-gridline:          rgba(255, 255, 255, 0.02);
+
+  /* Single Signature Accent: macOS Precision Blue */
+  --color-primary:           #0071e3;
+  --color-primary-hover:     #0077ed;
+  --color-primary-subtle:    rgba(0, 113, 227, 0.14);
+  --color-primary-glow:      rgba(0, 113, 227, 0.35);
+
+  --color-void-violet:       #0071e3;
+  --color-void-violet-hover: #0077ed;
+  --color-void-violet-glow:  rgba(0, 113, 227, 0.35);
+  --color-acid-lime:         #10b981;
+  --color-acid-lime-subtle:  rgba(16, 185, 129, 0.14);
+  --color-signal-teal:       #0071e3;
+  --color-signal-blue:       #0071e3;
+  --color-cyan:              #0071e3;
+  --color-cyan-dim:          #005bb5;
+
+  --color-luminous-fill:     rgba(255, 255, 255, 0.05);
+  --color-success:           #10b981;
+  --color-danger:            #f87171;
+  --color-warn:              #fbbf24;
+  --color-info:              #38bdf8;
+
+  --color-text-pure:         #ffffff;
+  --color-text-ice:          #f4f4f5;
+  --color-text-frost:        #e4e4e7;
+  --color-text-moon:         #d4d4d8;
+  --color-text-fog:          #a1a1aa;
+  --color-text-ash:          #71717a;
+  --color-text-faint:        #52525b;
+  --color-frost-glow:        #38bdf8;
+
+  --shadow-macos-window:     0 24px 64px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  --shadow-macos-card:       0 4px 20px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+@theme {
+  --color-canvas:            var(--color-canvas);
+  --color-canvas-subtle:     var(--color-canvas-subtle);
+  --color-surface:           var(--color-surface);
+  --color-surface-elevated:  var(--color-surface-elevated);
+  --color-surface-hover:     var(--color-surface-hover);
+
+  --color-carbon:            var(--color-carbon);
+  --color-obsidian:          var(--color-obsidian);
+  --color-steel:             var(--color-steel);
+  --color-steel-hover:       var(--color-steel-hover);
+
+  --color-border:            var(--color-border);
+  --color-border-strong:     var(--color-border-strong);
+  --color-glass-edge:        var(--color-glass-edge);
+  --color-glass-edge-strong: var(--color-glass-edge-strong);
+  --color-border-focus:      var(--color-border-focus);
+
+  --color-primary:           var(--color-primary);
+  --color-primary-hover:     var(--color-primary-hover);
+  --color-primary-subtle:    var(--color-primary-subtle);
+  --color-primary-glow:      var(--color-primary-glow);
+
+  --color-void-violet:       var(--color-void-violet);
+  --color-void-violet-hover: var(--color-void-violet-hover);
+  --color-void-violet-glow:  var(--color-void-violet-glow);
+  --color-acid-lime:         var(--color-acid-lime);
+  --color-acid-lime-subtle:  var(--color-acid-lime-subtle);
+  --color-signal-teal:       var(--color-signal-teal);
+  --color-signal-blue:       var(--color-signal-blue);
+  --color-cyan:              var(--color-cyan);
+  --color-cyan-dim:          var(--color-cyan-dim);
+
+  --color-luminous-fill:     var(--color-luminous-fill);
+  --color-success:           var(--color-success);
+  --color-danger:            var(--color-danger);
+  --color-warn:              var(--color-warn);
+  --color-info:              var(--color-info);
+
+  --color-text-pure:         var(--color-text-pure);
+  --color-text-ice:          var(--color-text-ice);
+  --color-text-frost:        var(--color-text-frost);
+  --color-text-moon:         var(--color-text-moon);
+  --color-text-fog:          var(--color-text-fog);
+  --color-text-ash:          var(--color-text-ash);
+  --color-text-faint:        var(--color-text-faint);
+  --color-frost-glow:        var(--color-frost-glow);
+
+  --color-bg:                var(--color-bg);
+  --color-bg-elevated:       var(--color-bg-elevated);
+  --color-text:              var(--color-text);
+  --color-text-dim:          var(--color-text-dim);
+
+  --font-sans:               -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif;
+  --font-display:            -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
+  --font-mono:               "SF Mono", "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+
+  --radius-xs:               4px;
+  --radius-sm:               8px;
+  --radius-md:               12px;
+  --radius-lg:               16px;
+  --radius-xl:               20px;
+  --radius-2xl:              24px;
+  --radius-full:             9999px;
+}
+
+/* ── Reset & Base Setup ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  background-color: var(--color-canvas);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--color-canvas);
+  color: var(--color-text);
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Clean background grid */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: 
+    linear-gradient(to right, var(--color-gridline) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-gridline) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Headings ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  letter-spacing: -0.025em;
+  color: var(--color-text-pure);
+  font-weight: 600;
+}
+
+.gradient-heading {
+  color: var(--color-text-pure);
+  letter-spacing: -0.025em;
+}
+
+.gradient-heading-violet {
+  color: var(--color-text-pure);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+}
+
+/* ── macOS Cards & Window Surfaces ── */
+.glass {
+  background: var(--color-surface);
+  border: 1px solid var(--color-glass-edge);
+  box-shadow: var(--shadow-macos-card);
+  border-radius: var(--radius-lg);
+  transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.glass-elevated {
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-glass-edge-strong);
+  box-shadow: var(--shadow-macos-card);
+  border-radius: var(--radius-lg);
+}
+
+.glass-modal {
+  background: var(--color-surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--color-glass-edge-strong);
+  box-shadow: var(--shadow-macos-window);
+  border-radius: var(--radius-xl);
+}
+
+/* ── macOS Window Controls ── */
+.macos-window {
+  background: var(--color-surface);
+  border: 1px solid var(--color-glass-edge-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-macos-window);
+  overflow: hidden;
+}
+
+.macos-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: var(--color-surface-elevated);
+  border-bottom: 1px solid var(--color-glass-edge);
+  user-select: none;
+}
+
+.macos-traffic-lights {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.macos-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 0.5px solid rgba(0, 0, 0, 0.12);
+  display: inline-block;
+  transition: opacity 0.15s ease;
+}
+
+.macos-dot:hover {
+  opacity: 0.85;
+}
+
+.macos-dot-close {
+  background-color: #ff5f56;
+}
+
+.macos-dot-minimize {
+  background-color: #ffbd2e;
+}
+
+.macos-dot-expand {
+  background-color: #27c93f;
+}
+
+/* ── macOS Segmented Control ── */
+.segmented-control {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  gap: 2px;
+}
+
+.segmented-item {
+  position: relative;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-fog);
+  transition: color 0.15s ease;
+  user-select: none;
+}
+
+.segmented-item:hover {
+  color: var(--color-text-pure);
+}
+
+.segmented-item.active {
+  color: var(--color-text-pure);
+  background: var(--color-surface);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+
+.dark .segmented-item.active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* ── Form Inputs ── */
+.input {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border-strong);
+  background: var(--color-canvas);
+  padding: 0.65rem 0.95rem;
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  color: var(--color-text-pure);
+  outline: none;
+  transition: all 0.15s ease;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.input::placeholder {
+  color: var(--color-text-ash);
+}
+
+.input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Buttons ── */
+.btn-primary {
+  background: var(--color-primary);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.15s ease;
+}
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+  box-shadow: 0 2px 6px rgba(0, 113, 227, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+.btn-secondary {
+  background: var(--color-surface-elevated);
+  color: var(--color-text-pure);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 0.15s ease;
+}
+.btn-secondary:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-border-strong);
+}
+
+.btn-google {
+  background: var(--color-surface);
+  color: var(--color-text-pure);
+  border: 1px solid var(--color-border-strong);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition: all 0.15s ease;
+}
+.btn-google:hover {
+  background: var(--color-surface-hover);
+}
+
+/* ── Badges & Chips ── */
+.badge-luminous {
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-frost);
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.badge-lime {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  color: #10b981;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Shimmer & Skeleton Loaders ── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    var(--color-surface-elevated) 50%,
+    var(--color-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+  border-radius: var(--radius-sm);
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Scrollbars ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-ash);
+}
+
+/* ── Nav Active Accent ── */
+.nav-active-bar {
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background: var(--color-primary);
+}
+
+/* ── Clean Progress Bar ── */
+.progress-track {
+  height: 4px;
+  width: 100%;
+  background: var(--color-surface-elevated);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Cyber Defense Utilities & Animations ── */
+@keyframes cyber-radar {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  50% { transform: scale(1.3); opacity: 0; }
+  100% { transform: scale(0.95); opacity: 0; }
+}
+
+@keyframes cyber-scan {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(1000%); }
+}
+
+.animate-radar-pulse {
+  animation: cyber-radar 2.5s cubic-bezier(0.25, 1, 0.5, 1) infinite;
+}
+
+.animate-cyber-scan {
+  animation: cyber-scan 3s linear infinite;
+}
+
+.cyber-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-glass-edge);
+  border-radius: var(--radius-xl);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.cyber-card:hover {
+  border-color: var(--color-border-strong);
+  box-shadow: 0 12px 32px -4px rgba(0, 113, 227, 0.12);
+  transform: translateY(-2px);
+}
+
+.cyber-badge-cyan {
+  background: rgba(6, 182, 212, 0.12);
+  border: 1px solid rgba(6, 182, 212, 0.28);
+  color: #06b6d4;
+}
+
+.cyber-badge-emerald {
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.28);
+  color: #10b981;
+}
+
+.cyber-badge-crimson {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  color: #ef4444;
+}
+
+.cyber-badge-amber {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.28);
+  color: #f59e0b;
+}
+
+.threat-ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker-slide 35s linear infinite;
+}
+
+.threat-ticker-track:hover {
+  animation-play-state: paused;
+}
+
+@keyframes ticker-slide {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
