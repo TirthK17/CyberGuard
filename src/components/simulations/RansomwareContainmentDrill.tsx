@@ -79,65 +79,65 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
     }
   }, [act]);
 
-  // Dark Web C2 Server Logs
+  // Attacker Server Logs
   const getC2Logs = () => {
     const logs = [
-      "[*] DarkVault Syndicate C2 Listener v6.1 (Tor Hidden Service)",
-      "[*] Payload: LockBit / BlackCat hybrid dropper payload",
-      "[*] Ready to receive payload execution beacons on darknet...",
+      "[*] Ransomware attacker server listening for infected computers...",
+      "[*] Malware payload: Disguised invoice file (.pdf.exe)",
+      "[*] Ready to receive signals when user double-clicks file...",
     ];
 
     if (act === "file_opened" || act === "encryption_surge") {
       logs.push(
-        "[+] BEACON RECEIVED: New victim host online (DESKTOP-WK-092)",
-        "[+] OS: Windows 11 / Enterprise Subnet (10.240.12.89)",
-        "[+] Executing: vssadmin.exe delete shadows /all /quiet",
-        "[+] SHADOW COPIES DESTROYED: Local system restore points wiped!",
-        "[+] AES-256-CBC engine initialized with victim-specific key 0x7F9A2B"
+        "[+] INFECTION STARTED: Victim opened the disguised file",
+        "[+] Target: Windows 11 PC connected to home/office network",
+        "[+] Malware action: Deleting local Windows restore points",
+        "[+] SYSTEM RESTORE DISABLED: User cannot roll back system changes",
+        "[+] ENCRYPTION STARTED: Scrambling files with secret attacker key"
       );
     }
 
     if (act === "encryption_surge") {
       logs.push(
-        "[>] ENCRYPTING: User Documents, Photos, & Databases...",
-        "[>] Appending extension: .DARKVAULT_LOCKED",
-        "[>] Exfiltrating 85 MB of confidential payroll to dark web leak site (Double Extortion)"
+        "[>] LOCKING: Personal documents, photos, and project files...",
+        "[>] Renaming files to .DARKVAULT_LOCKED (cannot be opened)",
+        "[>] Stealing private files to threaten public leak if ransom is not paid"
       );
     }
 
     if (act === "ransom_note") {
       logs.push(
-        "[★] ENCRYPTION 100% COMPLETE: Displaying extortion locker on victim screen",
-        "[★] Ransom demanded: 0.85 Bitcoin (~$48,500 USD) to wallet bc1q9x...",
-        "[★] 72-hour countdown timer activated. Awaiting victim payment."
+        "[★] ALL FILES LOCKED: Displaying ransom demand screen to victim",
+        "[★] Ransom demand: 0.85 Bitcoin ($48,500) demanded to unlock files",
+        "[★] Countdown timer active: threatening to delete unlock keys if timer expires"
       );
     }
 
     if (networkIsolated) {
       logs.push(
-        "[CRITICAL ALERT] VICTIM PULLED NETWORK ADAPTER!",
-        "[-] Lateral network spread halted! Cannot jump to file server (10.240.12.1)",
-        "[-] Dark web exfiltration channel severed."
+        "[SAFE ALERT] VICTIM DISCONNECTED NETWORK / WI-FI!",
+        "[-] Network spread stopped: virus cannot infect other devices on Wi-Fi!",
+        "[-] Data theft connection severed."
       );
     }
 
     if (processTerminated) {
       logs.push(
-        "[!] MALICIOUS PROCESS KILLED (SIGKILL on PID 4912)",
-        "[-] Encryption routine aborted by user intervention."
+        "[SAFE] SUSPICIOUS VIRUS TASK STOPPED!",
+        "[-] File locking process halted by user intervention."
       );
     }
 
     if (userChoice === "pay") {
       logs.push(
-        "[$$$] VICTIM SENT 0.85 BITCOIN!",
-        "[!] Criminal Policy: Key not provided (scam syndicate vanished).",
-        "[-] Victim files remain permanently destroyed despite payment."
+        "[$$$] VICTIM PAID RANSOM MONEY!",
+        "[!] Scammer reality: No unlock key provided (scammers took money and vanished).",
+        "[-] Files remain locked despite paying. Never pay a ransomware demand!"
       );
     } else if (backupVerified) {
       logs.push(
-        "[-] RANSOM REFUSED: Victim wiped disk & restored from offline immutable cold backup!",
-        "[-] Attacker extortion leverage: 0%. Total financial gain: $0."
+        "[-] RANSOM REFUSED: Cleaned PC and restored all files safely from offline backup!",
+        "[-] Scammer leverage: 0%. Total financial gain: $0."
       );
     }
 
@@ -253,7 +253,7 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
                   activeView === "split" ? "bg-primary text-white shadow-sm" : "text-text-fog hover:text-text-pure"
                 }`}
               >
-                <i className="ti ti-columns mr-1" /> Dual Split Screen
+                <i className="ti ti-columns mr-1" /> Split View
               </button>
               <button
                 onClick={() => setActiveView("workstation")}
@@ -261,7 +261,7 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
                   activeView === "workstation" ? "bg-primary text-white shadow-sm" : "text-text-fog hover:text-text-pure"
                 }`}
               >
-                <i className="ti ti-device-desktop mr-1" /> Victim Desktop
+                <i className="ti ti-device-desktop mr-1" /> Your Computer
               </button>
               <button
                 onClick={() => setActiveView("c2")}
@@ -269,7 +269,7 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
                   activeView === "c2" ? "bg-danger text-white shadow-sm" : "text-text-fog hover:text-text-pure"
                 }`}
               >
-                <i className="ti ti-skull mr-1" /> Dark Web C2
+                <i className="ti ti-skull mr-1" /> Scammer's Screen
               </button>
             </div>
 

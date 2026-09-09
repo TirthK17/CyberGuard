@@ -112,10 +112,10 @@ export function GlossaryPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="text-xs text-text-faint">Security Lexicon</p>
-        <h1 className="mt-0.5 font-display text-2xl font-semibold text-text">Cybersecurity Glossary</h1>
+        <p className="text-xs text-text-faint">Quick Reference</p>
+        <h1 className="mt-0.5 font-display text-2xl font-semibold text-text">Cyber Safety Glossary</h1>
         <p className="mt-1 text-sm text-text-dim">
-          Plain-language explanations, illustrative real-world examples, and protective habits.
+          Simple explanations for everyday security terms and how to protect yourself.
         </p>
       </motion.div>
 
@@ -126,7 +126,7 @@ export function GlossaryPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search cybersecurity terminology..."
+            placeholder="Search security terms..."
             className="input pl-9"
           />
           {search && (

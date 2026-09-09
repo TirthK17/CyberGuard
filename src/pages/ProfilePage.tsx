@@ -125,11 +125,11 @@ export function ProfilePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="eyebrow text-frost-glow">Operator Credentials</p>
+        <p className="eyebrow text-frost-glow">Account Settings</p>
         <h1 className="gradient-heading mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">
           Profile &amp; Security
         </h1>
-        <p className="mt-1 text-xs text-text-fog">Manage personal identity, cryptographic credentials, and access keys.</p>
+        <p className="mt-1 text-xs text-text-fog">Manage your personal information, score, and password.</p>
       </motion.div>
 
       {/* Overview */}
@@ -138,7 +138,7 @@ export function ProfilePage() {
           {/* Avatar */}
           <div className="relative shrink-0">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-void-violet/40 bg-void-violet/20 font-mono text-xl font-bold text-frost-glow shadow-[0_0_20px_var(--color-void-violet-glow)]">
-              {profile ? getInitials(profile.full_name) : "OP"}
+              {profile ? getInitials(profile.full_name) : "U"}
             </div>
             {profile && (
               <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full border border-canvas bg-void-violet font-mono text-[10px] font-bold text-text-pure shadow">
@@ -154,17 +154,17 @@ export function ProfilePage() {
               <Pill tone={profile?.status === "active" ? "success" : "danger"}>{profile?.status}</Pill>
             </div>
             <p className="mt-1 font-mono text-xs text-frost-glow truncate">{profile?.email}</p>
-            <p className="mt-0.5 font-mono text-[10px] text-text-ash">Operator registered {memberSince}</p>
+            <p className="mt-0.5 font-mono text-[10px] text-text-ash">Member since {memberSince}</p>
           </div>
         </div>
 
         {/* Stats */}
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
           {[
-            { icon: "ti-coin",        label: "XP POINTS",  value: profile?.points ?? 0 },
-            { icon: "ti-trending-up", label: "TIER LEVEL", value: profile?.level ?? 1 },
-            { icon: "ti-gauge",       label: "DEFENSE %",  value: `${profile?.awareness_score ?? 0}%` },
-            { icon: "ti-award",       label: "BADGES",     value: stats?.badgeCount ?? 0 },
+            { icon: "ti-coin",        label: "XP POINTS",    value: profile?.points ?? 0 },
+            { icon: "ti-trending-up", label: "LEVEL",        value: profile?.level ?? 1 },
+            { icon: "ti-gauge",       label: "SAFETY SCORE", value: `${profile?.awareness_score ?? 0}%` },
+            { icon: "ti-award",       label: "BADGES",       value: stats?.badgeCount ?? 0 },
           ].map((s) => (
             <div key={s.label} className="rounded-xl border border-glass-edge bg-carbon p-3.5">
               <i className={`ti ${s.icon} text-sm text-frost-glow`} />
@@ -182,7 +182,7 @@ export function ProfilePage() {
             <Button variant="ghost" size="xs" icon={<i className="ti ti-award text-xs" />}>Badges</Button>
           </Link>
           <Link to="/progress">
-            <Button variant="ghost" size="xs" icon={<i className="ti ti-trending-up text-xs" />}>Progress Telemetry</Button>
+            <Button variant="ghost" size="xs" icon={<i className="ti ti-trending-up text-xs" />}>My Progress</Button>
           </Link>
           {stats?.hasCertificate && (
             <Link to="/certificate">
@@ -194,7 +194,7 @@ export function ProfilePage() {
 
       {/* Edit profile */}
       <div className="glass rounded-2xl p-6">
-        <h2 className="font-display text-sm font-semibold text-text-pure">Operator Details</h2>
+        <h2 className="font-display text-sm font-semibold text-text-pure">Personal Details</h2>
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div>
             <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-text-moon" htmlFor="full-name">
@@ -221,7 +221,7 @@ export function ProfilePage() {
               aria-describedby="email-note"
             />
             <p id="email-note" className="mt-1.5 font-mono text-[10px] text-text-ash">
-              Identity email is managed by your auth provider (Google OAuth / Supabase).
+              Your email is connected to your login account.
             </p>
           </div>
           <AnimatePresence>
@@ -251,7 +251,7 @@ export function ProfilePage() {
       {/* Security */}
       <div className="glass rounded-2xl p-6">
         <h2 className="font-display text-sm font-semibold text-text-pure">Update Password</h2>
-        <p className="mt-0.5 text-xs text-text-fog">You'll need to confirm your existing password to rotate keys.</p>
+        <p className="mt-0.5 text-xs text-text-fog">Enter your current password to set a new password.</p>
         <form onSubmit={handlePasswordChange} className="mt-4 space-y-4">
           <div>
             <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-text-moon" htmlFor="cur-pass">

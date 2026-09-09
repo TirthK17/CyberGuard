@@ -24,18 +24,18 @@ export function CertificatePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="eyebrow text-frost-glow">Verified Accreditation</p>
+          <p className="eyebrow text-frost-glow">Achievement</p>
           <h1 className="gradient-heading mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">
             Certification
           </h1>
           <p className="mt-1 text-xs text-text-fog">
-            Demonstrate defense proficiency to claim your verified certificate.
+            Pass the Cyber Safety Test to earn your official certificate.
           </p>
         </motion.div>
         <EmptyState
           title="Certificate not yet unlocked"
-          description="Score at least 61 on the comprehensive awareness assessment to earn your official Cybersecurity Awareness Certificate."
-          actionLabel="Launch Assessment"
+          description="Score at least 61 on the Cyber Safety Test to earn your official CyberGuard Certificate."
+          actionLabel="Take Safety Test"
           onAction={() => navigate("/assessment")}
           icon="ti-certificate"
         />
@@ -51,12 +51,12 @@ export function CertificatePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="eyebrow text-frost-glow">Verified Accreditation</p>
+        <p className="eyebrow text-frost-glow">Achievement</p>
         <h1 className="gradient-heading mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">
-          Security Certification
+          Cyber Safety Certificate
         </h1>
         <p className="mt-1 text-xs text-text-fog">
-          Official digital credential certifying defensive cybersecurity readiness.
+          Official digital certificate verifying your cyber safety knowledge.
         </p>
       </motion.div>
 
@@ -81,28 +81,28 @@ export function CertificatePage() {
           </div>
 
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-text-ash">
-            Accreditation of Operational Competence
+            Certificate of Completion
           </p>
 
           <h2 className="gradient-heading mt-3 font-display text-2xl sm:text-3xl font-extrabold tracking-tight">
             Cybersecurity Awareness
           </h2>
 
-          <p className="mt-6 text-xs text-text-fog">This credential verifies that</p>
+          <p className="mt-6 text-xs text-text-fog">This certificate is awarded to</p>
           <p className="mt-2 font-display text-xl sm:text-2xl font-bold text-frost-glow tracking-tight">
             {profile?.full_name}
           </p>
 
           <p className="mt-3 max-w-md mx-auto text-xs leading-relaxed text-text-fog">
-            has successfully verified operational competence in identifying social engineering attack vectors,
-            maintaining credential hygiene, and implementing defensive security controls.
+            for successfully demonstrating practical knowledge in spotting online scams,
+            protecting accounts and passwords, and practicing safe digital habits.
           </p>
 
           {/* Telemetry Row */}
           <div className="relative mt-8 flex justify-center gap-8 border-t border-glass-edge pt-6">
             <div className="text-center">
               <div className="font-display text-2xl font-bold text-frost-glow">{score}</div>
-              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-text-ash">Index Score</div>
+              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-text-ash">Safety Score</div>
             </div>
             <div className="h-10 w-px self-center bg-glass-edge" />
             <div className="text-center">
@@ -112,12 +112,12 @@ export function CertificatePage() {
             <div className="h-10 w-px self-center bg-glass-edge" />
             <div className="text-center">
               <div className="font-mono text-sm font-semibold text-void-violet">{certId}</div>
-              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-text-ash">Credential ID</div>
+              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-text-ash">Certificate ID</div>
             </div>
           </div>
 
           <p className="mt-6 font-mono text-[9px] text-text-ash uppercase tracking-widest">
-            Cryptographically logged &amp; verified by CyberGuard
+            Issued &amp; verified by CyberGuard
           </p>
         </div>
       </motion.div>

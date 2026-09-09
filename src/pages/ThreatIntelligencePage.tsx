@@ -472,14 +472,14 @@ export function ThreatIntelligencePage() {
             <div className="flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-danger animate-ping" />
               <p className="font-mono text-xs font-bold uppercase tracking-wider text-danger">
-                Global Cyber Threat Intelligence Radar
+                Live Scam &amp; Threat Radar
               </p>
             </div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-text-pure sm:text-3xl mt-1">
-              Live Threat Radar &amp; Tactical Intelligence
+              Recent Scams &amp; Threat Alerts
             </h1>
-            <p className="mt-1 text-xs text-text-fog">
-              Real-time surveillance tracking weaponized zero-days, ransomware syndicates, mobile smishing campaigns, and AI extortion waves.
+            <p className="mt-1 text-sm text-text-fog">
+              Track active online scams, new fake email tricks, and trending cyber warnings from around the web.
             </p>
           </div>
 
@@ -488,11 +488,11 @@ export function ThreatIntelligencePage() {
             <div className="rounded-2xl border border-danger/40 bg-danger/10 px-4 py-2 flex items-center gap-3">
               <i className="ti ti-shield-bolt text-2xl text-danger animate-pulse" />
               <div>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash block">
-                  Current Threat Posture
+                <span className="text-xs font-semibold text-text-ash block">
+                  Current Threat Level
                 </span>
-                <span className="font-display text-sm font-bold text-danger">
-                  DEFCON 2 — ELEVATED
+                <span className="font-display text-sm sm:text-base font-bold text-danger">
+                  HIGH ALERT
                 </span>
               </div>
             </div>
@@ -500,11 +500,11 @@ export function ThreatIntelligencePage() {
             <div className="rounded-2xl border border-border bg-surface px-4 py-2 flex items-center gap-3">
               <i className="ti ti-radar text-2xl text-primary" />
               <div>
-                <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash block">
-                  Active Campaigns
+                <span className="text-xs font-semibold text-text-ash block">
+                  Trending Scams
                 </span>
-                <span className="font-display text-sm font-bold text-text-pure">
-                  18 Tracked Worldwide
+                <span className="font-display text-sm sm:text-base font-bold text-text-pure">
+                  18 Active Waves
                 </span>
               </div>
             </div>
@@ -517,18 +517,18 @@ export function ThreatIntelligencePage() {
         <div className="p-4 sm:p-5 border-b border-border bg-surface flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div className="h-3 w-3 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="font-display text-sm font-bold text-text-pure">
-              Live Attack Stream &amp; In-Flight Vector Canvas
+            <span className="font-display text-base font-bold text-text-pure">
+              Global Threat Map (Live Simulation)
             </span>
-            <span className="hidden sm:inline font-mono text-[10px] text-text-ash">
-              (Simulated Global Honeypot Telemetry)
+            <span className="hidden sm:inline text-xs text-text-ash">
+              (Live visual demo of simulated attack traffic)
             </span>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setLiveStreamPaused((p) => !p)}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-mono font-bold transition-colors border ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors border ${
                 liveStreamPaused
                   ? "border-warn bg-warn/10 text-warn"
                   : "border-border bg-surface text-text-ash hover:text-text-pure"
@@ -537,8 +537,8 @@ export function ThreatIntelligencePage() {
               <i className={`ti ${liveStreamPaused ? "ti-player-play" : "ti-player-pause"} text-xs`} />
               <span>{liveStreamPaused ? "Resume Feed" : "Pause Feed"}</span>
             </button>
-            <div className="font-mono text-[11px] text-text-ash px-2 py-1 rounded-lg bg-surface border border-border">
-              {attacks.length} Active Vectors
+            <div className="text-xs font-semibold text-text-ash px-2.5 py-1 rounded-lg bg-surface border border-border">
+              {attacks.length} Live Signals
             </div>
           </div>
         </div>
@@ -663,10 +663,9 @@ export function ThreatIntelligencePage() {
             </svg>
 
             {/* Radar Coordinates Overlay */}
-            <div className="absolute bottom-3 left-4 font-mono text-[10px] text-text-ash flex items-center gap-4 bg-black/60 px-3 py-1.5 rounded-lg border border-border/40 backdrop-blur-md">
-              <span>SCAN GRID: 840x380 GEO-INT</span>
-              <span className="text-emerald-400">STATUS: ACTIVE SWEEP</span>
-              <span className="hidden sm:inline text-text-fog">SENSORS: 11 GLOBAL HONEYPOTS</span>
+            <div className="absolute bottom-3 left-4 text-xs font-semibold text-text-ash flex items-center gap-4 bg-black/60 px-3 py-1.5 rounded-lg border border-border/40 backdrop-blur-md">
+              <span className="text-emerald-400 font-semibold">● LIVE GLOBAL SIMULATION</span>
+              <span className="hidden sm:inline text-text-fog">Showing simulated real-time attack attempts</span>
             </div>
           </div>
 
@@ -674,10 +673,10 @@ export function ThreatIntelligencePage() {
           <div className="lg:col-span-4 p-4 border-t lg:border-t-0 lg:border-l border-border bg-surface flex flex-col justify-between max-h-[380px]">
             <div>
               <div className="flex items-center justify-between pb-3 border-b border-border mb-3">
-                <span className="font-mono text-xs font-bold text-text-pure uppercase tracking-wider flex items-center gap-1.5">
-                  <i className="ti ti-terminal text-primary" /> Live Intercept Log
+                <span className="text-sm font-bold text-text-pure flex items-center gap-1.5">
+                  <i className="ti ti-terminal text-primary" /> Live Attack Log
                 </span>
-                <span className="font-mono text-[10px] text-emerald-400">REALTIME</span>
+                <span className="text-xs font-semibold text-emerald-400">REALTIME</span>
               </div>
 
               <div className="space-y-2 overflow-y-auto max-h-[260px] pr-1">
@@ -691,10 +690,10 @@ export function ThreatIntelligencePage() {
                       transition={{ duration: 0.2 }}
                       className="p-2.5 rounded-xl border border-border bg-surface-elevated text-xs space-y-1 hover:border-primary/40 transition-colors"
                     >
-                      <div className="flex items-center justify-between text-[10px] font-mono">
+                      <div className="flex items-center justify-between text-xs font-mono">
                         <span className="text-text-ash">[{atk.time}]</span>
                         <span
-                          className={`font-bold uppercase px-1.5 py-0.2 rounded text-[9px] ${
+                          className={`font-semibold uppercase px-2 py-0.5 rounded text-[10px] ${
                             atk.severity === "critical"
                               ? "bg-danger/20 text-danger border border-danger/30"
                               : atk.severity === "high"
@@ -705,12 +704,12 @@ export function ThreatIntelligencePage() {
                           {atk.severity}
                         </span>
                       </div>
-                      <div className="font-semibold text-text-pure truncate text-[11px]">
+                      <div className="font-semibold text-text-pure truncate text-xs sm:text-sm">
                         {atk.attackType}
                       </div>
-                      <div className="flex items-center justify-between text-[10px] text-text-fog font-mono">
+                      <div className="flex items-center justify-between text-xs text-text-fog">
                         <span>{atk.sourceCity} &rarr; {atk.targetCity}</span>
-                        <span className="text-text-ash">{atk.targetSector}</span>
+                        <span className="text-text-ash font-medium">{atk.targetSector}</span>
                       </div>
                     </motion.div>
                   ))}
@@ -718,9 +717,9 @@ export function ThreatIntelligencePage() {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-border mt-3 text-[10px] font-mono text-text-ash flex items-center justify-between">
+            <div className="pt-3 border-t border-border mt-3 text-xs text-text-ash flex items-center justify-between">
               <span>Updated: Just now</span>
-              <span className="text-primary font-semibold">Zero-Trust Node Sync</span>
+              <span className="text-primary font-semibold">Active Sync</span>
             </div>
           </div>
         </div>
@@ -735,7 +734,7 @@ export function ThreatIntelligencePage() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search threat dossiers by CVE, keyword (e.g. 'ransomware', 'teams', 'apk'), or attack vector..."
+              placeholder="Search scams and security alerts (e.g., 'teams', 'sms', 'apk', 'ransomware')..."
               className="input pl-10 text-xs sm:text-sm py-2.5"
             />
             {search && (
@@ -794,18 +793,18 @@ export function ThreatIntelligencePage() {
       {/* ── 4. THREAT DOSSIERS FEED ── */}
       <div className="space-y-4">
         <div className="flex items-center justify-between text-xs text-text-ash font-mono">
-          <span>Showing {filteredAdvisories.length} verified security bulletins</span>
-          <span>Updated continuously from CISA KEV &amp; MITRE ATT&amp;CK feeds</span>
+          <span>Showing {filteredAdvisories.length} verified security warnings</span>
+          <span>Continuously tracked from trusted cyber advisories</span>
         </div>
 
         {filteredAdvisories.length === 0 ? (
           <Card className="p-12 text-center space-y-3">
             <i className="ti ti-radar-off text-4xl text-text-ash" />
             <h3 className="font-display text-base font-bold text-text-pure">
-              No Threat Advisories Match Your Filter
+              No Warnings Match Your Filter
             </h3>
             <p className="text-xs text-text-fog max-w-sm mx-auto">
-              Try clearing your search query or selecting &apos;All Advisories&apos; to view global intelligence bulletins.
+              Try clearing your search query or selecting &apos;All Advisories&apos; to view all warnings.
             </p>
             <Button
               variant="secondary"
@@ -831,21 +830,21 @@ export function ThreatIntelligencePage() {
                     <Pill tone={severityTone(adv.severity)} size="sm">
                       {adv.severity.toUpperCase()}
                     </Pill>
-                    <span className="font-mono text-xs text-text-ash px-2 py-0.5 rounded bg-surface border border-border">
+                    <span className="text-xs font-semibold text-text-ash px-2.5 py-0.5 rounded-full bg-surface border border-border">
                       {adv.category}
                     </span>
                     {adv.cve && (
-                      <span className="font-mono text-[11px] font-bold text-primary px-2 py-0.5 rounded bg-primary/10 border border-primary/30">
+                      <span className="text-xs font-semibold text-primary px-2 py-0.5 rounded bg-primary/10 border border-primary/30">
                         {adv.cve}
                       </span>
                     )}
-                    <span className="text-[11px] text-text-ash font-mono">
+                    <span className="text-xs text-text-ash font-medium">
                       Origin: <strong className="text-text-pure">{adv.originRegion}</strong>
                     </span>
                   </div>
 
-                  <div className="flex items-center gap-3 font-mono text-xs text-text-ash">
-                    <span>REF: {adv.id}</span>
+                  <div className="flex items-center gap-3 text-xs text-text-ash font-medium">
+                    <span>ALERT #{adv.id.replace("ADV-2025-", "").replace("ADV-2024-", "")}</span>
                     <span>·</span>
                     <span>{adv.date}</span>
                   </div>
@@ -856,18 +855,18 @@ export function ThreatIntelligencePage() {
                   <h3 className="font-display text-base sm:text-lg font-bold text-text-pure leading-snug">
                     {adv.title}
                   </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-text-fog">
+                  <p className="mt-2 text-sm leading-relaxed text-text-fog">
                     {adv.summary}
                   </p>
                 </div>
 
                 {/* Target Sectors */}
                 <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                  <span className="text-[11px] font-mono text-text-ash mr-1">Impacted Sectors:</span>
+                  <span className="text-xs font-medium text-text-ash mr-1">Most Targeted:</span>
                   {adv.targetSectors.map((sec, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-0.5 rounded-md bg-surface text-[10px] font-mono text-text-pure border border-border"
+                      className="px-2.5 py-0.5 rounded-md bg-surface text-xs font-medium text-text-pure border border-border"
                     >
                       {sec}
                     </span>
@@ -877,19 +876,19 @@ export function ThreatIntelligencePage() {
                 {/* Attack Vector & Mitigation Preview */}
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl border border-danger/30 bg-danger/5 p-4 space-y-1">
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-danger font-bold flex items-center gap-1.5">
-                      <i className="ti ti-target" /> Observed Attack Vector
+                    <span className="text-xs uppercase tracking-wider text-danger font-bold flex items-center gap-1.5">
+                      <i className="ti ti-target" /> How The Scam Works
                     </span>
-                    <p className="text-xs text-text-pure leading-relaxed">
+                    <p className="text-xs sm:text-sm text-text-pure leading-relaxed">
                       {adv.attackVector}
                     </p>
                   </div>
 
                   <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-1">
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-400 font-bold flex items-center gap-1.5">
-                      <i className="ti ti-shield-check" /> Defensive Mitigation Directive
+                    <span className="text-xs uppercase tracking-wider text-emerald-400 font-bold flex items-center gap-1.5">
+                      <i className="ti ti-shield-check" /> How To Protect Yourself
                     </span>
-                    <p className="text-xs text-text-pure leading-relaxed">
+                    <p className="text-xs sm:text-sm text-text-pure leading-relaxed">
                       {adv.mitigation}
                     </p>
                   </div>
@@ -905,7 +904,7 @@ export function ThreatIntelligencePage() {
                       onClick={() => setSelectedAdvisory(adv)}
                       className="text-xs font-semibold"
                     >
-                      Inspect Full Dossier &amp; MITRE
+                      View Details &amp; Safety Steps
                     </Button>
 
                     <Button
@@ -915,7 +914,7 @@ export function ThreatIntelligencePage() {
                       onClick={() => handleCopyIocs(adv)}
                       className="text-xs"
                     >
-                      {copiedIoc === adv.id ? "IOCs Copied!" : "Export IOCs"}
+                      {copiedIoc === adv.id ? "Copied!" : "Copy Details"}
                     </Button>
                   </div>
 
@@ -927,7 +926,7 @@ export function ThreatIntelligencePage() {
                         icon={<i className="ti ti-player-play text-primary" />}
                         className="text-xs text-primary font-bold hover:bg-primary/10"
                       >
-                        {adv.simulationLabel || "Practice in Sandbox"} &rarr;
+                        {adv.simulationLabel || "Try Simulation"} &rarr;
                       </Button>
                     </Link>
                   )}
@@ -981,11 +980,11 @@ export function ThreatIntelligencePage() {
               </div>
 
               {/* Modal Body */}
-              <div className="p-6 overflow-y-auto space-y-6 text-xs leading-relaxed">
+              <div className="p-6 overflow-y-auto space-y-6 text-sm leading-relaxed">
                 {/* Full Threat Brief */}
                 <div className="space-y-2">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash font-bold block">
-                    1. Tactical Threat Summary
+                  <span className="text-xs uppercase tracking-wider text-text-ash font-bold block">
+                    1. Threat Overview
                   </span>
                   <p className="text-text-pure leading-relaxed text-sm bg-surface p-4 rounded-2xl border border-border">
                     {selectedAdvisory.summary}
@@ -994,8 +993,8 @@ export function ThreatIntelligencePage() {
 
                 {/* MITRE ATT&CK Matrix Mapping */}
                 <div className="space-y-3">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash font-bold block">
-                    2. MITRE ATT&amp;CK Framework Mapping
+                  <span className="text-xs uppercase tracking-wider text-text-ash font-bold block">
+                    2. How Attackers Operate (Techniques)
                   </span>
                   <div className="grid gap-3 sm:grid-cols-2">
                     {selectedAdvisory.mitre.map((m, idx) => (
@@ -1004,14 +1003,14 @@ export function ThreatIntelligencePage() {
                         className="p-3.5 rounded-xl border border-primary/30 bg-primary/5 flex items-start justify-between gap-2"
                       >
                         <div>
-                          <span className="font-mono text-[10px] text-primary uppercase font-bold block">
-                            Tactic: {m.tactic}
+                          <span className="text-xs text-primary uppercase font-bold block">
+                            Stage: {m.tactic}
                           </span>
-                          <strong className="text-xs text-text-pure mt-0.5 block">
+                          <strong className="text-sm text-text-pure mt-0.5 block">
                             {m.techniqueName}
                           </strong>
                         </div>
-                        <span className="font-mono text-xs font-bold text-text-pure px-2 py-0.5 rounded bg-surface border border-border">
+                        <span className="font-mono text-xs font-semibold text-text-pure px-2.5 py-0.5 rounded bg-surface border border-border">
                           {m.techniqueId}
                         </span>
                       </div>
@@ -1022,8 +1021,8 @@ export function ThreatIntelligencePage() {
                 {/* Indicators of Compromise (IOCs) */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash font-bold block">
-                      3. Verified Indicators of Compromise (IOCs)
+                    <span className="text-xs uppercase tracking-wider text-text-ash font-bold block">
+                      3. Known Suspicious Links &amp; Addresses
                     </span>
                     <Button
                       variant="secondary"
@@ -1032,13 +1031,13 @@ export function ThreatIntelligencePage() {
                       onClick={() => handleCopyIocs(selectedAdvisory)}
                       className="text-xs py-1"
                     >
-                      {copiedIoc === selectedAdvisory.id ? "Copied to Clipboard!" : "Copy IOC Block"}
+                      {copiedIoc === selectedAdvisory.id ? "Copied!" : "Copy Details"}
                     </Button>
                   </div>
 
-                  <div className="p-4 rounded-2xl bg-surface border border-border space-y-3 font-mono text-[11px]">
+                  <div className="p-4 rounded-2xl bg-surface border border-border space-y-3 font-mono text-xs">
                     <div>
-                      <span className="text-text-ash block text-[10px] uppercase mb-1">C2 Domains:</span>
+                      <span className="text-text-ash block text-xs font-semibold uppercase mb-1">Scam Domains &amp; Websites:</span>
                       <div className="space-y-1">
                         {selectedAdvisory.iocs.domains.map((d, i) => (
                           <div key={i} className="text-danger flex items-center gap-2">
@@ -1050,7 +1049,7 @@ export function ThreatIntelligencePage() {
                     </div>
 
                     <div className="pt-2 border-t border-border">
-                      <span className="text-text-ash block text-[10px] uppercase mb-1">Observed Attacker IPs:</span>
+                      <span className="text-text-ash block text-xs font-semibold uppercase mb-1">Scammer Server IPs:</span>
                       <div className="space-y-1">
                         {selectedAdvisory.iocs.ips.map((ip, i) => (
                           <div key={i} className="text-warn flex items-center gap-2">
@@ -1062,7 +1061,7 @@ export function ThreatIntelligencePage() {
                     </div>
 
                     <div className="pt-2 border-t border-border">
-                      <span className="text-text-ash block text-[10px] uppercase mb-1">Payload SHA-256 Hashes:</span>
+                      <span className="text-text-ash block text-xs font-semibold uppercase mb-1">Dangerous File Hashes (SHA-256):</span>
                       <div className="space-y-1">
                         {selectedAdvisory.iocs.hashes.map((h, i) => (
                           <div key={i} className="text-text-fog break-all flex items-center gap-2">
@@ -1077,17 +1076,17 @@ export function ThreatIntelligencePage() {
 
                 {/* Hardening Checklist */}
                 <div className="space-y-2">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-emerald-400 font-bold block">
-                    4. Hardening &amp; Remediation Instructions
+                  <span className="text-xs uppercase tracking-wider text-emerald-400 font-bold block">
+                    4. How to Stay Safe
                   </span>
                   <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-text-pure space-y-2">
                     <p className="leading-relaxed">
                       {selectedAdvisory.mitigation}
                     </p>
-                    <ul className="list-disc pl-4 space-y-1 text-text-fog text-xs">
-                      <li>Block outbound communication to all listed C2 domains and IP subnets at corporate perimeter firewalls.</li>
-                      <li>Initiate endpoint compromise scans across all workstations for matching SHA-256 process hashes.</li>
-                      <li>Deploy immediate user awareness notifications alerting staff to watch for this specific campaign vector.</li>
+                    <ul className="list-disc pl-4 space-y-1 text-text-fog text-sm">
+                      <li>Block access to listed fake websites and suspicious IP addresses.</li>
+                      <li>Scan your device for matching file downloads or suspicious background tasks.</li>
+                      <li>Share this advisory with friends, family, or coworkers who might receive similar messages.</li>
                     </ul>
                   </div>
                 </div>
@@ -1101,7 +1100,7 @@ export function ThreatIntelligencePage() {
                   onClick={() => setSelectedAdvisory(null)}
                   className="text-xs"
                 >
-                  Close Dossier
+                  Close Details
                 </Button>
 
                 {selectedAdvisory.simulationUrl && (
@@ -1112,7 +1111,7 @@ export function ThreatIntelligencePage() {
                       icon={<i className="ti ti-player-play" />}
                       className="text-xs font-bold"
                     >
-                      {selectedAdvisory.simulationLabel || "Launch Training Simulator"}
+                      {selectedAdvisory.simulationLabel || "Try Interactive Simulation"}
                     </Button>
                   </Link>
                 )}
@@ -1128,11 +1127,11 @@ export function ThreatIntelligencePage() {
           <div className="flex items-center justify-center md:justify-start gap-2">
             <i className="ti ti-bell-ringing text-lg text-primary" />
             <h3 className="font-display text-base font-bold text-text-pure">
-              Receive Urgent Zero-Day &amp; Critical Threat Alerts
+              Stay Alert to New Online Threats
             </h3>
           </div>
           <p className="text-xs text-text-fog max-w-xl">
-            Get instant telemetry notifications whenever a critical vulnerability (CVSS 9.0+) or nationwide scam wave is detected in your region.
+            Receive instant notifications whenever a widespread phishing scam or high-risk online security issue is detected in your region.
           </p>
         </div>
 
@@ -1144,7 +1143,7 @@ export function ThreatIntelligencePage() {
               icon={<i className="ti ti-settings" />}
               className="text-xs font-bold"
             >
-              Configure Notification Feeds
+              Notification Settings
             </Button>
           </Link>
           <Link to="/report">
@@ -1154,7 +1153,7 @@ export function ThreatIntelligencePage() {
               icon={<i className="ti ti-flag" />}
               className="text-xs"
             >
-              Report a New Threat
+              Report a Scam
             </Button>
           </Link>
         </div>

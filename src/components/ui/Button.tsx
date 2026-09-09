@@ -29,27 +29,27 @@ export function Button({
 
   const variants: Record<string, string> = {
     primary:
-      "rounded-xl bg-primary text-white font-medium border border-white/20 " +
+      "rounded-xl bg-primary text-white font-semibold border border-white/20 " +
       "shadow-[0_1px_2px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] " +
       "hover:bg-primary-hover active:scale-[0.98]",
     secondary:
-      "rounded-xl bg-surface-elevated border border-border text-text-pure " +
+      "rounded-xl bg-surface-elevated border border-border text-text-pure font-semibold " +
       "shadow-[0_1px_2px_rgba(0,0,0,0.04)] " +
       "hover:bg-surface-hover hover:border-border-strong active:scale-[0.98]",
     ghost:
-      "rounded-xl text-text-fog hover:text-text-pure hover:bg-surface-elevated border border-transparent",
+      "rounded-xl text-text-fog hover:text-text-pure hover:bg-surface-elevated font-semibold border border-transparent",
     danger:
-      "rounded-xl bg-danger/10 text-danger border border-danger/20 hover:bg-danger/20",
+      "rounded-xl bg-danger/10 text-danger border border-danger/20 hover:bg-danger/20 font-semibold",
     google:
-      "rounded-xl bg-surface border border-border-strong text-text-pure " +
+      "rounded-xl bg-surface border border-border-strong text-text-pure font-semibold " +
       "shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-surface-hover",
   };
 
   const sizes: Record<string, string> = {
-    xs: "px-2.5 py-1 text-xs rounded-lg",
-    sm: "px-3.5 py-1.5 text-xs rounded-lg",
-    md: "px-4 py-2 text-sm rounded-xl",
-    lg: "px-5 py-2.5 text-sm font-semibold rounded-xl",
+    xs: "px-3 py-1 text-xs font-semibold rounded-lg",
+    sm: "px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-xl",
+    md: "px-4 py-2 text-sm font-semibold rounded-xl",
+    lg: "px-6 py-2.5 text-sm sm:text-base font-semibold rounded-xl",
   };
 
   return (

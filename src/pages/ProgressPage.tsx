@@ -153,12 +153,12 @@ export function ProgressPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="eyebrow text-frost-glow">Operational Telemetry</p>
+        <p className="eyebrow text-frost-glow">Your Learning Journey</p>
         <h1 className="gradient-heading mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">
-          Defense Progress
+          Learning Progress
         </h1>
         <p className="mt-1 text-xs text-text-fog">
-          Granular analytics on completed curriculums, categorical defense strength, and weekly cadence.
+          Track your completed lessons, quiz scores, and weekly activity.
         </p>
       </motion.div>
 
@@ -166,9 +166,9 @@ export function ProgressPage() {
       <Card>
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash">Curriculum Telemetry</span>
+            <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash">Modules Progress</span>
             <div className="mt-1 font-display text-xl font-bold text-text-pure">
-              <AnimatedNumber value={completed} /> / {total} modules mastered
+              <AnimatedNumber value={completed} /> / {total} modules completed
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -176,7 +176,7 @@ export function ProgressPage() {
               <AnimatedNumber value={overall} suffix="%" />
             </span>
             <Pill tone={overall >= 100 ? "success" : overall > 0 ? "violet" : "default"}>
-              {overall >= 100 ? "GRADUATED" : overall > 0 ? "ACTIVE OPERATOR" : "READY TO LAUNCH"}
+              {overall >= 100 ? "COMPLETED" : overall > 0 ? "IN PROGRESS" : "GETTING STARTED"}
             </Pill>
           </div>
         </div>
@@ -188,8 +188,8 @@ export function ProgressPage() {
         {/* Category Radar / Strength */}
         <div className="glass rounded-2xl p-6">
           <SectionHeader
-            title="Strength by Vector"
-            description="Composite score across scenario quizzes and sandbox simulations."
+            title="Safety Score by Topic"
+            description="Your performance across quizzes and interactive simulations."
           />
           <div className="mt-4 h-64">
             {categoryData.length > 0 ? (
@@ -214,7 +214,7 @@ export function ProgressPage() {
             ) : (
               <div className="flex h-full flex-col items-center justify-center text-center">
                 <i className="ti ti-chart-radar text-2xl text-text-ash mb-2" />
-                <p className="font-mono text-xs text-text-fog">Complete challenges to generate vector telemetry.</p>
+                <p className="font-mono text-xs text-text-fog">Complete quizzes and simulations to see your scores here.</p>
               </div>
             )}
           </div>
@@ -224,7 +224,7 @@ export function ProgressPage() {
         <div className="glass rounded-2xl p-6">
           <SectionHeader
             title="Weekly Activity"
-            description="Security decisions tested and completed across the last 7 days."
+            description="Lessons, quizzes, and simulations completed over the last 7 days."
           />
           <div className="mt-4 h-64">
             <ResponsiveContainer width="100%" height="100%">
@@ -268,8 +268,8 @@ export function ProgressPage() {
       {/* Module Progress Grid */}
       <div className="space-y-4">
         <SectionHeader
-          title="Curriculum Modules Breakdown"
-          description="Detailed step-by-step progress on each topic."
+          title="All Learning Modules"
+          description="Track progress across each cybersecurity topic."
         />
 
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -318,8 +318,8 @@ export function ProgressPage() {
       {timeline && timeline.length > 0 ? (
         <Card>
           <SectionHeader
-            title="Operational Audit Log"
-            description="Chronological record of recent security decisions and certifications."
+            title="Recent Activity"
+            description="Timeline of completed lessons, quizzes, and earned badges."
           />
           <div className="mt-6 space-y-0">
             {timeline.map((log, i) => {

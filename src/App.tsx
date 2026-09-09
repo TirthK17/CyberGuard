@@ -43,17 +43,17 @@ import { AdminBadgesPage } from "@/pages/admin/AdminBadgesPage";
 import { AdminReportsPage } from "@/pages/admin/AdminReportsPage";
 import { AdminSettingsPage } from "@/pages/admin/AdminSettingsPage";
 
-/* Real-Life Cyber Defense Navigation */
+/* Simple, Friendly Navigation */
 const userNav: NavItem[] = [
-  { to: "/dashboard",   label: "Defense Center",      icon: "ti-shield-check" },
-  { to: "/training",    label: "Training Academy",    icon: "ti-book-2" },
-  { to: "/simulations", label: "Threat Sandboxes",    icon: "ti-target" },
-  { to: "/topics",      label: "Awareness Topics",    icon: "ti-bookmarks" },
-  { to: "/tools",       label: "Security Toolkit",    icon: "ti-tools" },
-  { to: "/threats",     label: "Live Threat Radar",   icon: "ti-radar" },
-  { to: "/assessment",  label: "Assessments",         icon: "ti-certificate" },
-  { to: "/report",      label: "Report Incident",     icon: "ti-flag" },
-  { to: "/leaderboard", label: "Rankings & Badges",   icon: "ti-trophy" },
+  { to: "/dashboard",   label: "Dashboard",           icon: "ti-layout-dashboard" },
+  { to: "/training",    label: "Lessons",             icon: "ti-book-2" },
+  { to: "/simulations", label: "Simulations",         icon: "ti-target" },
+  { to: "/topics",      label: "Security Topics",     icon: "ti-bookmarks" },
+  { to: "/tools",       label: "Safety Tools",        icon: "ti-tools" },
+  { to: "/threats",     label: "Recent Scams",        icon: "ti-bell-ringing" },
+  { to: "/assessment",  label: "Safety Test",         icon: "ti-certificate" },
+  { to: "/report",      label: "Report a Scam",       icon: "ti-flag" },
+  { to: "/leaderboard", label: "Badges & Ranks",      icon: "ti-trophy" },
   { to: "/settings",    label: "Settings",            icon: "ti-settings" },
 ];
 
@@ -90,7 +90,7 @@ function TopicsWrapper() {
   if (user) {
     return (
       <ProtectedRoute>
-        <DashboardShell navItems={userNav} brandLabel="Defense Console">
+        <DashboardShell navItems={userNav} brandLabel="CyberGuard">
           <TopicsPage />
         </DashboardShell>
       </ProtectedRoute>
@@ -122,25 +122,25 @@ function App() {
               <Route path="/register" element={<PublicLayout><RegisterPage /></PublicLayout>} />
 
               {/* User Console */}
-              <Route path="/dashboard" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><UserDashboardPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/training" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><TrainingPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/training/:slug" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><ModuleDetailPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/simulations" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><SimulationsPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/simulations/:slug" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><SimulationPlayerPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/tools" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><SecurityToolsPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/report" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><ReportIncidentPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/assessment" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><AssessmentPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/quizzes" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><QuizzesPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/quizzes/:id" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><QuizTakingPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/leaderboard" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><LeaderboardPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/badges" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><BadgesPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/certificate" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><CertificatePage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/progress" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><ProgressPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/threats" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><ThreatIntelligencePage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/guide" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><SecurityGuidePage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/glossary" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><GlossaryPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><ProfilePage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="Defense Console"><SettingsPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><UserDashboardPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/training" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><TrainingPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/training/:slug" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><ModuleDetailPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/simulations" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><SimulationsPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/simulations/:slug" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><SimulationPlayerPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/tools" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><SecurityToolsPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/report" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><ReportIncidentPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/assessment" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><AssessmentPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/quizzes" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><QuizzesPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/quizzes/:id" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><QuizTakingPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/leaderboard" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><LeaderboardPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/badges" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><BadgesPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/certificate" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><CertificatePage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/progress" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><ProgressPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/threats" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><ThreatIntelligencePage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/guide" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><SecurityGuidePage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/glossary" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><GlossaryPage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><ProfilePage /></DashboardShell></ProtectedRoute>} />
+              <Route path="/settings" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><SettingsPage /></DashboardShell></ProtectedRoute>} />
 
               {/* Admin Console */}
               <Route path="/admin" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminDashboardPage /></DashboardShell></AdminRoute>} />

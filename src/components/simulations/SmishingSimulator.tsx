@@ -37,70 +37,68 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
   // Scammer Syndicate Dashboard Logs
   const getScammerLogs = () => {
     const logs = [
-      "[*] GSM Bulk SMS Gateway v4.8 connected via SIM Farm",
-      "[*] Spoofed Header: 'VK-HDFCBK' (Alpha-numeric mask)",
-      "[*] Blast Target: +91 98765-XXXXX (High-Value Savings Account)",
-      "[*] Payload: 'Urgent Unauthorized ₹48,999 Debit Alert'",
+      "[Scammer System] Automated message sent to target phone",
+      "[Fake Sender] Showing 'HDFC Bank' to look authentic",
+      "[Scammer Lure] Threatening sudden unauthorized charge of ₹48,999 to induce panic",
     ];
 
     if (act === "inspect_sms") {
       logs.push(
-        "[>] SMS DELIVERED to victim smartphone at 9:15 PM",
-        "[>] Psychological Hook: Fear of sudden unapproved debit of ₹48,999"
+        "[Status] Fake text delivered to your phone",
+        "[Scammer Goal] Trying to rush you so you click before checking"
       );
     }
 
     if (inspectedSender || inspectedLink) {
       logs.push(
-        "[!] ALERT: Victim is inspecting the link and header! Suspicion high."
+        "[Alert] You are inspecting the link and sender details! Scammer is getting worried."
       );
     }
 
     if (act === "fake_portal") {
       logs.push(
-        "[+] VICTIM TOOK THE BAIT: Opened 'hdfc-fraud-cancel.secure-portal.net'",
-        `[KEYLOGGER] Customer ID: ${fakeCustId || "98410294"}`,
+        "[Bait Taken] You opened the fake website 'hdfc-fraud-cancel.secure-portal.net'",
+        `[Data Captured] Customer ID: ${fakeCustId || "98410294"}`,
         fakePin
-          ? `[KEYLOGGER] LIVE PIN/PASSWORD CAPTURED: ${"*".repeat(fakePin.length)}`
-          : "[KEYLOGGER] Awaiting victim NetBanking PIN entry..."
+          ? `[Password Stolen] PIN/Password captured: ${"*".repeat(fakePin.length)}`
+          : "[Waiting] Awaiting victim PIN or password..."
       );
     }
 
     if (act === "otp_trick") {
       logs.push(
-        "[★] CREDENTIALS STOLEN: Scammer bot logged into genuine bank backend!",
-        "[>] Scammer initiated wire transfer of ₹48,999 to Crypto Mule Wallet",
-        "[!] Bank generated legitimate 2FA OTP and sent to victim phone",
-        "[SPOOF TRICK] Labeling genuine debit OTP as 'FRAUD CANCELLATION OTP' on fake site..."
+        "[Credentials Stolen] Scammer is now logging into genuine bank with your password!",
+        "[Scammer Transfer] Scammer initiates ₹48,999 transfer from your real account",
+        "[Real Bank OTP] Bank generates a real security OTP and sends it to your phone",
+        "[The Deception] Fake website lies and tells you to type the OTP to 'CANCEL' the transaction"
       );
       if (fakeOtp) {
-        logs.push(`[★] LIVE OTP CAPTURE: ${fakeOtp}`);
+        logs.push(`[Live Capture] OTP captured: ${fakeOtp}`);
       }
     }
 
     if (act === "money_drained") {
       logs.push(
-        "[$$$] VICTIM ENTERED OTP: 841920!",
-        "[SUCCESS] Wire Transfer Completed: ₹48,999 debited from victim account!",
-        "[★] Funds immediately laundered into Monero/USDT cryptocurrency across 4 wallets",
-        "[-] Transaction irreversible. Scammer payout complete."
+        "[Trap Succeeded] You entered the OTP: 841920",
+        "[Transfer Completed] ₹48,999 debited from account and transferred away",
+        "[Result] Scammer got the money. Real banks cannot instantly reverse this once OTP is shared."
       );
     }
 
     if (act === "fraud_blocked") {
       logs.push(
-        "[-] VICTIM STOPPED! Read the real OTP message: 'Debit for ₹48,999'",
-        "[-] Victim called official toll-free on back of debit card",
-        "[-] Official bank card frozen. Phishing portal reported to CERT-In / Cyber Crime 1930",
-        "[-] ZERO FUNDS STOLEN. Scam campaign busted!"
+        "[Scam Blocked!] You stopped and read the real OTP text: 'Debit of ₹48,999'",
+        "[Safe Action] You contacted the real bank using the number on your card",
+        "[Protection] Card frozen and fake link reported",
+        "[Result] ZERO MONEY LOST! You beat the scammer."
       );
     }
 
     if (act === "fake_helpline") {
       logs.push(
-        "[📞 CALL INTERCEPTED] Victim dialed fake helpline 1800-420-9912!",
-        "[VOIP CALL CENTER] Scammer operator 'Agent Vikram' answered impersonating Bank Fraud Manager",
-        "[SOCIAL ENG] Coercing victim over the phone to read out the 6-digit OTP..."
+        "[Call Trapped] You called the fake phone number from the message",
+        "[Fake Operator] Scammer answered pretending to be bank customer support",
+        "[Social Trick] Scammer is talking politely to convince you to read out your OTP"
       );
     }
 
@@ -184,17 +182,17 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
               <span className="text-xs font-bold uppercase tracking-wider text-amber-500 font-mono">
-                Threat Sandbox: Mobile Smishing &amp; OTP Fraud
+                Practice Scenario: Fake Bank SMS Scam
               </span>
               <span className="text-[11px] px-2 py-0.5 rounded-full bg-surface-elevated border border-border text-text-ash">
-                Dual-Perspective Investigation
+                Interactive Walkthrough
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-text-pure">
-              The Panic at 9:15 PM: Anatomy of a Bank Smishing Scam
+              The Fake Bank Alert: SMS &amp; OTP Scam
             </h1>
             <p className="text-xs sm:text-sm text-text-fog mt-0.5">
-              Experience the psychological trap of fake bank debit SMS alerts. Watch both the victim&apos;s phone and the scammer&apos;s syndicate console in real time!
+              Experience how scammers create panic with fake debit alerts. Watch your phone and see what happens behind the scenes in real time.
             </p>
           </div>
 
@@ -207,7 +205,7 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
                   activeView === "split" ? "bg-primary text-white shadow-sm" : "text-text-fog hover:text-text-pure"
                 }`}
               >
-                <i className="ti ti-columns mr-1" /> Dual Split Screen
+                <i className="ti ti-columns mr-1" /> Split View
               </button>
               <button
                 onClick={() => setActiveView("phone")}
@@ -215,7 +213,7 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
                   activeView === "phone" ? "bg-primary text-white shadow-sm" : "text-text-fog hover:text-text-pure"
                 }`}
               >
-                <i className="ti ti-device-mobile mr-1" /> Your Phone
+                <i className="ti ti-device-mobile mr-1" /> Phone View
               </button>
               <button
                 onClick={() => setActiveView("scammer")}
@@ -223,7 +221,7 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
                   activeView === "scammer" ? "bg-danger text-white shadow-sm" : "text-text-fog hover:text-text-pure"
                 }`}
               >
-                <i className="ti ti-terminal mr-1" /> Scammer Syndicate
+                <i className="ti ti-terminal mr-1" /> Scammer&apos;s View
               </button>
             </div>
 
@@ -231,7 +229,7 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
               onClick={handleReset}
               className="px-3 py-1.5 text-xs font-medium rounded-xl bg-surface-elevated border border-border text-text-fog hover:text-text-pure transition flex items-center gap-1.5 cursor-pointer"
             >
-              <i className="ti ti-rotate-clockwise" /> Reset Simulation
+              <i className="ti ti-rotate-clockwise" /> Reset
             </button>
           </div>
         </div>
@@ -243,40 +241,40 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
               ? "bg-primary/15 border-primary text-primary"
               : "bg-surface text-text-fog border-border"
           }`}>
-            <span className="block text-[10px] text-text-ash">ACT 1</span>
-            The Fake Debit SMS
+            <span className="block text-[10px] text-text-ash">STEP 1</span>
+            Fake Alert SMS
           </div>
           <div className={`p-2 rounded-xl border text-center font-medium ${
             act === "fake_portal"
               ? "bg-danger/15 border-danger text-danger font-bold animate-pulse"
               : "bg-surface text-text-fog border-border"
           }`}>
-            <span className="block text-[10px] text-text-ash">ACT 2</span>
-            Cloned Bank Portal
+            <span className="block text-[10px] text-text-ash">STEP 2</span>
+            Fake Bank Site
           </div>
           <div className={`p-2 rounded-xl border text-center font-medium ${
             act === "otp_trick" || act === "fake_helpline"
               ? "bg-danger/15 border-danger text-danger font-bold animate-pulse"
               : "bg-surface text-text-fog border-border"
           }`}>
-            <span className="block text-[10px] text-text-ash">ACT 3</span>
-            The &quot;Cancel OTP&quot; Trap
+            <span className="block text-[10px] text-text-ash">STEP 3</span>
+            The OTP Trap
           </div>
           <div className={`p-2 rounded-xl border text-center font-medium ${
             act === "fraud_blocked" || act === "money_drained"
               ? "bg-emerald-500/15 border-emerald-500 text-emerald-500"
               : "bg-surface text-text-fog border-border"
           }`}>
-            <span className="block text-[10px] text-text-ash">ACT 4</span>
-            Crisis Decision &amp; Outcome
+            <span className="block text-[10px] text-text-ash">STEP 4</span>
+            Your Decision
           </div>
           <div className={`p-2 rounded-xl border text-center font-medium ${
             act === "how_smishing_works" || act === "final_score"
               ? "bg-primary/15 border-primary text-primary"
               : "bg-surface text-text-fog border-border"
           }`}>
-            <span className="block text-[10px] text-text-ash">ACT 5</span>
-            4 Anti-Smishing Rules
+            <span className="block text-[10px] text-text-ash">STEP 5</span>
+            Key Safety Rules
           </div>
         </div>
       </div>

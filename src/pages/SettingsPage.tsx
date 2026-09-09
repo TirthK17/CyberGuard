@@ -149,19 +149,19 @@ export function SettingsPage() {
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
         className="pb-2 border-b border-border"
       >
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary">System Preferences</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-primary">Preferences</p>
         <h1 className="font-display text-2xl font-bold tracking-tight text-text-pure sm:text-3xl mt-0.5">
           Settings
         </h1>
-        <p className="mt-1 text-xs text-text-fog">
-          Customize your appearance, security credentials, notification triggers, and offline telemetry.
+        <p className="mt-1 text-sm text-text-fog">
+          Manage your theme, account, notifications, and local data.
         </p>
       </motion.div>
 
-      {/* Appearance: macOS Theme Switcher */}
+      {/* Appearance: Theme Switcher */}
       <SettingSection
         title="Appearance &amp; Display"
-        description="Select your preferred color mode for the CyberGuard console."
+        description="Choose light, dark, or automatic system theme."
       >
         <div className="grid gap-3 sm:grid-cols-3 pt-2">
           {/* Light Theme Card */}
@@ -248,80 +248,80 @@ export function SettingsPage() {
       </SettingSection>
 
       {/* Account Info */}
-      <SettingSection title="Account &amp; Security Clearance" description="Your authenticated identity and access privileges.">
-        <SettingRow label="Account Email" description="Connected authentication identity.">
-          <span className="text-xs font-medium text-text-pure">{user?.email ?? "operator@cyberguard.dev"}</span>
+      <SettingSection title="Account Information" description="Your login email and account level.">
+        <SettingRow label="Account Email" description="Email used to sign in.">
+          <span className="text-xs font-medium text-text-pure">{user?.email ?? "user@cyberguard.dev"}</span>
         </SettingRow>
-        <SettingRow label="Platform Role">
+        <SettingRow label="Role">
           <span className="rounded-full bg-surface-elevated border border-border px-2.5 py-0.5 text-xs font-semibold uppercase text-text-pure">
-            {profile?.role ?? "Operator"}
+            {profile?.role ?? "Learner"}
           </span>
         </SettingRow>
-        <SettingRow label="Security Clearance">
+        <SettingRow label="Account Level">
           <span className="rounded-full bg-success/10 border border-success/20 px-2.5 py-0.5 text-xs font-semibold text-success">
-            Active • Tier {profile?.level ?? 1}
+            Active • Level {profile?.level ?? 1}
           </span>
         </SettingRow>
         <div className="pt-3">
           <Link to="/profile">
             <Button variant="secondary" size="sm" icon={<i className="ti ti-user-edit" />}>
-              Edit Profile &amp; Cryptographic Credentials
+              Edit Profile &amp; Settings
             </Button>
           </Link>
         </div>
       </SettingSection>
 
       {/* Security Alerts */}
-      <SettingSection title="Notifications &amp; Threat Feeds" description="Configure real-time drill reminders and threat alerts.">
+      <SettingSection title="Notifications &amp; Alerts" description="Choose what notifications you want to receive.">
         <SettingRow
-          label="Phishing Simulation Drills"
-          description="Receive occasional test scenarios to maintain defensive muscle memory."
+          label="Simulation Reminders"
+          description="Receive reminders to practice new scam simulations."
         >
           <input
             type="checkbox"
             checked={drillReminders}
             onChange={(e) => {
               setDrillReminders(e.target.checked);
-              toast({ title: "Drill reminders updated", variant: "info" });
+              toast({ title: "Reminders preference updated", variant: "info" });
             }}
             className="h-4 w-4 rounded border-border text-primary focus:ring-primary accent-primary cursor-pointer"
           />
         </SettingRow>
         <SettingRow
-          label="Incident Report Status Updates"
-          description="Get notified when the SOC team logs containment directives for your incident."
+          label="Scam Report Updates"
+          description="Get notified when there are updates on your reported incident."
         >
           <input
             type="checkbox"
             checked={emailAlerts}
             onChange={(e) => {
               setEmailAlerts(e.target.checked);
-              toast({ title: "Incident updates updated", variant: "info" });
+              toast({ title: "Report updates preference saved", variant: "info" });
             }}
             className="h-4 w-4 rounded border-border text-primary focus:ring-primary accent-primary cursor-pointer"
           />
         </SettingRow>
         <SettingRow
-          label="Live Threat Radar Alerts"
-          description="Urgent notifications when active zero-day campaigns are detected globally."
+          label="Urgent Scam Alerts"
+          description="Get alerted when widespread new online scams are detected in your area."
         >
           <input
             type="checkbox"
             checked={threatRadarAlerts}
             onChange={(e) => {
               setThreatRadarAlerts(e.target.checked);
-              toast({ title: "Threat radar alerts updated", variant: "info" });
+              toast({ title: "Scam alerts preference saved", variant: "info" });
             }}
             className="h-4 w-4 rounded border-border text-primary focus:ring-primary accent-primary cursor-pointer"
           />
         </SettingRow>
       </SettingSection>
 
-      {/* Local Telemetry & Diagnostics */}
-      <SettingSection title="Local Data &amp; Telemetry Station" description="Manage offline data state, backups, and cache sync.">
+      {/* Local Data & Storage */}
+      <SettingSection title="Data &amp; Storage" description="Export your progress or reset your local data.">
         <SettingRow
-          label="Export Defense Telemetry"
-          description="Download a verified JSON backup of completed modules, badges, and scorecards."
+          label="Export My Data"
+          description="Download a copy of your completed lessons, badges, and quiz scores."
         >
           <Button
             variant="secondary"
@@ -330,13 +330,13 @@ export function SettingsPage() {
             onClick={handleExportData}
             className="text-xs"
           >
-            Export JSON
+            Download Data (JSON)
           </Button>
         </SettingRow>
 
         <SettingRow
-          label="Reset Local Database"
-          description="Clear local storage cache and re-seed pre-populated curriculum dataset."
+          label="Reset Local Data"
+          description="Reset your locally saved progress and restore defaults."
         >
           <Button
             variant="danger"
@@ -345,20 +345,20 @@ export function SettingsPage() {
             onClick={handleResetTelemetry}
             className="text-xs"
           >
-            Reset Telemetry
+            Reset Data
           </Button>
         </SettingRow>
       </SettingSection>
 
       {/* Keyboard Shortcuts */}
-      <SettingSection title="Keyboard Shortcuts" description="Boost efficiency across the console with macOS shortcuts.">
+      <SettingSection title="Keyboard Shortcuts" description="Quick keyboard shortcuts for easy navigation.">
         <div className="space-y-2 pt-1">
           {SHORTCUTS.map((s) => (
-            <div key={s.description} className="flex items-center justify-between text-xs py-1.5 border-b border-border last:border-0">
+            <div key={s.description} className="flex items-center justify-between text-xs sm:text-sm py-2 border-b border-border last:border-0">
               <span className="text-text-fog">{s.description}</span>
               <div className="flex items-center gap-1">
                 {s.keys.map((k) => (
-                  <kbd key={k} className="rounded border border-border bg-surface-elevated px-1.5 py-0.5 font-mono text-[10px] text-text-pure">
+                  <kbd key={k} className="rounded border border-border bg-surface-elevated px-2 py-0.5 font-medium text-xs text-text-pure shadow-xs">
                     {k}
                   </kbd>
                 ))}

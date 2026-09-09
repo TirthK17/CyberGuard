@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 const links = [
   { to: "/about", label: "About" },
   { to: "/features", label: "Features" },
-  { to: "/topics", label: "Awareness Topics" },
+  { to: "/topics", label: "Topics" },
   { to: "/how-it-works", label: "How It Works" },
   { to: "/contact", label: "Contact" },
 ];
@@ -33,8 +33,8 @@ export function PublicNavbar() {
               <span className="font-display text-base font-bold tracking-tight text-text-pure">
                 CyberGuard
               </span>
-              <span className="hidden sm:inline-block px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-mono font-bold uppercase tracking-wider">
-                Awareness &amp; Defense
+              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
+                Online Safety Portal
               </span>
             </div>
           </div>
@@ -48,7 +48,7 @@ export function PublicNavbar() {
               <Link
                 key={l.to}
                 to={l.to}
-                className={`relative px-2 py-1 text-xs font-medium transition-colors ${
+                className={`relative px-2 py-1 text-sm font-medium transition-colors ${
                   active ? "text-text-pure font-semibold" : "text-text-fog hover:text-text-pure"
                 }`}
               >
@@ -79,7 +79,7 @@ export function PublicNavbar() {
 
           {user ? (
             <Button size="sm" variant="primary" onClick={() => navigate(isAdmin ? "/admin" : "/dashboard")}>
-              {isAdmin ? "Admin Console" : "Defense Command"}
+              {isAdmin ? "Admin Console" : "Dashboard"}
             </Button>
           ) : (
             <>

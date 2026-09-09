@@ -95,11 +95,11 @@ export function SimulationPlayerPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={() => navigate("/simulations")}>
-            <i className="ti ti-arrow-left mr-1.5" /> Back to Simulation Studio
+            <i className="ti ti-arrow-left mr-1.5" /> Back to Simulations
           </Button>
           <div className="flex items-center gap-2">
-            <Pill tone="primary" size="sm">Scenario: Spear-Phishing Mailbox</Pill>
-            <Pill tone="emerald" size="sm">macOS Sandbox</Pill>
+            <Pill tone="primary" size="sm">Fake Work Email</Pill>
+            <Pill tone="emerald" size="sm">Interactive Mailbox</Pill>
           </div>
         </div>
         <PhishingMailSandbox onComplete={handleSandboxComplete} />
@@ -112,11 +112,11 @@ export function SimulationPlayerPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={() => navigate("/simulations")}>
-            <i className="ti ti-arrow-left mr-1.5" /> Back to Simulation Studio
+            <i className="ti ti-arrow-left mr-1.5" /> Back to Simulations
           </Button>
           <div className="flex items-center gap-2">
-            <Pill tone="danger" size="sm">Scenario: Active Endpoint Ransomware</Pill>
-            <Pill tone="primary" size="sm">Containment Drill</Pill>
+            <Pill tone="danger" size="sm">Virus &amp; Ransomware Alert</Pill>
+            <Pill tone="primary" size="sm">Action Checklist</Pill>
           </div>
         </div>
         <RansomwareContainmentDrill onComplete={handleSandboxComplete} />
@@ -129,11 +129,11 @@ export function SimulationPlayerPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={() => navigate("/simulations")}>
-            <i className="ti ti-arrow-left mr-1.5" /> Back to Simulation Studio
+            <i className="ti ti-arrow-left mr-1.5" /> Back to Simulations
           </Button>
           <div className="flex items-center gap-2">
-            <Pill tone="warning" size="sm">Scenario: Mobile Smishing &amp; Bank Fraud</Pill>
-            <Pill tone="primary" size="sm">Dual-Perspective Phone &amp; Attacker Lab</Pill>
+            <Pill tone="warning" size="sm">Fake Bank SMS &amp; Call</Pill>
+            <Pill tone="primary" size="sm">Phone &amp; Scammer View</Pill>
           </div>
         </div>
         <SmishingSimulator onComplete={handleSandboxComplete} />
@@ -146,11 +146,11 @@ export function SimulationPlayerPage() {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <Button variant="ghost" size="sm" onClick={() => navigate("/simulations")}>
-            <i className="ti ti-arrow-left mr-1.5" /> Back to Simulation Studio
+            <i className="ti ti-arrow-left mr-1.5" /> Back to Simulations
           </Button>
           <div className="flex items-center gap-2">
-            <Pill tone="danger" size="sm">Scenario: Rogue Wi-Fi &amp; MITM Interception</Pill>
-            <Pill tone="primary" size="sm">Live Network Sandbox</Pill>
+            <Pill tone="danger" size="sm">Unsafe Public Wi-Fi</Pill>
+            <Pill tone="primary" size="sm">Interactive Demo</Pill>
           </div>
         </div>
         <MitmPaymentSandbox onComplete={handleSandboxComplete} />
@@ -215,7 +215,7 @@ export function SimulationPlayerPage() {
           )}
 
           <div className="mt-8 flex flex-col gap-2.5">
-            <Button onClick={() => navigate("/simulations")}>Back to Simulation Studio</Button>
+            <Button onClick={() => navigate("/simulations")}>Back to Simulations</Button>
             <Button
               variant="secondary"
               onClick={() => {
@@ -225,7 +225,7 @@ export function SimulationPlayerPage() {
                 setFinished(false);
               }}
             >
-              Replay Scenario
+              Try Again
             </Button>
           </div>
         </Card>
@@ -239,7 +239,7 @@ export function SimulationPlayerPage() {
     <div className="mx-auto max-w-3xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Button variant="ghost" size="sm" onClick={() => navigate("/simulations")}>
-          <i className="ti ti-arrow-left mr-1.5" /> Back to Simulation Studio
+          <i className="ti ti-arrow-left mr-1.5" /> Back to Simulations
         </Button>
         <span className="text-xs font-mono text-text-muted">
           Step {index + 1} of {steps.length}
@@ -265,7 +265,7 @@ export function SimulationPlayerPage() {
           <Card className="p-6 md:p-8 space-y-6">
             <div className="space-y-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-primary">
-                Scenario Step {index + 1}
+                Question {index + 1}
               </span>
               <h2 className="text-lg md:text-xl font-bold text-text-high leading-snug">
                 {current.prompt}
@@ -305,7 +305,7 @@ export function SimulationPlayerPage() {
                 animate={{ opacity: 1, y: 0 }}
                 className="p-4 rounded-xl bg-surface-muted border border-border text-xs text-text-low leading-relaxed"
               >
-                <strong className="text-text-high block mb-1">Defense Insight:</strong>
+                <strong className="text-text-high block mb-1">Security Tip:</strong>
                 {current.explanation}
               </motion.div>
             )}

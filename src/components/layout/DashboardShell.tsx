@@ -19,23 +19,23 @@ interface NavSection {
 function groupUserNav(items: NavItem[]): NavSection[] {
   const sections: NavSection[] = [
     {
-      label: "Defense Command",
+      label: "Main",
       items: items.filter((i) => ["/dashboard"].includes(i.to)),
     },
     {
-      label: "Training & Sandboxes",
+      label: "Learn & Practice",
       items: items.filter((i) =>
         ["/training", "/simulations", "/topics", "/assessment"].includes(i.to)
       ),
     },
     {
-      label: "Defense Tools & Intel",
+      label: "Safety Tools",
       items: items.filter((i) =>
         ["/tools", "/threats", "/report", "/leaderboard"].includes(i.to)
       ),
     },
     {
-      label: "System",
+      label: "Account",
       items: items.filter((i) => ["/settings"].includes(i.to)),
     },
   ];
@@ -90,7 +90,7 @@ function SidebarNav({
       {sections.map((section, si) => (
         <div key={section.label} className={cn("", si > 0 && "mt-4")}>
           {!collapsed && (
-            <p className="sidebar-section-label mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-text-ash">
+            <p className="sidebar-section-label mb-1.5 px-3 text-xs font-semibold uppercase tracking-wider text-text-ash">
               {section.label}
             </p>
           )}
@@ -111,7 +111,7 @@ function SidebarNav({
                   to={item.to}
                   title={collapsed ? item.label : undefined}
                   className={cn(
-                    "relative flex items-center gap-2.5 rounded-xl px-3 py-2 text-[13px] font-medium",
+                    "relative flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium",
                     "transition-all duration-150 ease-out group",
                     active
                       ? "bg-surface-elevated text-text-pure font-semibold shadow-sm border border-border"
@@ -211,8 +211,8 @@ export function DashboardShell({
         </div>
         {!collapsed && (
           <div className="sidebar-brand-text min-w-0">
-            <div className="font-display text-[14px] font-bold leading-none text-text-pure">CyberGuard</div>
-            <div className="mt-1 text-[10px] font-medium text-text-ash">{brandLabel}</div>
+            <div className="font-display text-base font-bold leading-none text-text-pure">CyberGuard</div>
+            <div className="mt-1 text-xs font-medium text-text-ash">{brandLabel}</div>
           </div>
         )}
       </div>
@@ -225,11 +225,11 @@ export function DashboardShell({
               new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })
             )
           }
-          className="sidebar-search mb-4 flex items-center gap-2 rounded-xl border border-border bg-surface-elevated px-3 py-2 text-[12px] text-text-fog transition-all duration-150 hover:border-border-strong hover:text-text-pure"
+          className="sidebar-search mb-4 flex items-center gap-2 rounded-xl border border-border bg-surface-elevated px-3 py-2 text-xs text-text-fog transition-all duration-150 hover:border-border-strong hover:text-text-pure"
         >
           <i className="ti ti-search text-xs text-text-ash" />
-          <span className="flex-1 text-left">Quick search…</span>
-          <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 font-mono text-[9px] text-text-ash leading-none">⌘K</kbd>
+          <span className="flex-1 text-left font-medium">Quick search…</span>
+          <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 font-sans text-xs font-semibold text-text-ash leading-none">⌘K</kbd>
         </button>
       )}
 
@@ -240,8 +240,8 @@ export function DashboardShell({
       <div className="mt-auto border-t border-border pt-3">
         {!collapsed && profile && (
           <div className="mb-3 px-3">
-            <div className="mb-1 flex items-center justify-between text-[11px]">
-              <span className="text-text-ash font-medium">Security Level {profile.level}</span>
+            <div className="mb-1 flex items-center justify-between text-xs font-medium">
+              <span className="text-text-ash">Level {profile.level}</span>
               <span className="text-primary font-semibold">{profile.points} XP</span>
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-elevated border border-border">
@@ -268,7 +268,7 @@ export function DashboardShell({
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <div className="truncate text-[12px] font-medium text-text-pure leading-none">{profile?.full_name ?? "Operator"}</div>
+              <div className="truncate text-[12px] font-medium text-text-pure leading-none">{profile?.full_name ?? "User"}</div>
               <div className="mt-1 truncate text-[10px] text-text-ash">{profile?.email}</div>
             </div>
           )}

@@ -8,12 +8,12 @@ import { motion, AnimatePresence } from "framer-motion";
    LIVE REAL-TIME THREAT ADVISORY TICKER
 ───────────────────────────────────────────────────────────────────────────── */
 const LIVE_THREATS = [
-  { id: 1, icon: "ti-alert-triangle", tone: "danger", text: "ACTIVE SURGE: Bank APK Smishing campaigns impersonating unpaid electricity & utility bills" },
-  { id: 2, icon: "ti-microphone", tone: "danger", text: "AI THREAT: Synthetic voice clone scams impersonating family members asking for urgent cash up +340%" },
-  { id: 3, icon: "ti-qrcode", tone: "warn", text: "QUISHING ADVISORY: Malicious QR stickers placed over legitimate parking meter payment portals" },
-  { id: 4, icon: "ti-brand-whatsapp", tone: "danger", text: "WHATSAPP ALERT: 'Hi Mom/Dad, dropped my phone in water' emergency funds lure circulating" },
-  { id: 5, icon: "ti-lock", tone: "warn", text: "CREDENTIAL NOTICE: 1.2B leaked credentials used in automated credential stuffing attacks this week" },
-  { id: 6, icon: "ti-wifi", tone: "info", text: "PUBLIC WI-FI: Evil Twin rogue hotspots detected in transit hubs harvesting plaintext session tokens" },
+  { id: 1, icon: "ti-alert-triangle", tone: "danger", text: "Warning: Fake electricity & phone bill text messages asking to install apps" },
+  { id: 2, icon: "ti-microphone", tone: "danger", text: "AI Alert: Fake voice calls pretending to be family members asking for urgent money" },
+  { id: 3, icon: "ti-qrcode", tone: "warn", text: "QR Scam Alert: Fake payment stickers placed over parking meters and store counters" },
+  { id: 4, icon: "ti-brand-whatsapp", tone: "danger", text: "WhatsApp Alert: Messages saying 'Hi Mom, I broke my phone, please send money quickly'" },
+  { id: 5, icon: "ti-lock", tone: "warn", text: "Password Warning: Leaked password lists circulating online—keep your passwords unique" },
+  { id: 6, icon: "ti-wifi", tone: "info", text: "Public Wi-Fi: Unsecured open Wi-Fi networks can expose what you browse" },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -152,45 +152,45 @@ const SCENARIOS: Record<ScenarioId, ScamScenario> = {
 const THREAT_VECTORS = [
   {
     icon: "ti-mail-bolt",
-    title: "Phishing & Fake Portals",
-    tag: "91% OF BREACHES",
-    summary: "Deceptive emails impersonating Netflix, Amazon, PayPal, and banks asking you to 'verify your billing details' on lookalike websites.",
-    realLifeDefense: "Never log in from an email link. Navigate to the website manually through your browser bookmark or official app.",
+    title: "Fake Emails & Phishing",
+    tag: "MOST COMMON",
+    summary: "Deceptive emails pretending to be Netflix, Amazon, PayPal, or your bank asking you to 'verify your details' on lookalike fake websites.",
+    realLifeDefense: "Never sign in from an email link. Open the official app or type the real website address yourself.",
   },
   {
     icon: "ti-device-mobile-message",
-    title: "SMS & WhatsApp OTP Fraud",
-    tag: "FASTEST GROWING",
-    summary: "Urgent texts about courier packages, toll charges, or electricity disconnections tempting you to tap malicious links or share OTPs.",
-    realLifeDefense: "One-Time Passwords (OTPs) are for YOUR eyes only. No genuine bank employee or customer support will ever ask for them.",
+    title: "Scam Texts & OTP Fraud",
+    tag: "HIGH ALERT",
+    summary: "Urgent text messages about parcel deliveries, unpaid bills, or bank alerts tricking you to click a link or give away one-time verification codes.",
+    realLifeDefense: "One-Time Passwords (OTPs) are private. No real bank or company will ever call or text asking you to share an OTP.",
   },
   {
     icon: "ti-key",
-    title: "Password Reuse & Leaks",
-    tag: "CREDENTIAL STUFFING",
-    summary: "Reusing one password across school, social media, and banking means one breached forum grants hackers access to your entire digital identity.",
-    realLifeDefense: "Use unique passphrases for every single service, backed by an encrypted password manager and app-based 2FA.",
+    title: "Reused & Weak Passwords",
+    tag: "ACCOUNT RISK",
+    summary: "Using the same password across multiple websites means if one small site gets hacked, criminals can unlock all your other accounts.",
+    realLifeDefense: "Use unique passwords for each service, save them in a secure password manager, and turn on two-step verification.",
   },
   {
     icon: "ti-robot",
-    title: "AI Voice & Deepfake Scams",
-    tag: "EMERGING THREAT",
-    summary: "Criminals clone 3 seconds of audio from social media videos to generate realistic telephone calls from children or bosses begging for money.",
-    realLifeDefense: "Always hang up and call the person back on their verified saved contact number before transferring any funds.",
+    title: "AI Voice & Impersonation Scams",
+    tag: "NEW SCAM",
+    summary: "Scammers clone voices from social media videos to pretend to be family members or coworkers calling urgently to ask for money.",
+    realLifeDefense: "Always hang up and call back the person's real, saved phone number to confirm before sending any money.",
   },
   {
     icon: "ti-file-alert",
-    title: "Malware & Pirated Downloads",
-    tag: "DEVICE TAKEOVER",
-    summary: "Cracked software, free movie streams, and suspicious PDF invoice attachments secretly injecting keyloggers and info-stealing malware.",
-    realLifeDefense: "Download software only from official stores. Avoid pirated cracks, and keep your operating system updated with auto-patches.",
+    title: "Viruses & Dangerous Downloads",
+    tag: "DEVICE THREAT",
+    summary: "Cracked games, free movie apps, or suspicious email attachments that secretly spy on your passwords and keystrokes.",
+    realLifeDefense: "Only download apps and files from verified app stores, avoid pirated software, and keep device updates turned on.",
   },
   {
     icon: "ti-wifi-off",
     title: "Public Wi-Fi Snooping",
-    tag: "MAN-IN-THE-MIDDLE",
-    summary: "Free airport and coffee shop Wi-Fi networks without encryption, or 'Evil Twin' fake hotspots designed to intercept your unencrypted traffic.",
-    realLifeDefense: "Avoid accessing financial accounts on public Wi-Fi without a reputable VPN, and turn off auto-connect to open networks.",
+    tag: "WI-FI RISK",
+    summary: "Free public Wi-Fi in cafes or airports that has no password, or fake hotspots created by attackers to spy on what you browse.",
+    realLifeDefense: "Avoid typing passwords or opening banking apps on public Wi-Fi unless you use a secure VPN or mobile data.",
   },
 ];
 
@@ -201,22 +201,22 @@ const AUDIT_QUESTIONS = [
   {
     id: "q1",
     question: "Do you use the same or similar passwords across multiple websites?",
-    riskIfYes: "High vulnerability to credential-stuffing attacks if any one service is breached.",
+    riskIfYes: "If one website gets breached, hackers can test that password on all your other accounts.",
   },
   {
     id: "q2",
-    question: "Do you click tracking links in SMS messages without checking the official delivery app?",
-    riskIfYes: "Susceptible to mobile smishing and malicious package-tracking APK downloads.",
+    question: "Do you click tracking links in text messages without checking the official app?",
+    riskIfYes: "Fake delivery and bank texts often lead to scam pages designed to steal card details.",
   },
   {
     id: "q3",
-    question: "Do you lack Multi-Factor Authentication (MFA / 2FA) on your primary email account?",
-    riskIfYes: "Email is the master key to password resets; without MFA, accounts can be hijacked easily.",
+    question: "Do you lack two-step verification (2FA) on your main email account?",
+    riskIfYes: "Your email is the master key to your digital life; without two-step login, it's easier to hijack.",
   },
   {
     id: "q4",
-    question: "Have you ever connected to free public Wi-Fi without verifying the network or using a VPN?",
-    riskIfYes: "Vulnerable to local network eavesdropping and session cookie interception.",
+    question: "Have you ever connected to free public Wi-Fi without using a VPN or mobile hotspot?",
+    riskIfYes: "Unsecured public networks can expose the websites you visit to others on the same network.",
   },
 ];
 
@@ -253,17 +253,17 @@ export function LandingPage() {
   return (
     <div className="overflow-x-hidden bg-canvas">
       {/* ── 1. LIVE THREAT ADVISORY TICKER ── */}
-      <div className="relative border-b border-border bg-surface-elevated overflow-hidden py-2 text-xs flex items-center">
-        <div className="relative z-10 flex items-center gap-1.5 px-3 py-0.5 bg-danger/10 text-danger font-mono text-[10px] font-bold uppercase tracking-wider rounded shrink-0 ml-4 shadow-sm border border-danger/20">
-          <span className="h-1.5 w-1.5 rounded-full bg-danger animate-ping" />
-          Live Threat Radar
+      <div className="relative border-b border-border bg-surface-elevated overflow-hidden py-2.5 text-xs flex items-center">
+        <div className="relative z-10 flex items-center gap-1.5 px-3 py-1 bg-danger/10 text-danger text-xs font-semibold uppercase tracking-wide rounded-md shrink-0 ml-4 shadow-sm border border-danger/20">
+          <span className="h-2 w-2 rounded-full bg-danger animate-ping" />
+          Live Scam Radar
         </div>
         <div className="threat-ticker-track flex items-center gap-8 text-text-fog pl-4">
             {LIVE_THREATS.concat(LIVE_THREATS).map((item, idx) => (
               <div key={`${item.id}-${idx}`} className="flex items-center gap-2 shrink-0">
-                <i className={`ti ${item.icon} ${item.tone === "danger" ? "text-danger" : item.tone === "warn" ? "text-warn" : "text-primary"}`} />
-                <span className="font-medium text-text-pure text-[11px]">{item.text}</span>
-                <span className="text-text-ash text-[10px]">•</span>
+                <i className={`ti ${item.icon} ${item.tone === "danger" ? "text-danger" : item.tone === "warn" ? "text-warn" : "text-primary"} text-sm`} />
+                <span className="font-medium text-text-pure text-xs sm:text-sm">{item.text}</span>
+                <span className="text-text-ash text-xs">•</span>
               </div>
             ))}
           </div>
@@ -277,13 +277,13 @@ export function LandingPage() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-subtle px-3.5 py-1 text-xs font-medium text-primary shadow-sm"
+            className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-subtle px-4 py-1.5 text-xs sm:text-sm font-semibold text-primary shadow-sm"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
             </span>
-            <span>Real-Life Cybersecurity Awareness &amp; Defense Platform</span>
+            <span>Easy Cybersecurity Training for Everyday Life</span>
           </motion.div>
 
           {/* Headline */}
@@ -293,9 +293,9 @@ export function LandingPage() {
             transition={{ duration: 0.35, delay: 0.05 }}
             className="mt-6 font-display text-4xl font-bold tracking-tight text-text-pure sm:text-5xl lg:text-6xl max-w-4xl mx-auto leading-tight"
           >
-            Transform From A Cyber Target Into An{" "}
+            Learn To Spot Online Scams &amp;{" "}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-500 to-emerald-500">
-              Active Defender.
+              Protect Yourself.
             </span>
           </motion.h1>
 
@@ -305,9 +305,7 @@ export function LandingPage() {
             transition={{ duration: 0.35, delay: 0.1 }}
             className="mt-5 text-base sm:text-lg text-text-fog max-w-3xl mx-auto leading-relaxed"
           >
-            95% of cyber breaches exploit human manipulation, not software bugs.
-            CyberGuard empowers everyday users, students, and teams with instinctual defenses against
-            phishing, WhatsApp &amp; SMS scams, deepfakes, and account hijackers through realistic zero-risk simulations.
+            Over 90% of cyber attacks trick people rather than breaking code. CyberGuard teaches you how to recognize fake emails, suspicious texts, AI phone scams, and unsafe Wi-Fi through simple, hands-on practice.
           </motion.p>
 
           {/* Hero CTAs */}
@@ -319,17 +317,17 @@ export function LandingPage() {
           >
             <Link to="/register">
               <Button variant="primary" size="lg" icon={<i className="ti ti-shield-check" />}>
-                Start Training Free
+                Start Free
               </Button>
             </Link>
             <a href="#interactive-lab">
               <Button variant="secondary" size="lg" icon={<i className="ti ti-target" />}>
-                Try Live Scam Spotter
+                Try Scam Spotter
               </Button>
             </a>
             <Link to="/simulations">
               <Button variant="ghost" size="lg" icon={<i className="ti ti-device-laptop" />}>
-                Explore Threat Sandboxes
+                Practice Simulations
               </Button>
             </Link>
           </motion.div>
@@ -339,16 +337,16 @@ export function LandingPage() {
             <div className="rounded-2xl border border-border bg-surface p-6 shadow-xl relative overflow-hidden">
               {/* Header Bar */}
               <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-border">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <i className="ti ti-scan text-lg" />
+                <div className="flex items-center gap-3">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <i className="ti ti-scan text-xl" />
                   </div>
                   <div>
-                    <h2 className="text-sm font-bold text-text-pure">
-                      Live Threat Inspection Station: Real-Life Scam Spotter
+                    <h2 className="text-base font-bold text-text-pure">
+                      Scam Spotter: Test Your Instincts
                     </h2>
-                    <p className="text-[11px] text-text-ash">
-                      Can you identify the deception tactics? Test your instincts below.
+                    <p className="text-xs text-text-ash">
+                      Can you spot the red flags in this message? Try picking the safe action below.
                     </p>
                   </div>
                 </div>
@@ -361,13 +359,13 @@ export function LandingPage() {
                       setSelectedOption(null);
                       setShowXRay(false);
                     }}
-                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
+                    className={`px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
                       activeScenario === "smishing"
                         ? "bg-surface text-text-pure shadow-sm border border-border"
                         : "text-text-ash hover:text-text-pure"
                     }`}
                   >
-                    📱 Bank SMS
+                    📱 Fake SMS
                   </button>
                   <button
                     onClick={() => {
@@ -375,13 +373,13 @@ export function LandingPage() {
                       setSelectedOption(null);
                       setShowXRay(false);
                     }}
-                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
+                    className={`px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
                       activeScenario === "email"
                         ? "bg-surface text-text-pure shadow-sm border border-border"
                         : "text-text-ash hover:text-text-pure"
                     }`}
                   >
-                    📧 Phishing Email
+                    📧 Fake Email
                   </button>
                   <button
                     onClick={() => {
@@ -389,13 +387,13 @@ export function LandingPage() {
                       setSelectedOption(null);
                       setShowXRay(false);
                     }}
-                    className={`px-3 py-1 text-xs font-medium rounded-lg transition-colors ${
+                    className={`px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-lg transition-colors cursor-pointer ${
                       activeScenario === "whatsapp"
                         ? "bg-surface text-text-pure shadow-sm border border-border"
                         : "text-text-ash hover:text-text-pure"
                     }`}
                   >
-                    💬 WhatsApp AI Lure
+                    💬 WhatsApp Scam
                   </button>
                 </div>
               </div>
@@ -405,32 +403,32 @@ export function LandingPage() {
                 {/* Left: Simulated Message Frame */}
                 <div className="lg:col-span-2 space-y-4">
                   <div className="rounded-xl border border-border bg-surface-elevated p-4">
-                    <div className="flex items-center justify-between pb-2 border-b border-border text-xs">
+                    <div className="flex items-center justify-between pb-2.5 border-b border-border text-xs sm:text-sm">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-text-pure">{scenario.source}</span>
-                        <span className="text-[11px] text-text-ash font-mono">From: {scenario.displayFrom}</span>
+                        <span className="text-xs text-text-ash">From: {scenario.displayFrom}</span>
                       </div>
                       <Pill tone={scenario.badgeTone}>{scenario.category}</Pill>
                     </div>
 
                     {/* Message Body */}
                     <div className="py-4">
-                      <p className="text-xs sm:text-sm text-text-pure font-sans leading-relaxed bg-surface p-3.5 rounded-lg border border-border">
+                      <p className="text-sm sm:text-base text-text-pure font-sans leading-relaxed bg-surface p-4 rounded-xl border border-border">
                         {scenario.body}
                       </p>
                     </div>
 
                     {/* X-Ray Inspector Toggle Button */}
-                    <div className="flex items-center justify-between pt-2 border-t border-border">
+                    <div className="flex items-center justify-between pt-2.5 border-t border-border">
                       <button
                         onClick={() => setShowXRay(!showXRay)}
-                        className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary-hover cursor-pointer"
+                        className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-primary hover:text-primary-hover cursor-pointer"
                       >
-                        <i className={`ti ${showXRay ? "ti-eye-off" : "ti-scan"} text-sm`} />
-                        {showXRay ? "Hide Deception Analysis" : "Inspect Red Flags & X-Ray Analysis"}
+                        <i className={`ti ${showXRay ? "ti-eye-off" : "ti-scan"} text-base`} />
+                        {showXRay ? "Hide Clues" : "Show Clues & Red Flags"}
                       </button>
-                      <span className="text-[11px] text-text-ash font-mono">
-                        {scenario.redFlags.length} Deception Flags
+                      <span className="text-xs text-text-ash font-medium">
+                        {scenario.redFlags.length} Clues to Spot
                       </span>
                     </div>
 
@@ -441,14 +439,14 @@ export function LandingPage() {
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
                           exit={{ opacity: 0, height: 0 }}
-                          className="mt-3 space-y-2 pt-3 border-t border-border"
+                          className="mt-3 space-y-2.5 pt-3 border-t border-border"
                         >
                           {scenario.redFlags.map((flag, idx) => (
-                            <div key={idx} className="p-2 rounded bg-danger/5 border border-danger/20 text-xs">
-                              <span className="font-semibold text-danger flex items-center gap-1">
-                                <i className="ti ti-alert-circle text-xs" /> Flag {idx + 1}: {flag.label}
+                            <div key={idx} className="p-3 rounded-xl bg-danger/5 border border-danger/20 text-xs sm:text-sm">
+                              <span className="font-semibold text-danger flex items-center gap-1.5">
+                                <i className="ti ti-alert-circle text-sm" /> Clue {idx + 1}: {flag.label}
                               </span>
-                              <p className="text-[11px] text-text-fog mt-0.5">{flag.explanation}</p>
+                              <p className="text-xs text-text-fog mt-1 leading-relaxed">{flag.explanation}</p>
                             </div>
                           ))}
                         </motion.div>
@@ -458,8 +456,8 @@ export function LandingPage() {
 
                   {/* Interactive Decision Choices */}
                   <div className="space-y-2">
-                    <p className="text-xs font-semibold text-text-pure">
-                      What is your immediate defensive response?
+                    <p className="text-xs sm:text-sm font-semibold text-text-pure">
+                      What would you do?
                     </p>
                     <div className="space-y-2">
                       {scenario.options.map((opt) => {
@@ -468,18 +466,18 @@ export function LandingPage() {
                           <button
                             key={opt.id}
                             onClick={() => setSelectedOption(opt.id)}
-                            className={`w-full text-left p-3 rounded-xl border text-xs transition-all flex items-center justify-between cursor-pointer ${
+                            className={`w-full text-left p-3.5 rounded-xl border text-xs sm:text-sm transition-all flex items-center justify-between cursor-pointer ${
                               isSelected
                                 ? opt.isCorrect
-                                  ? "border-success bg-success/10 text-text-pure"
-                                  : "border-danger bg-danger/10 text-text-pure"
-                                : "border-border bg-surface hover:bg-surface-elevated text-text-fog hover:text-text-pure"
+                                ? "border-success bg-success/10 text-text-pure font-semibold"
+                                : "border-danger bg-danger/10 text-text-pure font-semibold"
+                              : "border-border bg-surface hover:bg-surface-elevated text-text-fog hover:text-text-pure"
                             }`}
                           >
                             <span>{opt.text}</span>
                             {isSelected && (
-                              <span className={`text-xs font-semibold shrink-0 ml-2 ${opt.isCorrect ? "text-success" : "text-danger"}`}>
-                                {opt.isCorrect ? "✓ Safe Action" : "✗ Vulnerable"}
+                              <span className={`text-xs sm:text-sm font-semibold shrink-0 ml-2 ${opt.isCorrect ? "text-success" : "text-danger"}`}>
+                                {opt.isCorrect ? "✓ Safe Choice" : "✗ Scam Trap"}
                               </span>
                             )}
                           </button>
@@ -489,55 +487,55 @@ export function LandingPage() {
                   </div>
                 </div>
 
-                {/* Right: Expert Guidance & Feedback Panel */}
+                {/* Right: Guidance & Feedback Panel */}
                 <div className="rounded-xl border border-border bg-surface-elevated p-4 flex flex-col justify-between">
                   <div>
                     <div className="flex items-center gap-2 pb-2 border-b border-border">
                       <i className="ti ti-shield-check text-primary" />
-                      <span className="text-xs font-bold text-text-pure">Tactical Evaluation</span>
+                      <span className="text-xs font-bold text-text-pure">Feedback</span>
                     </div>
 
                     <div className="mt-3">
                       {activeOption ? (
                         <div
-                          className={`p-3 rounded-xl border text-xs leading-relaxed ${
+                          className={`p-3.5 rounded-xl border text-xs sm:text-sm leading-relaxed ${
                             activeOption.isCorrect
                               ? "bg-success/10 border-success/30 text-success"
                               : "bg-danger/10 border-danger/30 text-danger"
                           }`}
                         >
                           <p className="font-bold mb-1">
-                            {activeOption.isCorrect ? "Defensive Instinct Confirmed!" : "Attacker Trap Sprung!"}
+                            {activeOption.isCorrect ? "✓ Great Instinct!" : "✗ Trap Sprung!"}
                           </p>
-                          <p className="text-[11px] text-text-pure leading-normal">
+                          <p className="text-xs sm:text-sm text-text-pure leading-relaxed">
                             {activeOption.feedback}
                           </p>
                         </div>
                       ) : (
-                        <div className="p-3 rounded-xl bg-surface border border-border text-center py-6">
+                        <div className="p-4 rounded-xl bg-surface border border-border text-center py-6">
                           <i className="ti ti-hand-click text-2xl text-text-ash mb-1" />
-                          <p className="text-xs font-medium text-text-pure">Choose an action</p>
-                          <p className="text-[11px] text-text-ash mt-0.5">
-                            Pick how you would handle this message in real life.
+                          <p className="text-xs sm:text-sm font-semibold text-text-pure">Choose an action</p>
+                          <p className="text-xs text-text-ash mt-1">
+                            Pick what you would do if you received this message.
                           </p>
                         </div>
                       )}
                     </div>
 
                     {/* Pro Defense Rule */}
-                    <div className="mt-4 p-3 rounded-xl bg-surface border border-border text-xs">
-                      <span className="font-semibold text-primary flex items-center gap-1.5 text-[11px] uppercase tracking-wider">
-                        <i className="ti ti-bulb text-sm" /> Real-Life Rule
+                    <div className="mt-4 p-3.5 rounded-xl bg-surface border border-border text-xs sm:text-sm">
+                      <span className="font-semibold text-primary flex items-center gap-1.5 text-xs uppercase tracking-wider">
+                        <i className="ti ti-bulb text-base" /> Safety Rule
                       </span>
-                      <p className="mt-1 text-[11px] text-text-fog leading-relaxed">
+                      <p className="mt-1 text-xs sm:text-sm text-text-fog leading-relaxed">
                         {scenario.expertTip}
                       </p>
                     </div>
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-border text-center">
-                    <Link to="/simulations" className="text-xs font-semibold text-primary hover:underline flex items-center justify-center gap-1">
-                      Play Full Simulation Sandboxes <i className="ti ti-arrow-right text-[10px]" />
+                    <Link to="/simulations" className="text-xs sm:text-sm font-semibold text-primary hover:underline flex items-center justify-center gap-1">
+                      Try Full Scam Simulations <i className="ti ti-arrow-right text-xs" />
                     </Link>
                   </div>
                 </div>
@@ -550,13 +548,12 @@ export function LandingPage() {
       {/* ── 4. REAL-WORLD CYBER THREATS IMPACTING EVERYONE ── */}
       <section className="py-20 max-w-6xl mx-auto px-6">
         <div className="text-center max-w-2xl mx-auto mb-14">
-          <p className="eyebrow">Real Threat Landscape</p>
+          <p className="eyebrow">Common Scams</p>
           <h2 className="mt-1 font-display text-2xl font-bold text-text-pure sm:text-3xl">
-            The Scams &amp; Attacks Targeting Everyone in Daily Life
+            The 6 Most Common Online Scams Today
           </h2>
-          <p className="mt-2 text-xs sm:text-sm text-text-fog leading-relaxed">
-            Cybercrime is no longer just a corporate IT issue. Criminals prey on curiosity, fear, and daily routines.
-            Here are the 6 primary attack vectors you must recognize.
+          <p className="mt-2 text-sm sm:text-base text-text-fog leading-relaxed">
+            Most scams prey on curiosity, urgency, or fear. Here are the 6 main scams you are likely to encounter in daily life.
           </p>
         </div>
 
@@ -568,25 +565,25 @@ export function LandingPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.3, delay: i * 0.05 }}
-              className="cyber-card p-5 flex flex-col justify-between border border-border"
+              className="cyber-card p-6 flex flex-col justify-between border border-border"
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20">
                     <i className={`ti ${v.icon} text-xl`} />
                   </div>
-                  <span className="font-mono text-[9px] font-bold px-2 py-0.5 rounded bg-surface-elevated text-primary border border-border">
+                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-surface-elevated text-primary border border-border">
                     {v.tag}
                   </span>
                 </div>
-                <h3 className="font-display text-base font-semibold text-text-pure">{v.title}</h3>
-                <p className="mt-2 text-xs text-text-fog leading-relaxed">{v.summary}</p>
+                <h3 className="font-display text-base sm:text-lg font-bold text-text-pure">{v.title}</h3>
+                <p className="mt-2 text-xs sm:text-sm text-text-fog leading-relaxed">{v.summary}</p>
               </div>
 
               <div className="mt-5 pt-3 border-t border-border">
-                <div className="text-[11px] text-text-pure bg-surface-elevated p-2.5 rounded-lg border border-border">
-                  <span className="font-semibold text-success flex items-center gap-1 text-[10px] uppercase tracking-wider mb-0.5">
-                    <i className="ti ti-shield text-xs" /> Defense Habit
+                <div className="text-xs sm:text-sm text-text-pure bg-surface-elevated p-3 rounded-xl border border-border">
+                  <span className="font-semibold text-success flex items-center gap-1 text-xs uppercase tracking-wider mb-1">
+                    <i className="ti ti-shield text-sm" /> Good Habit
                   </span>
                   {v.realLifeDefense}
                 </div>
@@ -600,12 +597,12 @@ export function LandingPage() {
       <section className="py-20 border-t border-border bg-surface-elevated">
         <div className="max-w-4xl mx-auto px-6">
           <div className="text-center max-w-xl mx-auto mb-10">
-            <p className="eyebrow">Interactive Self-Check</p>
+            <p className="eyebrow">Quick Check</p>
             <h2 className="mt-1 font-display text-2xl font-bold text-text-pure sm:text-3xl">
-              60-Second Cyber Vulnerability Audit
+              60-Second Security Self-Check
             </h2>
-            <p className="mt-2 text-xs sm:text-sm text-text-fog">
-              Answer 4 honest questions about your daily digital habits to calculate your personal Cyber Exposure Grade.
+            <p className="mt-2 text-sm sm:text-base text-text-fog">
+              Answer 4 quick questions about your everyday digital habits to check your basic safety score.
             </p>
           </div>
 
@@ -614,13 +611,13 @@ export function LandingPage() {
               {AUDIT_QUESTIONS.map((q, idx) => {
                 const answer = auditAnswers[q.id];
                 return (
-                  <div key={q.id} className="p-4 rounded-xl border border-border bg-surface-elevated flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div key={q.id} className="p-4 sm:p-5 rounded-xl border border-border bg-surface-elevated flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="max-w-xl">
-                      <span className="text-[10px] font-mono font-bold text-primary uppercase">Risk Factor 0{idx + 1}</span>
-                      <p className="text-xs sm:text-sm font-medium text-text-pure mt-0.5">{q.question}</p>
+                      <span className="text-xs font-semibold text-primary uppercase tracking-wider">Question 0{idx + 1}</span>
+                      <p className="text-sm sm:text-base font-semibold text-text-pure mt-1">{q.question}</p>
                       {answer === true && (
-                        <p className="text-[11px] text-danger mt-1 flex items-center gap-1">
-                          <i className="ti ti-alert-triangle" /> {q.riskIfYes}
+                        <p className="text-xs sm:text-sm text-danger mt-1.5 flex items-center gap-1.5">
+                          <i className="ti ti-alert-triangle text-base" /> {q.riskIfYes}
                         </p>
                       )}
                     </div>
@@ -628,7 +625,7 @@ export function LandingPage() {
                     <div className="flex items-center gap-2 shrink-0">
                       <button
                         onClick={() => handleAuditToggle(q.id, true)}
-                        className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                        className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
                           answer === true
                             ? "bg-danger text-white shadow-sm"
                             : "bg-surface border border-border text-text-fog hover:text-text-pure"
@@ -638,7 +635,7 @@ export function LandingPage() {
                       </button>
                       <button
                         onClick={() => handleAuditToggle(q.id, false)}
-                        className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                        className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
                           answer === false
                             ? "bg-success text-white shadow-sm"
                             : "bg-surface border border-border text-text-fog hover:text-text-pure"
@@ -662,22 +659,22 @@ export function LandingPage() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-display text-2xl font-bold text-text-pure">
-                      Your Cyber Resilience Score: {auditScore} / 100
+                      Your Safety Score: {auditScore} / 100
                     </span>
                     <Pill tone={auditScore >= 75 ? "success" : auditScore >= 50 ? "warn" : "danger"}>
-                      {auditScore >= 75 ? "Low Exposure (Hardened)" : auditScore >= 50 ? "Moderate Risk" : "High Exposure"}
+                      {auditScore >= 75 ? "Well Protected" : auditScore >= 50 ? "Moderate Risk" : "Needs Attention"}
                     </Pill>
                   </div>
-                  <p className="text-xs text-text-fog mt-1">
+                  <p className="text-xs sm:text-sm text-text-fog mt-1">
                     {auditScore === 100
-                      ? "Outstanding! You practice proactive cyber defense habits."
-                      : "You have actionable security blind spots that adversaries actively exploit. Level up in our training modules!"}
+                      ? "Great job! You have strong everyday cyber safety habits."
+                      : "You have a few security habits that scammers take advantage of. Learn how to fix them in our short lessons!"}
                   </p>
                 </div>
 
                 <Link to="/training">
                   <Button variant="primary" size="sm" icon={<i className="ti ti-arrow-right" />}>
-                    Fix My Weak Spots
+                    Improve My Habits
                   </Button>
                 </Link>
               </motion.div>
@@ -689,12 +686,12 @@ export function LandingPage() {
       {/* ── 6. HANDS-ON SIMULATION SANDBOXES SHOWCASE ── */}
       <section className="py-20 max-w-6xl mx-auto px-6">
         <div className="text-center max-w-xl mx-auto mb-12">
-          <p className="eyebrow">Experiential Learning</p>
+          <p className="eyebrow">Interactive Practice</p>
           <h2 className="mt-1 font-display text-2xl font-bold text-text-pure sm:text-3xl">
-            Simulations That Build Muscle Memory
+            Learn By Doing in Safe Simulations
           </h2>
-          <p className="mt-2 text-xs sm:text-sm text-text-fog leading-relaxed">
-            Slide decks don't stop hackers. CyberGuard places you inside safe virtual environments where you can safely experience attacks, inspect payloads, and practice emergency response.
+          <p className="mt-2 text-sm sm:text-base text-text-fog leading-relaxed">
+            Reading about safety is fine, but practicing is better. Step inside our safe demo environments to see how real scams work without any risk to your accounts.
           </p>
         </div>
 
@@ -704,15 +701,15 @@ export function LandingPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary mb-4">
                 <i className="ti ti-mail-bolt text-xl" />
               </div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-text-ash">Interactive Client</span>
-              <h3 className="font-display text-base font-bold text-text-pure mt-1">Phishing Mail Sandbox</h3>
-              <p className="text-xs text-text-fog mt-2 leading-relaxed">
-                Step into a full simulated email client. Inspect spoofed RFC headers, verify SPF/DKIM flags, and report malicious links.
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-ash">Email Lab</span>
+              <h3 className="font-display text-base font-bold text-text-pure mt-1">Fake Email Lab</h3>
+              <p className="text-xs sm:text-sm text-text-fog mt-2 leading-relaxed">
+                Open a mock email inbox and practice finding sneaky red flags like spoofed addresses and fake login links.
               </p>
             </div>
             <div className="mt-5 pt-3 border-t border-border">
-              <Link to="/simulations" className="text-xs font-semibold text-primary hover:underline flex items-center justify-between">
-                <span>Launch Sandbox</span>
+              <Link to="/simulations" className="text-xs sm:text-sm font-semibold text-primary hover:underline flex items-center justify-between">
+                <span>Try Simulation</span>
                 <i className="ti ti-chevron-right text-xs" />
               </Link>
             </div>
@@ -723,15 +720,15 @@ export function LandingPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-500 mb-4">
                 <i className="ti ti-message-chatbot text-xl" />
               </div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-text-ash">Mobile Lab</span>
-              <h3 className="font-display text-base font-bold text-text-pure mt-1">SMS Smishing Simulator</h3>
-              <p className="text-xs text-text-fog mt-2 leading-relaxed">
-                Experience deceptive banking alerts, parcel delivery updates, and fake lottery lures inside a realistic mobile smartphone interface.
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-ash">Phone Lab</span>
+              <h3 className="font-display text-base font-bold text-text-pure mt-1">SMS Scam Lab</h3>
+              <p className="text-xs sm:text-sm text-text-fog mt-2 leading-relaxed">
+                See fake bank texts and parcel alerts on a virtual smartphone. Learn how scammers try to steal your OTP codes.
               </p>
             </div>
             <div className="mt-5 pt-3 border-t border-border">
-              <Link to="/simulations" className="text-xs font-semibold text-cyan-500 hover:underline flex items-center justify-between">
-                <span>Launch Lab</span>
+              <Link to="/simulations" className="text-xs sm:text-sm font-semibold text-cyan-500 hover:underline flex items-center justify-between">
+                <span>Try Simulation</span>
                 <i className="ti ti-chevron-right text-xs" />
               </Link>
             </div>
@@ -742,15 +739,15 @@ export function LandingPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-danger/10 text-danger mb-4">
                 <i className="ti ti-file-lock text-xl" />
               </div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-text-ash">Incident Triage</span>
-              <h3 className="font-display text-base font-bold text-text-pure mt-1">Ransomware Quarantine</h3>
-              <p className="text-xs text-text-fog mt-2 leading-relaxed">
-                A workstation is compromised by encrypting malware. Can you isolate the network segment and kill command channels in under 60 seconds?
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-ash">Safety Drill</span>
+              <h3 className="font-display text-base font-bold text-text-pure mt-1">Virus Containment Drill</h3>
+              <p className="text-xs sm:text-sm text-text-fog mt-2 leading-relaxed">
+                Practice what to do when suspicious software is downloaded: isolate your device and stop file encryption in time.
               </p>
             </div>
             <div className="mt-5 pt-3 border-t border-border">
-              <Link to="/simulations" className="text-xs font-semibold text-danger hover:underline flex items-center justify-between">
-                <span>Launch Drill</span>
+              <Link to="/simulations" className="text-xs sm:text-sm font-semibold text-danger hover:underline flex items-center justify-between">
+                <span>Try Simulation</span>
                 <i className="ti ti-chevron-right text-xs" />
               </Link>
             </div>
@@ -761,15 +758,15 @@ export function LandingPage() {
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500 mb-4">
                 <i className="ti ti-key text-xl" />
               </div>
-              <span className="text-[10px] font-mono uppercase tracking-wider text-text-ash">Security Toolkit</span>
-              <h3 className="font-display text-base font-bold text-text-pure mt-1">Entropy &amp; Crack Calculator</h3>
-              <p className="text-xs text-text-fog mt-2 leading-relaxed">
-                Real-time mathematical entropy analyzer that calculates how many minutes, years, or centuries it takes GPUs to crack your passphrase.
+              <span className="text-xs font-semibold uppercase tracking-wider text-text-ash">Safety Tool</span>
+              <h3 className="font-display text-base font-bold text-text-pure mt-1">Password Strength Tool</h3>
+              <p className="text-xs sm:text-sm text-text-fog mt-2 leading-relaxed">
+                Check how hard your password is to crack and see how easily automated hacking tools can guess common words.
               </p>
             </div>
             <div className="mt-5 pt-3 border-t border-border">
-              <Link to="/tools" className="text-xs font-semibold text-emerald-500 hover:underline flex items-center justify-between">
-                <span>Launch Tool</span>
+              <Link to="/tools" className="text-xs sm:text-sm font-semibold text-emerald-500 hover:underline flex items-center justify-between">
+                <span>Open Tool</span>
                 <i className="ti ti-chevron-right text-xs" />
               </Link>
             </div>
@@ -786,39 +783,39 @@ export function LandingPage() {
                 <i className="ti ti-sos text-xl" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-danger">Emergency Action: Suspect You Just Got Hacked?</h3>
-                <p className="text-xs text-text-ash">Follow these 4 immediate containment steps if you clicked a bad link or shared credentials.</p>
+                <h3 className="text-base sm:text-lg font-bold text-danger">Emergency: Think You Just Got Scammed or Hacked?</h3>
+                <p className="text-xs sm:text-sm text-text-ash">Follow these 4 simple steps immediately if you clicked a suspicious link or shared a code.</p>
               </div>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4 mt-6">
-              <div className="p-3.5 rounded-xl border border-border bg-surface-elevated text-xs">
-                <span className="font-mono text-danger font-bold">STEP 01</span>
-                <p className="font-semibold text-text-pure mt-1">Sever Connections</p>
-                <p className="text-[11px] text-text-fog mt-0.5">Disconnect device Wi-Fi and mobile data immediately to halt malware exfiltration.</p>
+              <div className="p-4 rounded-xl border border-border bg-surface-elevated text-xs sm:text-sm">
+                <span className="text-xs font-bold text-danger">STEP 01</span>
+                <p className="font-bold text-text-pure mt-1">Turn Off Wi-Fi & Data</p>
+                <p className="text-xs text-text-fog mt-1 leading-relaxed">Disconnect your internet right away to stop any sneaky apps from sending out your files.</p>
               </div>
-              <div className="p-3.5 rounded-xl border border-border bg-surface-elevated text-xs">
-                <span className="font-mono text-danger font-bold">STEP 02</span>
-                <p className="font-semibold text-text-pure mt-1">Reset Passwords</p>
-                <p className="text-[11px] text-text-fog mt-0.5">From a clean secondary device, immediately change your primary email and bank passwords.</p>
+              <div className="p-4 rounded-xl border border-border bg-surface-elevated text-xs sm:text-sm">
+                <span className="text-xs font-bold text-danger">STEP 02</span>
+                <p className="font-bold text-text-pure mt-1">Change Passwords</p>
+                <p className="text-xs text-text-fog mt-1 leading-relaxed">Using a different, safe device, update your main email and bank account passwords immediately.</p>
               </div>
-              <div className="p-3.5 rounded-xl border border-border bg-surface-elevated text-xs">
-                <span className="font-mono text-danger font-bold">STEP 03</span>
-                <p className="font-semibold text-text-pure mt-1">Revoke Sessions</p>
-                <p className="text-[11px] text-text-fog mt-0.5">In Google/Apple/Microsoft account settings, click 'Log out of all other active devices'.</p>
+              <div className="p-4 rounded-xl border border-border bg-surface-elevated text-xs sm:text-sm">
+                <span className="text-xs font-bold text-danger">STEP 03</span>
+                <p className="font-bold text-text-pure mt-1">Log Out Everywhere</p>
+                <p className="text-xs text-text-fog mt-1 leading-relaxed">In your Google, Apple, or bank security settings, select 'Sign out of all other devices'.</p>
               </div>
-              <div className="p-3.5 rounded-xl border border-border bg-surface-elevated text-xs">
-                <span className="font-mono text-danger font-bold">STEP 04</span>
-                <p className="font-semibold text-text-pure mt-1">Report Incident</p>
-                <p className="text-[11px] text-text-fog mt-0.5">File an incident report on CyberGuard or notify your bank's 24/7 fraud helpline.</p>
+              <div className="p-4 rounded-xl border border-border bg-surface-elevated text-xs sm:text-sm">
+                <span className="text-xs font-bold text-danger">STEP 04</span>
+                <p className="font-bold text-text-pure mt-1">Contact Bank / Report</p>
+                <p className="text-xs text-text-fog mt-1 leading-relaxed">If money or bank cards are involved, call your bank immediately, then report the scam.</p>
               </div>
             </div>
 
-            <div className="mt-5 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs">
-              <span className="text-text-ash">CyberGuard Incident Desk provides guided containment checklists.</span>
+            <div className="mt-5 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+              <span className="text-text-ash">Need help handling a scam? We provide clear, step-by-step guidance.</span>
               <Link to="/report">
-                <Button variant="secondary" size="xs" icon={<i className="ti ti-flag" />}>
-                  Submit Scam Incident
+                <Button variant="secondary" size="sm" icon={<i className="ti ti-flag" />}>
+                  Report a Scam
                 </Button>
               </Link>
             </div>
@@ -833,11 +830,10 @@ export function LandingPage() {
             <i className="ti ti-shield-check text-2xl" />
           </div>
           <h2 className="font-display text-3xl font-bold text-text-pure">
-            Make Cyber Safety An Instinct, Not An Afterthought.
+            Make Cyber Safety Second Nature.
           </h2>
           <p className="mt-3 text-sm text-text-fog leading-relaxed">
-            Join thousands of individuals, students, and defenders who test their security instincts on CyberGuard.
-            Accessible, zero-risk, and engineered for real-life safety.
+            Practice spotting real-world scams and protect your accounts with simple, practical daily habits. Free, zero-risk, and built for everyone.
           </p>
           <div className="mt-7 flex items-center justify-center gap-3">
             <Link to="/register">
@@ -847,7 +843,7 @@ export function LandingPage() {
             </Link>
             <Link to="/login">
               <Button variant="secondary" size="lg">
-                Quick Demo Access
+                Try Demo
               </Button>
             </Link>
           </div>

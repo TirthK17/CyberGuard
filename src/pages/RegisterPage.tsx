@@ -64,8 +64,8 @@ export function RegisterPage() {
             Verification link sent
           </h2>
           <p className="mt-2 text-xs text-text-fog leading-relaxed">
-            We’ve dispatched a verification link to <strong className="text-text-pure">{email}</strong>.
-            Click the link in the message to activate your defense operator account.
+            We’ve sent a verification link to <strong className="text-text-pure">{email}</strong>.
+            Click the link in the message to activate your account.
           </p>
           <div className="mt-6 flex justify-center">
             <Link to="/login">
@@ -94,7 +94,7 @@ export function RegisterPage() {
             <span className="macos-dot macos-dot-minimize" />
             <span className="macos-dot macos-dot-expand" />
           </div>
-          <span className="text-[11px] font-medium text-text-ash">CyberGuard Operator Registration</span>
+          <span className="text-[11px] font-medium text-text-ash">CyberGuard Sign Up</span>
           <div className="w-10" />
         </div>
 
@@ -105,15 +105,15 @@ export function RegisterPage() {
             </div>
             <div>
               <span className="font-display text-base font-bold tracking-tight text-text-pure">CyberGuard</span>
-              <p className="text-[10px] text-text-ash">Security Awareness Portal</p>
+              <p className="text-[10px] text-text-ash">Cyber Safety Learning</p>
             </div>
           </div>
 
           <h1 className="mt-6 font-display text-2xl font-bold tracking-tight text-text-pure">
-            Create Operator Account
+            Create Free Account
           </h1>
           <p className="mt-1 text-xs text-text-fog">
-            Join the platform to begin threat simulations and track your security readiness index.
+            Start learning with interactive lessons, scam simulations, and free safety tools.
           </p>
 
           {/* Google OAuth Button */}
@@ -178,7 +178,7 @@ export function RegisterPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="alex@organization.com"
+                placeholder="alex@example.com"
                 className="input"
               />
             </div>
@@ -226,7 +226,7 @@ export function RegisterPage() {
           <p className="mt-6 text-center text-xs text-text-fog">
             Already registered?{" "}
             <Link to="/login" className="font-semibold text-primary hover:underline">
-              Sign in to Console
+              Sign in here
             </Link>
           </p>
         </div>

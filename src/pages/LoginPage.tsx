@@ -77,7 +77,7 @@ export function LoginPage() {
             <span className="macos-dot macos-dot-minimize" />
             <span className="macos-dot macos-dot-expand" />
           </div>
-          <span className="text-[11px] font-medium text-text-ash">CyberGuard Authentication</span>
+          <span className="text-[11px] font-medium text-text-ash">CyberGuard</span>
           <div className="w-10" />
         </div>
 
@@ -89,36 +89,36 @@ export function LoginPage() {
             </div>
             <div>
               <span className="font-display text-base font-bold tracking-tight text-text-pure">CyberGuard</span>
-              <p className="text-[10px] text-text-ash">Security Awareness Portal</p>
+              <p className="text-[10px] text-text-ash">Cyber Safety Learning</p>
             </div>
           </div>
 
           <h1 className="mt-6 font-display text-2xl font-bold tracking-tight text-text-pure">
-            Sign in to Console
+            Welcome Back
           </h1>
           <p className="mt-1 text-xs text-text-fog">
-            Access your defense training modules, interactive phishing simulator, and security tools.
+            Sign in to access your safety lessons, simulations, and security tools.
           </p>
 
           {/* Quick Demo Access Callout for Evaluators & Judges */}
           <div className="mt-5 rounded-xl border border-primary/20 bg-primary-subtle p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-primary">Prototype Quick Evaluation</span>
+              <span className="text-xs font-semibold text-primary">Instant Preview Access</span>
               <span className="text-[10px] uppercase font-bold text-primary tracking-wide">1-Click</span>
             </div>
             <p className="text-[11px] text-text-fog mt-1">
-              Skip registration and launch the prototype instantly with full feature access:
+              Explore all features immediately with pre-loaded demo data:
             </p>
             <div className="mt-3 flex items-center gap-2">
               <Button
                 type="button"
                 variant="primary"
                 size="xs"
-                className="flex-1 py-1.5"
+                className="flex-1 py-1.5 font-semibold"
                 onClick={() => handleDemoLogin(false)}
                 loading={demoLoading}
               >
-                Launch Operator Console
+                Explore Demo Dashboard
               </Button>
             </div>
           </div>
@@ -127,7 +127,7 @@ export function LoginPage() {
           <div className="relative my-6 flex items-center justify-center">
             <div className="w-full border-t border-border" />
             <span className="absolute bg-surface px-3 text-[10px] uppercase font-medium tracking-wider text-text-ash">
-              or sign in with credentials
+              or sign in with email
             </span>
           </div>
 
@@ -158,7 +158,7 @@ export function LoginPage() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="name@organization.com"
+                placeholder="name@example.com"
                 className="input"
               />
             </div>
@@ -209,7 +209,7 @@ export function LoginPage() {
           <p className="mt-6 text-center text-xs text-text-fog">
             Don't have an account yet?{" "}
             <Link to="/register" className="font-semibold text-primary hover:underline">
-              Create operator profile
+              Create free account
             </Link>
           </p>
         </div>

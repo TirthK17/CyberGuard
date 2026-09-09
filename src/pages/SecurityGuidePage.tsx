@@ -108,10 +108,10 @@ export function SecurityGuidePage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="text-xs text-text-faint">Emergency Response Playbook</p>
-        <h1 className="mt-0.5 font-display text-2xl font-semibold text-text">What Should I Do?</h1>
+        <p className="text-xs text-text-faint">Quick Help Guide</p>
+        <h1 className="mt-0.5 font-display text-2xl font-semibold text-text">What Should I Do Right Now?</h1>
         <p className="mt-1 text-sm text-text-dim">
-          Select an incident scenario below for prioritized, step-by-step containment instructions.
+          Choose a situation below for clear, step-by-step instructions on what to do immediately.
         </p>
       </motion.div>
 
@@ -174,7 +174,7 @@ export function SecurityGuidePage() {
 
                 <div className="mt-6">
                   <p className="text-xs font-semibold uppercase tracking-wider text-text-faint mb-4">
-                    Immediate Remediation Steps
+                    What to Do Right Now (Step-by-Step)
                   </p>
                   <ol className="space-y-4">
                     {current.steps.map((step, i) => (

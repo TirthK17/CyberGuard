@@ -49,7 +49,7 @@ function calculatePasswordMetrics(password: string) {
 
   // Crack times: Single GPU = 1e8 guesses/sec, Cluster = 1e11 guesses/sec
   const formatTime = (secs: number) => {
-    if (isCommon) return "Instant (< 1 millisecond)";
+    if (isCommon) return "Instant (< 1 second)";
     if (secs < 1) return "Under 1 second";
     if (secs < 60) return `${Math.round(secs)} seconds`;
     if (secs < 3600) return `${Math.round(secs / 60)} minutes`;
@@ -75,22 +75,22 @@ function calculatePasswordMetrics(password: string) {
   let tone: "danger" | "warn" | "cyan" | "success" = "danger";
 
   if (score >= 80) {
-    label = "Fortified (Vault Ready)";
+    label = "Very Strong";
     tone = "success";
   } else if (score >= 60) {
-    label = "Moderate (Acceptable)";
+    label = "Good";
     tone = "cyan";
   } else if (score >= 40) {
-    label = "Weak (Vulnerable)";
+    label = "Weak";
     tone = "warn";
   }
 
   const checks = [
-    { label: "14+ characters minimum length", passed: password.length >= 14 },
-    { label: "Includes uppercase & lowercase letters", passed: hasLower && hasUpper },
-    { label: "Includes numeric digits (0–9)", passed: hasDigit },
-    { label: "Includes special symbols (!@#$%^&*)", passed: hasSymbol },
-    { label: "Resists known dictionary breach lists", passed: !isCommon && !/^(password|admin|123456|qwerty)/i.test(password) },
+    { label: "At least 14 characters long", passed: password.length >= 14 },
+    { label: "Uppercase & lowercase letters", passed: hasLower && hasUpper },
+    { label: "Numbers (0–9)", passed: hasDigit },
+    { label: "Special symbols (!@#$%^&*)", passed: hasSymbol },
+    { label: "Not a commonly guessed word", passed: !isCommon && !/^(password|admin|123456|qwerty)/i.test(password) },
   ];
 
   return { score, entropy, crackTimeSingleGpu, crackTimeCluster, isCommon, label, tone, checks };
@@ -149,10 +149,10 @@ function PasswordAnalyzerTab() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h3 className="font-display text-base sm:text-lg font-bold text-text-pure">
-              Password Health &amp; Entropy Meter
+              Password Strength &amp; Passphrase Generator
             </h3>
             <p className="mt-1 text-xs text-text-fog">
-              Test your password resilience against high-throughput GPU clusters (RTX 4090 rigs) and leaked dictionary tables.
+              Test how hard your password is to guess and generate easy-to-remember, ultra-strong passphrases.
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -174,7 +174,7 @@ function PasswordAnalyzerTab() {
             type={show ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder="Type or paste any password/passphrase to test..."
+            placeholder="Type or paste any password to test..."
             className="input pr-24 font-mono text-sm py-3"
           />
           <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
@@ -202,7 +202,7 @@ function PasswordAnalyzerTab() {
           <div className="p-3.5 rounded-xl bg-danger/10 border border-danger/30 text-xs text-danger flex items-center gap-2">
             <i className="ti ti-alert-triangle text-base shrink-0" />
             <span>
-              <strong>Warning: Common Dictionary Match!</strong> This password appears in top leaked credential databases. Attackers test this within the first 0.001 seconds of an attack!
+              <strong>Warning: Common Leaked Password!</strong> This password is listed in publicly known breach databases. Hackers can guess this in under a second!
             </span>
           </div>
         )}
@@ -210,32 +210,32 @@ function PasswordAnalyzerTab() {
         {/* Live Metrics Grid */}
         <div className="grid gap-4 sm:grid-cols-3">
           <div className="rounded-2xl border border-border bg-surface-elevated p-4 space-y-1">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash">
-              8x GPU Cluster Rig
+            <span className="text-xs font-semibold text-text-ash block">
+              Time to Guess
             </span>
             <div className="font-display text-base sm:text-lg font-bold text-text-pure truncate">
               {metrics.crackTimeCluster}
             </div>
-            <p className="text-[11px] text-text-fog">
-              At 100 billion hash guesses / sec
+            <p className="text-xs text-text-fog">
+              Estimated time for automated guessing tools
             </p>
           </div>
 
           <div className="rounded-2xl border border-border bg-surface-elevated p-4 space-y-1">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash">
-              Information Entropy
+            <span className="text-xs font-semibold text-text-ash block">
+              Complexity Rating
             </span>
             <div className="font-display text-base sm:text-lg font-bold text-primary">
-              {metrics.entropy} bits
+              {metrics.entropy} / 100
             </div>
-            <p className="text-[11px] text-text-fog">
-              Mathematical randomness index
+            <p className="text-xs text-text-fog">
+              Based on length and variety of characters
             </p>
           </div>
 
           <div className="rounded-2xl border border-border bg-surface-elevated p-4 space-y-1">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash">
-              Vault Health Score
+            <span className="text-xs font-semibold text-text-ash block">
+              Strength Score
             </span>
             <div className="flex items-center gap-2">
               <span className="font-display text-base sm:text-lg font-bold text-text-pure">
@@ -249,8 +249,8 @@ function PasswordAnalyzerTab() {
 
         {/* Criteria Checklist */}
         <div className="border-t border-border pt-5 space-y-3">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash block">
-            Defensive Criteria Validation
+          <span className="text-xs font-semibold uppercase tracking-wider text-text-ash block">
+            Password Checklist:
           </span>
           <div className="grid gap-2 sm:grid-cols-2">
             {metrics.checks.map((chk, i) => (
@@ -272,18 +272,18 @@ function PasswordAnalyzerTab() {
 
         {/* Passphrase Generator Settings Drawer */}
         <div className="border-t border-border pt-5 space-y-3">
-          <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash block">
-            Passphrase Generator Settings:
+          <span className="text-xs font-semibold uppercase tracking-wider text-text-ash block">
+            Passphrase Generator Options:
           </span>
           <div className="flex flex-wrap items-center gap-4 text-xs">
             <div className="flex items-center gap-2">
-              <span className="text-text-fog">Length:</span>
+              <span className="text-text-fog">Word Count:</span>
               {[3, 4, 5].map((cnt) => (
                 <button
                   key={cnt}
                   type="button"
                   onClick={() => setWordsCount(cnt)}
-                  className={`px-2.5 py-1 rounded-lg border text-xs font-mono font-bold transition-colors ${
+                  className={`px-3 py-1 rounded-lg border text-xs font-semibold transition-colors ${
                     wordsCount === cnt
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border bg-surface text-text-ash"
@@ -295,13 +295,13 @@ function PasswordAnalyzerTab() {
             </div>
 
             <div className="flex items-center gap-2">
-              <span className="text-text-fog">Separator:</span>
+              <span className="text-text-fog">Divider:</span>
               {["-", "_", "."].map((sep) => (
                 <button
                   key={sep}
                   type="button"
                   onClick={() => setSeparator(sep)}
-                  className={`px-2.5 py-1 rounded-lg border text-xs font-mono font-bold transition-colors ${
+                  className={`px-3 py-1 rounded-lg border text-xs font-semibold transition-colors ${
                     separator === sep
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border bg-surface text-text-ash"
@@ -510,7 +510,7 @@ function PhishingInspectorTab() {
                 : "text-text-fog hover:text-text-pure"
             }`}
           >
-            <i className="ti ti-link mr-1.5" /> Live Custom URL Analyzer
+            <i className="ti ti-link mr-1.5" /> Check a Link
           </button>
           <button
             onClick={() => setSubMode("samples")}
@@ -520,7 +520,7 @@ function PhishingInspectorTab() {
                 : "text-text-fog hover:text-text-pure"
             }`}
           >
-            <i className="ti ti-mail-opened mr-1.5" /> Phishing Email Case Samples
+            <i className="ti ti-mail-opened mr-1.5" /> Sample Scam Emails
           </button>
         </div>
       </div>
@@ -529,16 +529,16 @@ function PhishingInspectorTab() {
         <Card className="p-6 sm:p-8 space-y-6">
           <div>
             <h3 className="font-display text-base sm:text-lg font-bold text-text-pure">
-              Live URL &amp; Domain Phishing Dissector
+              Suspicious Link &amp; Website Checker
             </h3>
             <p className="mt-1 text-xs text-text-fog">
-              Paste any suspicious link, domain, or SMS URL. The engine performs deep lexical dissection to identify lookalike subdomains, brand spoofing, and executable drops.
+              Paste any suspicious link or website you received in a text or email to check for fake domains, spoofed company names, and dangerous downloads.
             </p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-mono font-bold text-text-pure uppercase">
-              Target URL to Dissect:
+            <label className="text-xs font-semibold text-text-pure uppercase tracking-wider">
+              Link to Check:
             </label>
             <div className="flex gap-2">
               <input
@@ -554,7 +554,7 @@ function PhishingInspectorTab() {
                 onClick={() => setCustomInput("https://login.microsoft.com.account-update.ru/auth/login.exe")}
                 className="text-xs shrink-0"
               >
-                Sample URL
+                Sample Link
               </Button>
             </div>
           </div>
@@ -567,10 +567,10 @@ function PhishingInspectorTab() {
             >
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
                 <div>
-                  <span className="text-[10px] font-mono text-text-ash uppercase">
-                    Dissection Hostname:
+                  <span className="text-xs font-semibold text-text-ash uppercase tracking-wider">
+                    Website Address:
                   </span>
-                  <div className="font-mono text-sm font-bold text-text-pure break-all">
+                  <div className="font-mono text-sm sm:text-base font-bold text-text-pure break-all">
                     {urlAnalysis.hostname}
                   </div>
                 </div>
@@ -579,15 +579,15 @@ function PhishingInspectorTab() {
                   <Pill tone={urlAnalysis.tone} size="md">
                     {urlAnalysis.verdict}
                   </Pill>
-                  <span className="text-xs font-mono font-bold text-text-pure">
+                  <span className="text-xs font-semibold text-text-pure">
                     Risk: {urlAnalysis.score}/100
                   </span>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <span className="text-xs font-bold text-text-pure font-mono uppercase">
-                  Detected Red Flags &amp; Structural Anomalies:
+                <span className="text-xs font-semibold text-text-pure uppercase tracking-wider">
+                  Detected Red Flags:
                 </span>
                 <div className="space-y-2">
                   {urlAnalysis.flags.map((flag, idx) => (
@@ -609,10 +609,10 @@ function PhishingInspectorTab() {
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-5">
             <div>
               <h3 className="font-display text-base font-bold text-text-pure">
-                Adversary Phishing Email Dissection Lab
+                Sample Scam Emails
               </h3>
-              <p className="mt-1 text-xs text-text-fog">
-                Inspect real-world adversary email techniques. Examine spoofed headers, lookalike subdomains, and hidden redirection payloads.
+              <p className="mt-1 text-xs sm:text-sm text-text-fog">
+                Inspect real-life scam emails to see how attackers use fake sender addresses, artificial panic, and disguised links.
               </p>
             </div>
             {/* Sample Switcher */}
@@ -621,9 +621,9 @@ function PhishingInspectorTab() {
                 <button
                   key={s.id}
                   onClick={() => { setSelectedId(s.id); setAnalyzed(false); }}
-                  className={`rounded-full border px-3 py-1 font-mono text-[11px] transition-colors ${
+                  className={`rounded-full border px-3.5 py-1 text-xs font-semibold transition-colors ${
                     selectedId === s.id
-                      ? "border-primary bg-primary/20 text-primary font-bold"
+                      ? "border-primary bg-primary/20 text-primary"
                       : "border-border bg-surface text-text-ash hover:text-text-pure"
                   }`}
                 >
@@ -638,36 +638,36 @@ function PhishingInspectorTab() {
             {/* Headers */}
             <div className="border-b border-border bg-surface p-4 space-y-2 text-xs">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-mono text-text-ash">From:</span>
+                <span className="text-text-ash font-medium">From:</span>
                 <span className="text-text-pure font-medium">
                   {sample.senderName} &lt;<span className="font-mono text-danger font-semibold">{sample.senderEmail}</span>&gt;
                 </span>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-mono text-text-ash">Reply-To:</span>
+                <span className="text-text-ash font-medium">Reply-To:</span>
                 <span className="font-mono text-warn font-semibold">{sample.replyTo}</span>
               </div>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <span className="font-mono text-text-ash">Subject:</span>
+                <span className="text-text-ash font-medium">Subject:</span>
                 <span className="text-text-pure font-bold">{sample.subject}</span>
               </div>
             </div>
 
             {/* Body */}
             <div className="p-6 space-y-4">
-              <p className="text-xs leading-relaxed text-text-fog whitespace-pre-line">
+              <p className="text-xs sm:text-sm leading-relaxed text-text-fog whitespace-pre-line">
                 {sample.body}
               </p>
 
               <div className="p-4 rounded-xl border border-danger/30 bg-danger/10 space-y-2">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-danger font-bold block">
-                  Weaponized Link / Call-to-Action
+                <span className="text-xs uppercase tracking-wider text-danger font-bold block">
+                  Suspicious Link Inside Email
                 </span>
                 <div className="text-sm font-semibold text-text-pure underline">
                   {sample.linkText}
                 </div>
                 <div className="text-xs font-mono text-danger break-all">
-                  Hidden Destination: {sample.targetLink}
+                  Actual Destination: {sample.targetLink}
                 </div>
               </div>
             </div>
@@ -679,12 +679,12 @@ function PhishingInspectorTab() {
               size="sm"
               icon={<i className="ti ti-scan" />}
               onClick={() => setAnalyzed((a) => !a)}
-              className="text-xs"
+              className="text-xs font-semibold"
             >
-              {analyzed ? "Hide Red Flag Annotations" : "Analyze Phishing Red Flags"}
+              {analyzed ? "Hide Red Flags" : "Show Red Flags"}
             </Button>
-            <span className="font-mono text-[11px] text-text-ash">
-              {sample.redFlags.length} security indicators flagged
+            <span className="text-xs text-text-ash font-medium">
+              {sample.redFlags.length} suspicious clues found
             </span>
           </div>
 
@@ -698,12 +698,12 @@ function PhishingInspectorTab() {
               >
                 <div className="flex items-center gap-2 font-display text-sm font-bold text-primary">
                   <i className="ti ti-shield-alert text-lg" />
-                  <span>Defensive Threat Breakdown</span>
+                  <span>Why This Is A Scam</span>
                 </div>
                 <ul className="space-y-2">
                   {sample.redFlags.map((flag, i) => (
-                    <li key={i} className="flex items-start gap-2 text-xs leading-relaxed text-text-pure">
-                      <span className="font-mono font-bold text-danger shrink-0 mt-0.5">[{i + 1}]</span>
+                    <li key={i} className="flex items-start gap-2 text-xs sm:text-sm leading-relaxed text-text-pure">
+                      <span className="font-semibold text-danger shrink-0 mt-0.5">[{i + 1}]</span>
                       <span>{flag}</span>
                     </li>
                   ))}
@@ -733,28 +733,28 @@ function WifiAuditorTab() {
 
   if (encType === "open") {
     riskScore += 45;
-    warnings.push("Unencrypted Open Wi-Fi: Every network packet is broadcast in plain text over radio frequencies.");
+    warnings.push("Open Wi-Fi (No Password): Anyone nearby can potentially see which websites you connect to.");
   } else if (encType === "wep") {
     riskScore += 40;
-    warnings.push("WEP Encryption: Deprecated and trivially broken in under 60 seconds with automated tools (Aircrack-ng).");
+    warnings.push("Old WEP Security: Outdated encryption that can be broken in under a minute by attackers.");
   } else if (encType === "wpa2") {
     riskScore += 10;
   }
 
   if (location === "cafe" || location === "airport") {
     riskScore += 25;
-    warnings.push("Public Hotspot: Vulnerable to rogue 'Evil Twin' spoofing and local ARP cache poisoning.");
+    warnings.push("Public Hotspot: Scammers can set up fake Wi-Fi networks with the same name to trick you.");
   }
 
   if (hasCertWarning) {
     riskScore += 40;
-    warnings.push("CRITICAL: SSL/TLS Certificate Warning detected! High probability of active Man-in-the-Middle (MITM) proxy interception.");
+    warnings.push("Warning Message Detected: Your device alerted you about an unsafe security certificate. Do not type passwords or payment details!");
   }
 
   if (hasVpn) {
     riskScore = Math.max(0, riskScore - 50);
   } else if (location !== "home") {
-    warnings.push("No VPN Active: Local router operator and eavesdroppers can log DNS requests and unencrypted connections.");
+    warnings.push("No VPN Active: Your browsing activity is visible to the network owner or router.");
   }
 
   riskScore = Math.min(riskScore, 100);
@@ -765,25 +765,25 @@ function WifiAuditorTab() {
       <Card className="p-6 sm:p-8 space-y-6">
         <div>
           <h3 className="font-display text-base sm:text-lg font-bold text-text-pure">
-            Public Wi-Fi &amp; Network Security Risk Auditor
+            Wi-Fi Safety Checker
           </h3>
           <p className="mt-1 text-xs text-text-fog">
-            Evaluate your network environment before transmitting passwords or banking details. Calculate MITM interception exposure and test VPN shielding.
+            Check how safe your current Wi-Fi connection is before typing sensitive passwords or opening banking apps.
           </p>
         </div>
 
         {/* Configuration Parameters */}
         <div className="grid gap-4 sm:grid-cols-2 text-xs">
           <div className="p-4 rounded-xl bg-surface-elevated border border-border space-y-2">
-            <span className="font-mono font-bold text-text-pure uppercase">
-              1. Wireless Encryption Standard:
+            <span className="text-xs font-semibold text-text-pure uppercase tracking-wider">
+              1. Wi-Fi Security Type:
             </span>
             <div className="grid grid-cols-2 gap-2">
               {[
                 { id: "open", label: "Open (No Password)" },
-                { id: "wep",  label: "WEP (Legacy)" },
-                { id: "wpa2", label: "WPA2-Personal" },
-                { id: "wpa3", label: "WPA3 (Modern)" },
+                { id: "wep",  label: "WEP (Old / Insecure)" },
+                { id: "wpa2", label: "WPA2 (Standard)" },
+                { id: "wpa3", label: "WPA3 (Modern & Safest)" },
               ].map((item) => (
                 <button
                   key={item.id}
@@ -801,14 +801,14 @@ function WifiAuditorTab() {
           </div>
 
           <div className="p-4 rounded-xl bg-surface-elevated border border-border space-y-2">
-            <span className="font-mono font-bold text-text-pure uppercase">
-              2. Physical Environment:
+            <span className="text-xs font-semibold text-text-pure uppercase tracking-wider">
+              2. Where are you connecting from?
             </span>
             <div className="grid grid-cols-3 gap-2">
               {[
                 { id: "home",    label: "Home / Office" },
                 { id: "cafe",    label: "Coffee Shop" },
-                { id: "airport", label: "Airport / Transit" },
+                { id: "airport", label: "Airport / Hotel" },
               ].map((item) => (
                 <button
                   key={item.id}
@@ -837,14 +837,14 @@ function WifiAuditorTab() {
             <div className="flex items-center gap-3">
               <i className={`ti ti-shield-lock text-xl ${hasVpn ? "text-emerald-400" : "text-text-ash"}`} />
               <div>
-                <strong className="block text-text-pure">Virtual Private Network (VPN)</strong>
-                <span className="text-[11px] text-text-fog">
-                  {hasVpn ? "Active: All packets encrypted in transit" : "Inactive: Raw packets exposed"}
+                <strong className="block text-text-pure">VPN (Virtual Private Network)</strong>
+                <span className="text-xs text-text-fog">
+                  {hasVpn ? "Active: Your internet connection is encrypted" : "Off: Network owner can see websites visited"}
                 </span>
               </div>
             </div>
-            <span className={`font-mono text-xs font-bold ${hasVpn ? "text-emerald-400" : "text-text-ash"}`}>
-              {hasVpn ? "ENABLED" : "DISABLED"}
+            <span className={`text-xs font-bold ${hasVpn ? "text-emerald-400" : "text-text-ash"}`}>
+              {hasVpn ? "ON" : "OFF"}
             </span>
           </div>
 
@@ -857,14 +857,14 @@ function WifiAuditorTab() {
             <div className="flex items-center gap-3">
               <i className={`ti ti-alert-triangle text-xl ${hasCertWarning ? "text-danger" : "text-text-ash"}`} />
               <div>
-                <strong className="block text-text-pure">SSL Certificate Warning</strong>
-                <span className="text-[11px] text-text-fog">
-                  {hasCertWarning ? "Warning Triggered on Network" : "Clean Certificate Handshake"}
+                <strong className="block text-text-pure">Browser Warning Alert</strong>
+                <span className="text-xs text-text-fog">
+                  {hasCertWarning ? "Saw an 'Unsafe Connection' Warning" : "No Browser Warnings"}
                 </span>
               </div>
             </div>
-            <span className={`font-mono text-xs font-bold ${hasCertWarning ? "text-danger" : "text-text-ash"}`}>
-              {hasCertWarning ? "DETECTED" : "NONE"}
+            <span className={`text-xs font-bold ${hasCertWarning ? "text-danger" : "text-text-ash"}`}>
+              {hasCertWarning ? "YES" : "NO"}
             </span>
           </div>
         </div>
@@ -872,15 +872,15 @@ function WifiAuditorTab() {
         {/* Assessment Scorecard */}
         <div className="p-5 rounded-2xl border border-border bg-surface-elevated space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-text-pure font-mono uppercase">
-              Network Threat Telemetry:
+            <span className="text-xs font-semibold text-text-pure uppercase tracking-wider">
+              Safety Summary:
             </span>
             <div className="flex items-center gap-2">
               <Pill tone={isSafe ? "emerald" : "danger"} size="md">
-                {isSafe ? "PROTECTED / SECURE" : "VULNERABLE TO INTERCEPTION"}
+                {isSafe ? "SAFE TO USE" : "UNSAFE FOR BANKING OR LOGINS"}
               </Pill>
-              <span className="font-mono text-xs font-bold text-text-pure">
-                Risk: {riskScore}/100
+              <span className="text-xs font-semibold text-text-pure">
+                Risk Level: {riskScore}/100
               </span>
             </div>
           </div>
@@ -896,7 +896,7 @@ function WifiAuditorTab() {
             ) : (
               <div className="flex items-center gap-2 text-xs text-emerald-400 p-2 rounded-lg bg-surface">
                 <i className="ti ti-shield-check text-base" />
-                <span>Modern WPA3 encryption with VPN tunneling provides robust network security.</span>
+                <span>Great protection! Modern encryption and VPN keep your network traffic private.</span>
               </div>
             )}
           </div>
@@ -925,16 +925,16 @@ const HISTORICAL_BREACHES: BreachRecord[] = [
     domain: "canva.com",
     breachDate: "May 2019",
     pwnCount: "137 Million",
-    dataClasses: ["Email addresses", "Passwords (salted bcrypt)", "Usernames", "Geographic locations"],
-    description: "A malicious actor gained unauthorized access to internal database servers, extracting millions of user profiles.",
+    dataClasses: ["Email addresses", "Passwords (encrypted)", "Usernames", "Locations"],
+    description: "Unauthorized attackers broke into database servers and copied millions of user profile records.",
   },
   {
-    title: "LinkedIn Professional Network",
+    title: "LinkedIn",
     domain: "linkedin.com",
     breachDate: "June 2021",
     pwnCount: "700 Million",
     dataClasses: ["Email addresses", "Full names", "Phone numbers", "Physical addresses", "Job titles"],
-    description: "An adversary exploited public API endpoints to scrape and correlate records of over 92% of all registered users.",
+    description: "Scrapers exploited public web endpoints to collect user information from over 90% of registered accounts.",
   },
   {
     title: "Adobe Creative Cloud",
@@ -942,15 +942,15 @@ const HISTORICAL_BREACHES: BreachRecord[] = [
     breachDate: "October 2013",
     pwnCount: "153 Million",
     dataClasses: ["Email addresses", "Password hints", "Encrypted passwords", "User IDs"],
-    description: "Attackers breached customer servers, extracting encrypted source code and customer credentials.",
+    description: "Hackers accessed servers containing customer account records and encrypted passwords.",
   },
   {
-    title: "Dropbox Cloud Storage",
+    title: "Dropbox",
     domain: "dropbox.com",
     breachDate: "Mid 2012",
     pwnCount: "68 Million",
     dataClasses: ["Email addresses", "Passwords (hashed)"],
-    description: "Credentials stolen from an employee account were used to access an internal project document containing customer accounts.",
+    description: "Stolen employee login credentials gave unauthorized attackers access to internal user lists.",
   },
 ];
 
@@ -973,10 +973,10 @@ function BreachScannerTab() {
       <Card className="p-6 sm:p-8 space-y-6">
         <div>
           <h3 className="font-display text-base sm:text-lg font-bold text-text-pure">
-            Dark Web Data Breach &amp; Credential Exposure Scanner
+            Data Breach Checker
           </h3>
           <p className="mt-1 text-xs text-text-fog">
-            Scan simulated threat intelligence databases to see if your email address or company domain was exposed in major historical breaches.
+            Check if your email address was ever included in past major company data leaks.
           </p>
         </div>
 
@@ -985,7 +985,7 @@ function BreachScannerTab() {
             type="email"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Enter an email address to check (e.g., user@domain.com)..."
+            placeholder="Enter your email address (e.g., alex@example.com)..."
             className="input flex-1 font-mono text-xs sm:text-sm py-2.5"
           />
           <Button
@@ -995,7 +995,7 @@ function BreachScannerTab() {
             disabled={loading}
             className="text-xs font-bold shrink-0 px-6"
           >
-            {loading ? "Scanning..." : "Check Breaches"}
+            {loading ? "Checking..." : "Check Breaches"}
           </Button>
         </div>
 
@@ -1009,15 +1009,15 @@ function BreachScannerTab() {
               <div className="flex items-center gap-2">
                 <i className="ti ti-alert-triangle text-lg shrink-0" />
                 <span>
-                  Query <strong>{query}</strong> was detected in <strong>2 historic breach dumps</strong>.
+                  Email <strong>{query}</strong> was found in <strong>2 past public data leaks</strong>.
                 </span>
               </div>
-              <Pill tone="danger" size="sm">EXPOSED</Pill>
+              <Pill tone="danger" size="sm">FOUND IN BREACH</Pill>
             </div>
 
             <div className="space-y-3">
-              <span className="text-xs font-bold text-text-pure uppercase font-mono">
-                Correlated Historical Incident Records:
+              <span className="text-xs font-semibold text-text-pure uppercase tracking-wider">
+                Past Incidents Involving This Email:
               </span>
               <div className="grid gap-3 sm:grid-cols-2">
                 {HISTORICAL_BREACHES.slice(0, 2).map((b, i) => (
@@ -1026,19 +1026,19 @@ function BreachScannerTab() {
                     className="p-4 rounded-xl bg-surface-elevated border border-border space-y-2 text-xs"
                   >
                     <div className="flex items-center justify-between">
-                      <strong className="text-text-pure font-bold text-sm">{b.title}</strong>
-                      <span className="font-mono text-[11px] text-text-ash">{b.breachDate}</span>
+                      <strong className="text-text-pure font-bold text-sm sm:text-base">{b.title}</strong>
+                      <span className="text-xs text-text-ash font-medium">{b.breachDate}</span>
                     </div>
-                    <p className="text-text-fog leading-relaxed text-[11px]">
+                    <p className="text-text-fog leading-relaxed text-xs sm:text-sm">
                       {b.description}
                     </p>
                     <div className="pt-2 border-t border-border">
-                      <span className="text-[10px] font-mono text-text-ash block mb-1">Exposed Data:</span>
+                      <span className="text-xs font-semibold text-text-ash block mb-1">Information Leaked:</span>
                       <div className="flex flex-wrap gap-1">
                         {b.dataClasses.map((dc, idx) => (
                           <span
                             key={idx}
-                            className="px-2 py-0.5 rounded bg-surface border border-border text-[10px] text-text-pure"
+                            className="px-2.5 py-0.5 rounded bg-surface border border-border text-xs font-medium text-text-pure"
                           >
                             {dc}
                           </span>
@@ -1052,12 +1052,12 @@ function BreachScannerTab() {
 
             <div className="p-4 rounded-2xl bg-surface-elevated border border-border text-xs space-y-2">
               <strong className="text-text-pure font-bold block">
-                🛡️ Required Remediation Protocol:
+                🛡️ Recommended Safety Steps:
               </strong>
               <ul className="space-y-1 text-text-fog pl-2">
-                <li>• Change passwords immediately on accounts that shared this credential.</li>
-                <li>• Enforce app-based Multi-Factor Authentication (TOTP / FIDO2).</li>
-                <li>• Never reuse passwords across email and banking portals.</li>
+                <li>• Change your password immediately on any service where you used this email and password.</li>
+                <li>• Turn on two-step verification (2FA) with an authenticator app.</li>
+                <li>• Never reuse the same password across multiple websites.</li>
               </ul>
             </div>
           </motion.div>
@@ -1083,66 +1083,66 @@ interface HygieneCheck {
 const HYGIENE_CHECKS: HygieneCheck[] = [
   {
     id: "mfa-email",
-    category: "Authentication",
-    title: "Multi-Factor Authentication on Primary Email",
-    description: "App-based authenticator (Google Authenticator / 1Password) or hardware FIDO2 key active on your primary personal and corporate email accounts.",
-    impact: "+25 Awareness XP",
+    category: "Login Safety",
+    title: "Two-Step Verification on Main Email",
+    description: "An authenticator app or security key protects your personal and work email accounts against password theft.",
+    impact: "+25 XP",
     points: 25,
   },
   {
     id: "pwd-manager",
-    category: "Authentication",
-    title: "Dedicated Password Manager in Use",
-    description: "All web credentials stored in an encrypted vault with 16+ character random passwords, zero human memory reuse.",
-    impact: "+25 Awareness XP",
+    category: "Passwords",
+    title: "Password Manager in Use",
+    description: "All your logins are saved in a secure password manager with unique, long passwords for every website.",
+    impact: "+25 XP",
     points: 25,
   },
   {
     id: "os-updates",
-    category: "System Integrity",
-    title: "Automated Operating System & Browser Updates",
-    description: "Auto-update enabled across your laptop and smartphone so zero-day security patches apply without human delay.",
-    impact: "+20 Awareness XP",
+    category: "Devices",
+    title: "Automatic System Updates Turned On",
+    description: "Your phone and computer install security patches automatically so known glitches get fixed quickly.",
+    impact: "+20 XP",
     points: 20,
   },
   {
     id: "remote-wipe",
-    category: "Physical Security",
-    title: "Device Encryption & Find My / Remote Wipe Configured",
-    description: "FileVault (macOS) or BitLocker (Windows) active, alongside remote wipe capability if laptop/phone is stolen.",
-    impact: "+20 Awareness XP",
+    category: "Devices",
+    title: "Device Lock & Find My Enabled",
+    description: "Your laptop and phone require a PIN or biometric lock, and you can remotely lock or erase them if lost.",
+    impact: "+20 XP",
     points: 20,
   },
   {
     id: "backup-321",
-    category: "Data Protection",
-    title: "3-2-1 Rule Encrypted Backup Solution",
-    description: "3 copies of critical data across 2 separate media, with at least 1 immutable offline/cloud copy protected against ransomware.",
-    impact: "+30 Awareness XP",
+    category: "Backups",
+    title: "Regular Backups of Important Files",
+    description: "Your precious photos and documents are backed up to cloud storage or an external hard drive in case of virus infection.",
+    impact: "+30 XP",
     points: 30,
   },
   {
     id: "vpn-public",
-    category: "Network Safety",
-    title: "VPN Active on Untrusted Public Wi-Fi",
-    description: "Tunnels all laptop/mobile traffic through an encrypted VPN when connecting at airports, cafes, or hotels.",
-    impact: "+20 Awareness XP",
+    category: "Wi-Fi Safety",
+    title: "VPN on Public Wi-Fi",
+    description: "You use a VPN or your phone's mobile hotspot whenever you connect to Wi-Fi at cafes or airports.",
+    impact: "+20 XP",
     points: 20,
   },
   {
     id: "privacy-social",
-    category: "Social Engineering",
-    title: "Social Media Privacy & Metadata Lock Down",
-    description: "Work details, birthday, and location metadata locked to private connections to prevent spear-phishing reconnaissance.",
-    impact: "+20 Awareness XP",
+    category: "Privacy",
+    title: "Private Social Media Profiles",
+    description: "Personal details like your birthday, phone number, and location are hidden from strangers online.",
+    impact: "+20 XP",
     points: 20,
   },
   {
     id: "phish-reporting",
-    category: "Response",
-    title: "Know Exactly How to Report Suspicious Incidents",
-    description: "Familiar with company IT emergency contact, spam reporting button, and quarantine protocol.",
-    impact: "+20 Awareness XP",
+    category: "Good Habits",
+    title: "Know How to Spot & Report Scams",
+    description: "You recognize fake messages and report suspicious emails instead of clicking links or replying.",
+    impact: "+20 XP",
     points: 20,
   },
 ];
@@ -1174,8 +1174,8 @@ function CyberHygieneAuditTab() {
           meta: { audit_item: check.id },
         });
         toast({
-          title: "Audit item confirmed!",
-          description: `+${check.points} XP earned for verified security hygiene.`,
+          title: "Safety habit checked!",
+          description: `+${check.points} XP earned for keeping good cyber safety habits.`,
           variant: "success",
         });
         await refreshProfile();
@@ -1197,10 +1197,10 @@ function CyberHygieneAuditTab() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
             <h3 className="font-display text-base sm:text-lg font-bold text-text-pure">
-              Personal Cyber Hygiene Checklist
+              Daily Safety Checklist
             </h3>
             <p className="mt-1 text-xs text-text-fog">
-              Audit your everyday workstation defense posture. Check off verified habits to earn XP and boost your defense score.
+              Check off your everyday security habits to earn XP points and boost your safety score.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -1208,7 +1208,7 @@ function CyberHygieneAuditTab() {
               <AnimatedNumber value={pct} suffix="%" />
             </span>
             <Pill tone={pct >= 80 ? "emerald" : pct >= 50 ? "primary" : "danger"}>
-              {pct >= 80 ? "HARDENED" : pct >= 50 ? "PARTIALLY PROTECTED" : "EXPOSED"}
+              {pct >= 80 ? "WELL PROTECTED" : pct >= 50 ? "PARTIALLY PROTECTED" : "NEEDS ATTENTION"}
             </Pill>
           </div>
         </div>
@@ -1242,17 +1242,17 @@ function CyberHygieneAuditTab() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-text-ash">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-text-ash">
                       {item.category}
                     </span>
-                    <span className="font-mono text-[10px] text-emerald-400 font-semibold">
+                    <span className="text-xs text-emerald-400 font-semibold">
                       {item.impact}
                     </span>
                   </div>
-                  <h4 className={`mt-1 font-display text-sm font-semibold ${checked ? "text-text-pure" : "text-text-fog"}`}>
+                  <h4 className={`mt-1 font-display text-sm sm:text-base font-semibold ${checked ? "text-text-pure" : "text-text-fog"}`}>
                     {item.title}
                   </h4>
-                  <p className="mt-1 text-xs leading-relaxed text-text-ash">
+                  <p className="mt-1 text-xs sm:text-sm leading-relaxed text-text-ash">
                     {item.description}
                   </p>
                 </div>
@@ -1282,14 +1282,14 @@ export function SecurityToolsPage() {
         className="pb-2 border-b border-border flex flex-col md:flex-row md:items-center justify-between gap-4"
       >
         <div>
-          <p className="text-xs font-semibold uppercase tracking-wider text-primary font-mono">
-            Defensive Utilities &amp; Diagnostics
+          <p className="text-xs font-semibold uppercase tracking-wider text-primary">
+            Practical Tools
           </p>
           <h1 className="font-display text-2xl font-bold tracking-tight text-text-pure sm:text-3xl mt-0.5">
-            Security Toolkit
+            Safety Tools
           </h1>
           <p className="mt-1 text-xs text-text-fog">
-            Audit passwords, dissect suspicious URLs, test public Wi-Fi vulnerability, scan dark web breaches, and track workstation hygiene.
+            Test password strength, inspect suspicious links, check Wi-Fi safety, and audit everyday digital habits.
           </p>
         </div>
 
@@ -1297,10 +1297,10 @@ export function SecurityToolsPage() {
         <div className="flex flex-wrap items-center gap-1.5 p-1.5 rounded-2xl bg-surface border border-border">
           {[
             { id: "password", label: "Passwords", icon: "ti-key" },
-            { id: "phish",    label: "URL Inspector", icon: "ti-link" },
-            { id: "wifi",     label: "Wi-Fi Auditor", icon: "ti-wifi" },
-            { id: "breach",   label: "Breach Scanner", icon: "ti-spy" },
-            { id: "hygiene",  label: "Hygiene Scorecard", icon: "ti-list-check" },
+            { id: "phish",    label: "Link Inspector", icon: "ti-link" },
+            { id: "wifi",     label: "Wi-Fi Safety", icon: "ti-wifi" },
+            { id: "breach",   label: "Breach Check", icon: "ti-spy" },
+            { id: "hygiene",  label: "Safety Checklist", icon: "ti-list-check" },
           ].map((tab) => {
             const active = activeTab === tab.id;
             return (

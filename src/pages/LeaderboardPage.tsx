@@ -23,67 +23,67 @@ interface TierInfo {
 const OPERATOR_TIERS: TierInfo[] = [
   {
     tier: 1,
-    title: "Cyber Recruit",
+    title: "Beginner",
     minXp: 0,
     maxXp: 199,
     color: "text-text-ash",
-    badge: "RECRUIT",
+    badge: "TIER 1",
     perks: [
-      "Access to Training Academy Modules 1 & 2",
-      "Interactive Phishing & Wi-Fi Sandboxes",
-      "Workstation Cyber Hygiene Audit Tool",
+      "Access to introductory cybersecurity lessons",
+      "Interactive fake email & Wi-Fi simulations",
+      "Password strength checker tool",
     ],
   },
   {
     tier: 2,
-    title: "Defensive Analyst",
+    title: "Explorer",
     minXp: 200,
     maxXp: 499,
     color: "text-primary",
-    badge: "ANALYST",
+    badge: "TIER 2",
     perks: [
-      "Unlocks Ransomware & Mobile Smishing Sandboxes",
-      "Live URL & Phishing Dissector Tool",
-      "Operator Community Leaderboard Registration",
+      "Interactive bank SMS & virus containment drills",
+      "Suspicious link and website checker",
+      "Featured on community leaderboard",
     ],
   },
   {
     tier: 3,
-    title: "Security Specialist",
+    title: "Protector",
     minXp: 500,
     maxXp: 999,
     color: "text-cyan",
-    badge: "SPECIALIST",
+    badge: "TIER 3",
     perks: [
-      "Comprehensive Cyber Readiness Diagnostic Examination",
-      "Digital Defense Certificate Eligibility (61%+ Score)",
-      "Dark Web Data Breach & Credential Scanner",
+      "Comprehensive Cyber Safety Test",
+      "CyberGuard Certificate eligibility (61%+ score)",
+      "Leaked data and account breach checker",
     ],
   },
   {
     tier: 4,
-    title: "Threat Hunter",
+    title: "Guardian",
     minXp: 1000,
     maxXp: 1999,
     color: "text-warn",
-    badge: "HUNTER",
+    badge: "TIER 4",
     perks: [
-      "Live Threat Radar IOC Export & Zero-Day Tracking",
-      "Incident Intake & Automated SOC Triage Dispatch",
-      "Gold Certified Cyber Sentinel Honors",
+      "Real-time scam advisories and fraud alerts",
+      "Incident reporting and recovery guidance",
+      "Guardian achievement recognition",
     ],
   },
   {
     tier: 5,
-    title: "Cyber Sentinel",
+    title: "Master Guardian",
     minXp: 2000,
     maxXp: 99999,
     color: "text-emerald-400",
-    badge: "SENTINEL",
+    badge: "TIER 5",
     perks: [
-      "Master Operator Defense Command & Full Academy Completion",
-      "Specialist Digital Badge & Verified Defense Credential",
-      "VIP Recognition on Global CyberGuard Leaderboard",
+      "All lessons and interactive challenges completed",
+      "Verified CyberGuard Certificate of Completion",
+      "Top rank on community leaderboard",
     ],
   },
 ];
@@ -159,9 +159,9 @@ function RankingsTab() {
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-text-ash flex items-center gap-1.5">
-                <i className="ti ti-crown text-warn" /> Podium of Cyber Defense Champions
+                <i className="ti ti-crown text-warn" /> Top Community Learners
               </span>
-              <span className="font-mono text-[10px] text-emerald-400">Live Community Telemetry</span>
+              <span className="font-mono text-[10px] text-emerald-400">Community Rankings</span>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-3 items-end">
@@ -187,7 +187,7 @@ function RankingsTab() {
                   >
                     {isFirst && (
                       <div className="absolute top-0 right-0 bg-amber-400 text-black font-mono text-[9px] font-bold px-3 py-0.5 rounded-bl-xl uppercase tracking-widest">
-                        #1 Operator
+                        #1 Rank
                       </div>
                     )}
 
@@ -213,7 +213,7 @@ function RankingsTab() {
 
                     <div className="mt-3 flex items-center justify-center gap-2">
                       <span className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] text-text-fog">
-                        Tier {entry.level}
+                        Level {entry.level}
                       </span>
                       <span className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] text-primary font-semibold">
                         {entry.badges_count || 3} Badges
@@ -240,13 +240,13 @@ function RankingsTab() {
                   <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash">
                     Your Current Standings
                   </span>
-                  <Pill tone="primary" size="sm">Tier {profile.level}</Pill>
+                  <Pill tone="primary" size="sm">Level {profile.level}</Pill>
                 </div>
                 <h4 className="font-display text-base font-bold text-text-pure mt-0.5">
                   {profile.full_name}
                 </h4>
                 <p className="text-xs text-text-fog font-mono">
-                  {profile.points.toLocaleString()} Defense XP · {profile.awareness_score ?? 85}% Awareness Index
+                  {profile.points.toLocaleString()} XP · {profile.awareness_score ?? 85}% Safety Score
                 </p>
               </div>
             </div>
@@ -274,24 +274,24 @@ function RankingsTab() {
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search operators by name..."
+              placeholder="Search learners by name..."
               className="input pl-10 text-xs py-2"
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-text-ash">Filter Tier:</span>
+            <span className="text-xs font-mono text-text-ash">Filter Level:</span>
             <select
               value={tierFilter}
               onChange={(e) => setTierFilter(e.target.value)}
               className="select text-xs py-1.5 px-3 bg-surface border-border rounded-xl font-mono text-text-pure"
             >
-              <option value="all">All Tiers</option>
-              <option value="5">Tier 5 (Sentinel)</option>
-              <option value="4">Tier 4 (Hunter)</option>
-              <option value="3">Tier 3 (Specialist)</option>
-              <option value="2">Tier 2 (Analyst)</option>
-              <option value="1">Tier 1 (Recruit)</option>
+              <option value="all">All Levels</option>
+              <option value="5">Tier 5 (Master Guardian)</option>
+              <option value="4">Tier 4 (Guardian)</option>
+              <option value="3">Tier 3 (Protector)</option>
+              <option value="2">Tier 2 (Explorer)</option>
+              <option value="1">Tier 1 (Beginner)</option>
             </select>
           </div>
         </div>
@@ -300,7 +300,7 @@ function RankingsTab() {
         <div className="divide-y divide-border">
           {filtered.length === 0 ? (
             <div className="py-12 text-center text-xs text-text-ash">
-              No operators match your filter query.
+              No learners match your search query.
             </div>
           ) : (
             filtered.map((entry, idx) => {
@@ -339,9 +339,9 @@ function RankingsTab() {
                       )}
                     </div>
                     <div className="flex items-center gap-2 text-[11px] font-mono text-text-ash mt-0.5">
-                      <span>Tier {entry.level} Operator</span>
+                      <span>Level {entry.level}</span>
                       <span>·</span>
-                      <span>{entry.badges_count || 2} Insignias</span>
+                      <span>{entry.badges_count || 2} Badges</span>
                     </div>
                   </div>
 
@@ -350,7 +350,7 @@ function RankingsTab() {
                     <span className="font-mono text-xs sm:text-sm font-bold text-text-pure block">
                       {entry.points.toLocaleString()} XP
                     </span>
-                    <span className="font-mono text-[10px] text-text-ash">Defense Score</span>
+                    <span className="font-mono text-[10px] text-text-ash">Score</span>
                   </div>
                 </div>
               );
@@ -395,13 +395,13 @@ function BadgesTab() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash font-bold block">
-              Insignia Telemetry &amp; Collection
+              Badges &amp; Achievements
             </span>
             <h3 className="font-display text-lg sm:text-xl font-bold text-text-pure mt-0.5">
-              {earnedCount} of {totalCount} Operational Badges Acquired
+              {earnedCount} of {totalCount} Badges Unlocked
             </h3>
             <p className="mt-1 text-xs text-text-fog">
-              Prove your mastery across all threat vectors: phishing detection, password vaulting, Wi-Fi defense, smishing interception, and incident triage.
+              Earn badges by completing lessons, scoring well on quizzes, and finishing interactive security simulations.
             </p>
           </div>
 
@@ -410,7 +410,7 @@ function BadgesTab() {
               {completionPct}%
             </span>
             <Pill tone={completionPct >= 75 ? "emerald" : completionPct >= 25 ? "primary" : "warn"}>
-              {completionPct >= 75 ? "HARDENED OPERATOR" : completionPct >= 25 ? "IN PROGRESS" : "NOVICE DEFENDER"}
+              {completionPct >= 75 ? "SAFETY EXPERT" : completionPct >= 25 ? "IN PROGRESS" : "BEGINNER"}
             </Pill>
           </div>
         </div>
@@ -538,26 +538,26 @@ function TiersTab() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <span className="font-mono text-[10px] uppercase tracking-widest text-primary font-bold block">
-              Defense Operational Hierarchy
+              Your Growth Roadmap
             </span>
             <h3 className="font-display text-lg sm:text-xl font-bold text-text-pure mt-0.5">
-              Operator Tiers &amp; Progression Roadmap
+              Levels &amp; Progression Roadmap
             </h3>
             <p className="text-xs text-text-fog leading-relaxed max-w-2xl mt-1">
-              Advance through the ranks by completing interactive modules, surviving threat sandboxes, verifying security hygiene, and reporting live cyber incidents.
+              Level up by completing safety lessons, trying simulations, scoring well on quizzes, and using security tools.
             </p>
           </div>
 
           <div className="p-4 rounded-2xl bg-surface border border-border text-xs space-y-1 sm:text-right shrink-0">
             <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash block">
-              Your Current Standing:
+              Your Current Level:
             </span>
             <div className="font-display text-base font-bold text-primary">
-              Tier {currentLevel} · {currentPoints.toLocaleString()} XP
+              Level {currentLevel} · {currentPoints.toLocaleString()} XP
             </div>
             {nextTier && (
               <span className="font-mono text-[11px] text-emerald-400 block">
-                +{xpNeeded} XP to reach Tier {nextTier.tier} ({nextTier.title})
+                +{xpNeeded} XP to reach Level {nextTier.tier} ({nextTier.title})
               </span>
             )}
           </div>
@@ -593,7 +593,7 @@ function TiersTab() {
                         : "border-border bg-surface text-text-ash"
                     }`}
                   >
-                    T{tier.tier}
+                    L{tier.tier}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
@@ -602,7 +602,7 @@ function TiersTab() {
                       </h4>
                       {isCurrent && (
                         <span className="rounded-full bg-primary/20 text-primary font-mono text-[9px] font-bold px-2 py-0.5 uppercase">
-                          Current Tier
+                          Current Level
                         </span>
                       )}
                     </div>
@@ -613,15 +613,15 @@ function TiersTab() {
                 </div>
 
                 <div className="text-right">
-                  <span className="font-mono text-xs font-bold text-emerald-400">
-                    {isUnlocked ? "AUTHORIZATION GRANTED" : "RESTRICTED ACCESS"}
+                  <span className={`font-mono text-xs font-bold ${isUnlocked ? "text-emerald-400" : "text-text-ash"}`}>
+                    {isUnlocked ? "UNLOCKED" : "LOCKED"}
                   </span>
                 </div>
               </div>
 
               <div className="mt-4 space-y-2">
                 <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash font-bold block">
-                  Unlocked Privileges &amp; Tooling:
+                  What's Unlocked at this Level:
                 </span>
                 <div className="grid gap-2 sm:grid-cols-3 text-xs text-text-pure">
                   {tier.perks.map((perk, i) => (
@@ -665,13 +665,13 @@ export function LeaderboardPage() {
       >
         <div>
           <p className="font-mono text-xs font-bold uppercase tracking-wider text-primary">
-            Community Defense Telemetry &amp; Recognition
+            Community &amp; Achievements
           </p>
           <h1 className="font-display text-2xl font-bold tracking-tight text-text-pure sm:text-3xl mt-0.5">
-            Rankings &amp; Badges Command
+            Leaderboard &amp; Badges
           </h1>
           <p className="mt-1 text-xs text-text-fog">
-            Compare defensive telemetry with other operators, unlock verified skill insignias, and advance through operator tiers.
+            See top learners in the community, collect achievement badges, and level up as you complete safety lessons.
           </p>
         </div>
 

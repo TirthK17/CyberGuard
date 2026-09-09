@@ -51,12 +51,12 @@ export function QuizzesPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="eyebrow text-frost-glow">Verification Challenges</p>
+        <p className="eyebrow text-frost-glow">Quick Knowledge Checks</p>
         <h1 className="gradient-heading mt-1 font-display text-2xl font-bold tracking-tight sm:text-3xl">
           Practice Quizzes
         </h1>
         <p className="mt-1 text-xs text-text-fog">
-          Reinforce threat detection through rapid-fire, scenario-based security questions.
+          Test your cyber safety instincts with quick scenario quizzes.
         </p>
       </motion.div>
 
@@ -67,7 +67,7 @@ export function QuizzesPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search quizzes by title, vector, or topic..."
+            placeholder="Search quizzes by title or topic..."
             className="input pl-10"
           />
           {search && (
@@ -160,7 +160,7 @@ export function QuizzesPage() {
                       </h3>
 
                       <p className="mt-2 text-xs text-text-fog leading-relaxed">
-                        Test your defensive decision-making under time pressure.
+                        Test your knowledge with practical scenario questions.
                       </p>
                     </div>
 
@@ -178,7 +178,7 @@ export function QuizzesPage() {
                       )}
 
                       <span className="text-frost-glow group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
-                        {scorePct !== null ? "Retake" : "Launch Quiz"}
+                        {scorePct !== null ? "Retake" : "Start Quiz"}
                         <i className="ti ti-arrow-right text-xs" />
                       </span>
                     </div>

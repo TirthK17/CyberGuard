@@ -13,10 +13,10 @@ const categoryIcons: Record<string, string> = {
 };
 
 const SIMULATION_BADGES: Record<string, { label: string; tone: "primary" | "emerald" | "danger" | "warning" }> = {
-  "mitm-attack": { label: "Live Rogue Wi-Fi & MITM", tone: "danger" },
-  "phishing-email": { label: "Live Spear-Phishing Lab", tone: "primary" },
-  "ransomware-response": { label: "Live Ransomware Attack & Triage", tone: "danger" },
-  "social-engineering-call": { label: "Live Mobile Smishing & OTP Scam", tone: "warning" },
+  "mitm-attack": { label: "Public Wi-Fi Demo", tone: "danger" },
+  "phishing-email": { label: "Fake Email Lab", tone: "primary" },
+  "ransomware-response": { label: "Virus Containment", tone: "danger" },
+  "social-engineering-call": { label: "SMS & OTP Scam", tone: "warning" },
 };
 
 const DIFFICULTIES = ["all", "beginner", "intermediate", "advanced"] as const;
@@ -69,20 +69,20 @@ export function SimulationsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-wider text-primary font-mono">
-              Safe Practice Arena
+              Practice Playground
             </p>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-high mt-1">
-              Interactive Threat Sandboxes &amp; Games
+              Scam &amp; Threat Simulations
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-text-low">
-              Practice in a 100% safe, zero-risk playground. Experience real scams, spot the hidden clues, and test your defense instincts—you can&apos;t break anything here!
+              Practice spotting real-world scams in a 100% safe environment. Test how you react to suspicious emails, texts, and alerts with zero risk to your accounts.
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface border border-border text-xs font-mono text-emerald-500 font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              100% Safe Sandbox
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface border border-border text-xs text-emerald-400 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              100% Safe Practice
             </span>
           </div>
         </div>
@@ -105,7 +105,7 @@ export function SimulationsPage() {
               <strong className="text-primary">3.</strong> Decide if it&apos;s safe or a scam
             </span>
           </div>
-          <div className="text-[11px] text-emerald-500 font-mono font-bold">
+          <div className="text-xs text-emerald-400 font-semibold">
             All skill levels welcome!
           </div>
         </div>
@@ -118,7 +118,7 @@ export function SimulationsPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search scenarios by incident type or vector..."
+            placeholder="Search scenarios by name or topic..."
             className="w-full h-10 pl-10 pr-10 rounded-xl bg-surface border border-border text-sm text-text-high placeholder:text-text-muted focus:outline-none focus:border-primary transition"
           />
           {search && (
@@ -225,23 +225,23 @@ export function SimulationsPage() {
                     </Pill>
                   </div>
 
-                  <p className="mt-3 text-xs leading-relaxed text-text-low line-clamp-2">
+                  <p className="mt-3 text-sm leading-relaxed text-text-low line-clamp-2">
                     {s.description}
                   </p>
 
                   <div className="mt-5 flex items-center justify-between border-t border-border pt-3.5 text-xs text-text-muted">
-                    <span className="flex items-center gap-1.5 font-mono">
+                    <span className="flex items-center gap-1.5 font-medium">
                       <i className="ti ti-clock text-primary" /> {s.duration_minutes}m duration
                     </span>
 
                     {bestScore !== undefined ? (
-                      <span className={`flex items-center gap-1.5 font-semibold font-mono ${isPassed ? "text-emerald-500" : "text-amber-500"}`}>
+                      <span className={`flex items-center gap-1.5 font-semibold ${isPassed ? "text-emerald-400" : "text-amber-400"}`}>
                         <i className={`ti ${isPassed ? "ti-check" : "ti-alert-triangle"}`} />
                         Best Score: {bestScore}/100
                       </span>
                     ) : (
-                      <span className="text-primary font-medium group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
-                        Launch Drill <i className="ti ti-arrow-right" />
+                      <span className="text-primary font-semibold group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
+                        Start Simulation <i className="ti ti-arrow-right" />
                       </span>
                     )}
                   </div>

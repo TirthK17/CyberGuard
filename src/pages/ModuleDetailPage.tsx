@@ -26,47 +26,47 @@ const MODULE_EXTRAS: Record<
     quizId: "quiz-1",
     quizTitle: "Fundamentals Knowledge Check",
     sandboxSlug: "mitm-attack",
-    sandboxTitle: "Rogue Wi-Fi & MITM Sandbox",
+    sandboxTitle: "Public Wi-Fi Safety Demo",
     nextSlug: "password-account-security",
     nextTitle: "Password & Account Security",
   },
   "password-account-security": {
     quizId: "quiz-3",
-    quizTitle: "Password & 2FA Mastery Quiz",
+    quizTitle: "Password & 2FA Quiz",
     sandboxSlug: "phishing-email",
-    sandboxTitle: "Spear-Phishing Trap Sandbox",
+    sandboxTitle: "Fake Email Simulation",
     nextSlug: "phishing-awareness",
-    nextTitle: "Phishing & Spear-Phishing Awareness",
+    nextTitle: "Phishing & Fake Emails",
   },
   "phishing-awareness": {
     quizId: "quiz-2",
     quizTitle: "Phishing Detection Quiz",
     sandboxSlug: "phishing-email",
-    sandboxTitle: "Spear-Phishing & 2FA Bypass Sandbox",
+    sandboxTitle: "Fake Email Simulation",
     nextSlug: "social-engineering",
-    nextTitle: "Social Engineering & Pretexting",
+    nextTitle: "Social Engineering & Scams",
   },
   "social-engineering": {
     quizId: "quiz-4",
-    quizTitle: "Social Engineering Defense Quiz",
+    quizTitle: "Scam Detection Quiz",
     sandboxSlug: "social-engineering-call",
-    sandboxTitle: "Mobile Smishing & OTP Scam Sandbox",
+    sandboxTitle: "Fake Bank SMS & Call Simulation",
     nextSlug: "malware-ransomware",
-    nextTitle: "Malware & Ransomware Defense",
+    nextTitle: "Viruses & Ransomware",
   },
   "malware-ransomware": {
     quizId: "quiz-5",
-    quizTitle: "Ransomware Containment Quiz",
+    quizTitle: "Ransomware Safety Quiz",
     sandboxSlug: "ransomware-response",
-    sandboxTitle: "Ransomware Containment Drill",
+    sandboxTitle: "Virus Containment Drill",
     nextSlug: "network-security",
-    nextTitle: "Network Security & Safe Browsing",
+    nextTitle: "Wi-Fi & Safe Browsing",
   },
   "network-security": {
     quizId: "quiz-6",
-    quizTitle: "Network Security & Safe Browsing Quiz",
+    quizTitle: "Wi-Fi & Safe Browsing Quiz",
     sandboxSlug: "mitm-attack",
-    sandboxTitle: "Rogue Wi-Fi & Payment Interception",
+    sandboxTitle: "Public Wi-Fi Safety Demo",
     nextSlug: "cybersecurity-fundamentals",
     nextTitle: "Cybersecurity Fundamentals",
   },
@@ -418,14 +418,14 @@ export function ModuleDetailPage() {
           onClick={() => navigate("/training")}
           className="text-xs"
         >
-          <i className="ti ti-arrow-left mr-1.5" /> Back to Training Academy
+          <i className="ti ti-arrow-left mr-1.5" /> Back to Lessons
         </Button>
         <div className="flex items-center gap-2">
           <Pill tone="primary" size="sm">
             {module.category}
           </Pill>
           <Pill tone={isModuleFullyComplete ? "emerald" : "default"} size="sm">
-            {isModuleFullyComplete ? "✓ Mastered" : `${percent}% Complete`}
+            {isModuleFullyComplete ? "✓ Completed" : `${percent}% Complete`}
           </Pill>
         </div>
       </div>
@@ -436,7 +436,7 @@ export function ModuleDetailPage() {
           <div className="p-4 rounded-2xl bg-surface border border-border space-y-3">
             <div>
               <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-primary">
-                Module Syllabus
+                Lesson List
               </span>
               <h1 className="mt-1 text-base font-bold text-text-pure leading-snug">
                 {module.title}
@@ -445,7 +445,7 @@ export function ModuleDetailPage() {
 
             <div>
               <div className="flex justify-between text-xs text-text-ash mb-1">
-                <span>Curriculum Progress</span>
+                <span>Module Progress</span>
                 <span className="font-mono text-primary font-semibold">{percent}%</span>
               </div>
               <ProgressBar value={percent} />
@@ -495,7 +495,7 @@ export function ModuleDetailPage() {
           {extra && (
             <div className="p-4 rounded-2xl bg-primary/5 border border-primary/20 space-y-3">
               <div className="text-[11px] font-bold text-text-pure uppercase tracking-wider font-mono flex items-center gap-1.5">
-                <i className="ti ti-target" /> Practice &amp; Verify
+                <i className="ti ti-target" /> Practice &amp; Quiz
               </div>
 
               <Link
@@ -503,11 +503,11 @@ export function ModuleDetailPage() {
                 className="group p-2.5 rounded-xl bg-surface border border-border hover:border-primary/50 transition-all block space-y-1"
               >
                 <div className="flex items-center justify-between text-xs font-bold text-text-pure group-hover:text-primary transition-colors">
-                  <span>Knowledge Check</span>
+                  <span>Quick Quiz</span>
                   <i className="ti ti-arrow-right text-[10px]" />
                 </div>
                 <p className="text-[11px] text-text-ash leading-snug">
-                  4 scenario questions to lock in your score (+20 XP).
+                  4 scenario questions to test your knowledge (+20 XP).
                 </p>
               </Link>
 
@@ -518,7 +518,7 @@ export function ModuleDetailPage() {
                 >
                   <div className="flex items-center justify-between text-xs font-bold text-text-pure group-hover:text-emerald-400 transition-colors">
                     <span className="flex items-center gap-1">
-                      🎮 Hands-on Sandbox
+                      🎮 Simulation
                     </span>
                     <i className="ti ti-arrow-right text-[10px]" />
                   </div>
@@ -619,10 +619,10 @@ export function ModuleDetailPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold text-text-pure">
-                      Curriculum Milestone: {module.title} Mastered!
+                      Great Job! {module.title} Completed!
                     </h3>
                     <p className="text-xs text-text-fog">
-                      You've completed all lessons in this topic. Lock in your muscle memory with practical verification:
+                      You've finished all lessons in this module. Practice what you learned:
                     </p>
                   </div>
                 </div>
@@ -641,7 +641,7 @@ export function ModuleDetailPage() {
                         {extra.quizTitle}
                       </h4>
                       <p className="text-[11px] text-text-ash mt-1">
-                        Verify your instincts across 4 scenario questions (+20 XP).
+                        Answer 4 quick scenario questions (+20 XP).
                       </p>
                     </div>
                   </Link>
@@ -653,14 +653,14 @@ export function ModuleDetailPage() {
                     >
                       <div>
                         <div className="flex items-center justify-between text-xs font-bold text-emerald-400 mb-1">
-                          <span>2. Threat Sandbox</span>
+                          <span>2. Try Simulation</span>
                           <i className="ti ti-arrow-right text-[10px]" />
                         </div>
                         <h4 className="text-xs font-bold text-text-pure group-hover:text-emerald-400 transition-colors">
                           {extra.sandboxTitle}
                         </h4>
                         <p className="text-[11px] text-text-ash mt-1">
-                          Hands-on simulated attack with real-time feedback.
+                          Interactive hands-on simulation with step-by-step guidance.
                         </p>
                       </div>
                     </Link>
@@ -680,7 +680,7 @@ export function ModuleDetailPage() {
                           {extra.nextTitle}
                         </h4>
                         <p className="text-[11px] text-text-ash mt-1">
-                          Advance to the next cybersecurity module.
+                          Continue to the next safety lesson.
                         </p>
                       </div>
                     </Link>

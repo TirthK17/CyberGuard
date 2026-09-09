@@ -35,50 +35,50 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
   // Terminal log stream for the hacker's view
   const getHackerLogs = () => {
     const baseLogs = [
-      "[*] MITM Router Proxy v4.2 active on wlan0 (192.168.1.1)",
-      "[*] Broadcasting fake SSID: 'Cafe_FREE_HighSpeed_WiFi'",
-      "[*] Packet sniffer listening for unencrypted HTTP/DNS...",
+      "[*] Fake Wi-Fi hotspot active and broadcasting",
+      "[*] Fake network created: 'Cafe_FREE_HighSpeed_WiFi'",
+      "[*] Listening for nearby devices and network traffic...",
     ];
 
     if (selectedWifi === "fake") {
       baseLogs.push(
-        "[+] VICTIM JOINED: 192.168.1.104 (Rahul's Phone - iPhone 15)",
-        "[+] ARP Poisoning active: Target MAC 8A:4F:92:B1 -> Attacker Gateway",
-        "[+] ALL VICTIM TRAFFIC NOW PASSING THROUGH ATTACKER LAPTOP"
+        "[+] DEVICE CONNECTED: Rahul's Phone (iPhone 15)",
+        "[+] Traffic redirect active: device data now routes through attacker laptop",
+        "[+] ATTACKER CAN NOW MONITOR INTERNET ACTIVITY"
       );
     }
 
     if (act === "captive_snoop" || act === "payment_warning") {
       baseLogs.push(
-        "[>] SNOOPED: User opened 'https://rahulelectronics.in/cart'",
+        "[>] SNOOPED: User opened 'rahulelectronics.in/cart'",
         "[>] SNOOPED: Item 'Pro Wireless Headphones' - Amount: ₹1,499",
-        "[>] SNOOPED COOKIE: session_token=x8829_usr_9410"
+        "[>] SNOOPED COOKIE: user login session token intercepted"
       );
     }
 
     if (act === "payment_warning" || act === "hacker_tamper") {
       baseLogs.push(
-        "[!] SSL INTERCEPTION: Serving fake self-signed cert 'RogueProxy_CA'",
-        "[!] Victim received 'Invalid Certificate' prompt on phone..."
+        "[!] ATTEMPTING TO BREAK ENCRYPTION: Serving fake security certificate",
+        "[!] Warning shown on victim phone: 'Security Certificate Not Trusted'..."
       );
     }
 
     if (act === "hacker_tamper" || act === "critical_decision") {
       baseLogs.push(
-        "[★] PACKET INTERCEPTED: POST /api/v1/upi/pay",
-        "[★] ORIGINAL PAYLOAD: { amount: 1499, to: 'rahul_electronics@upi' }",
-        "[★] TAMPERING BUFFER: Modifying 1499 -> 9499",
-        "[★] TAMPERING BUFFER: Modifying recipient -> 'attacker_wallet_mule@upi'",
-        "[★] FORWARDING TAMPERED PACKET TO BANK GATEWAY..."
+        "[★] PAYMENT REQUEST INTERCEPTED: UPI Payment in progress",
+        "[★] ORIGINAL DETAILS: ₹1,499 to 'rahul_electronics@upi'",
+        "[★] TAMPERING DATA: Modifying amount from ₹1,499 to ₹9,499",
+        "[★] TAMPERING DATA: Changing recipient to attacker's account",
+        "[★] SENDING TAMPERED PAYMENT TO BANK..."
       );
     }
 
     if (vpnActive) {
       baseLogs.push(
-        "[CRITICAL] VICTIM ACTIVATED VPN (AES-256 WIREGAURD TUNNEL)",
-        "[ERROR] SSL/TLS Strip failed! Cannot read encrypted payload",
-        "[ERROR] Raw bytes: e4 9b 12 ff c0 88 23 11 04 a2 (UNREADABLE GIBBERISH)",
-        "[-] ATTACK DEFEATED BY END-TO-END ENCRYPTION"
+        "[SAFE] VICTIM ACTIVATED VPN (ENCRYPTED TUNNEL)",
+        "[BLOCKED] Attacker cannot read or tamper with encrypted traffic",
+        "[BLOCKED] Raw data is scrambled: e4 9b 12 ff c0 88 23 11 04 a2 (unreadable)",
+        "[-] ATTACK PREVENTED BY SECURE VPN ENCRYPTION"
       );
     } else if (userDecision === "cancel") {
       baseLogs.push("[-] VICTIM REJECTED TRANSACTION: Payment cancelled by user!");
@@ -240,7 +240,7 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
               : "bg-surface text-text-fog border-border"
           }`}>
             <span className="block text-[10px] text-text-ash">STEP 3</span>
-            The MITM Hijack
+            The Data Tampering
           </div>
           <div className={`p-2 rounded-xl border text-center font-medium ${
             act === "decision_outcome" || act === "vpn_experiment"

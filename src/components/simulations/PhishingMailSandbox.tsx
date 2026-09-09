@@ -34,66 +34,66 @@ export function PhishingMailSandbox({ onComplete }: PhishingMailSandboxProps) {
   const [hasReported, setHasReported] = useState(false);
   const [scoreReported, setScoreReported] = useState(false);
 
-  // Hacker C2 (Command & Control) Live Logs
+  // Hacker Live Action Logs
   const getHackerLogs = () => {
     const logs = [
-      "[*] Evilginx Phishlet Server v3.8 listening on port 443...",
-      "[*] Registered Domain: 'google-accounts-security.auth-portal.net'",
-      "[*] Cloned Target: accounts.google.com (v2026 UI)",
-      "[*] Campaign: 'Urgent Account Suspension Bait #492'",
+      "[*] Fake login website active on server",
+      "[*] Registered lookalike domain: 'google-accounts-security.auth-portal.net'",
+      "[*] Cloned genuine Google login design",
+      "[*] Scam campaign: 'Urgent Account Warning'",
     ];
 
     if (act === "email_inspect") {
       logs.push(
-        "[>] TARGET REACHED: Email delivered to victim inbox",
-        "[>] Tracking pixel loaded by victim (User-Agent: Chrome / Windows 11)"
+        "[>] Phishing email delivered to victim inbox",
+        "[>] Email opened: victim viewed message"
       );
     }
 
     if (inspectedSender || inspectedLink) {
       logs.push(
-        "[!] CAUTION: Victim is hovering links and inspecting headers! High vigilance detected."
+        "[!] ALERT: Victim is inspecting sender address and links! High vigilance detected."
       );
     }
 
     if (act === "fake_login") {
       logs.push(
-        "[+] VICTIM CLICKED BAIT LINK: Redirected to cloned login page!",
-        `[KEYLOGGER] Captured Account: ${fakeEmailInput || "rahul.sharma@gmail.com"}`,
+        "[+] LINK CLICKED: Victim reached fake login page",
+        `[CAPTURED] Account email: ${fakeEmailInput || "rahul.sharma@gmail.com"}`,
         fakePasswordInput
-          ? `[KEYLOGGER] LIVE PASSWORD CAPTURE: ${"*".repeat(fakePasswordInput.length)} (${fakePasswordInput})`
-          : "[KEYLOGGER] Waiting for victim to enter password..."
+          ? `[CAPTURED] Password: ${"*".repeat(fakePasswordInput.length)} (${fakePasswordInput})`
+          : "[WAITING] Waiting for user to enter password..."
       );
     }
 
     if (act === "two_factor_steal") {
       logs.push(
-        "[★] PASSWORD ACQUIRED! Submitting to genuine Google API in background...",
-        "[!] GOOGLE REQUIRES 2FA: Triggered SMS/Authenticator prompt on victim phone",
-        "[>] Displaying fake 2FA OTP input field on victim screen..."
+        "[★] PASSWORD STOLEN: Testing credentials on genuine service in background...",
+        "[!] TWO-FACTOR PROMPT TRIGGERED: Prompting user for security code...",
+        "[>] Displaying fake OTP screen to steal the code..."
       );
       if (otpInput) {
-        logs.push(`[★] LIVE OTP CAPTURE: ${otpInput}`);
+        logs.push(`[★] CODE CAPTURED: ${otpInput}`);
       }
     }
 
     if (act === "account_takeover") {
       logs.push(
-        "[$$$] 2FA OTP VALIDATED WITH GENUINE GOOGLE SERVER!",
-        "[★] SESSION COOKIE HIJACKED: SID=s%3A88fa199... HSID=0912..",
-        "[CRITICAL] ATTACKER LOGGED IN AS VICTIM!",
+        "[!] STOLEN CODE VALIDATED WITH REAL GOOGLE SERVER!",
+        "[★] LOGIN SESSION HIJACKED: Attacker gained full account access",
+        "[ALERT] ATTACKER LOGGED IN AS VICTIM!",
         "[*] Action: Changed recovery email & phone number",
-        "[*] Action: Downloading Google Drive files, private photos, & emails",
-        "[*] Action: Sending fake emergency payment requests to all contacts"
+        "[*] Action: Accessing private photos, files, & emails",
+        "[*] Action: Sending fake emergency money requests to contacts"
       );
     }
 
     if (act === "defense_triumph") {
       logs.push(
-        "[-] PHISHING ATTACK BLOCKED BY VICTIM!",
-        "[-] Victim reported domain to Google SafeBrowsing / Enterprise SOC",
-        "[-] Domain 'auth-portal.net' blacklisted globally with RED WARNING SCREEN",
-        "[-] Zero credentials captured. Attack failed."
+        "[SAFE] PHISHING ATTEMPT BLOCKED!",
+        "[SAFE] Victim reported fake link for removal",
+        "[SAFE] Fake website flagged with red warning screen",
+        "[SAFE] Zero passwords or data stolen. Attack failed!"
       );
     }
 

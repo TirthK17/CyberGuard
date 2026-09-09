@@ -109,14 +109,14 @@ export function SectionHeader({
     <div className="flex flex-wrap items-start justify-between gap-3">
       <div>
         {eyebrow && (
-          <p className="eyebrow mb-1">
+          <p className="eyebrow mb-1.5">
             {eyebrow}
           </p>
         )}
-        <h2 className="font-display text-lg font-semibold tracking-tight text-text-pure">
+        <h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-text-pure">
           {title}
         </h2>
-        {description && <p className="mt-0.5 text-xs text-text-fog leading-relaxed">{description}</p>}
+        {description && <p className="mt-1 text-sm text-text-fog leading-relaxed">{description}</p>}
       </div>
       {action && <div className="shrink-0">{action}</div>}
     </div>
@@ -158,22 +158,22 @@ export function StatCard({
       className="glass rounded-2xl p-5"
     >
       <div className="flex items-center justify-between">
-        <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg border", iconToneMap[tone] ?? iconToneMap.default)}>
-          <i className={`ti ${icon} text-base`} />
+        <div className={cn("flex h-9 w-9 items-center justify-center rounded-xl border", iconToneMap[tone] ?? iconToneMap.default)}>
+          <i className={`ti ${icon} text-lg`} />
         </div>
         {delta !== undefined && (
-          <div className={cn("flex items-center gap-1 font-mono text-[11px] font-medium", delta >= 0 ? "text-success" : "text-danger")}>
+          <div className={cn("flex items-center gap-1 font-sans text-xs font-semibold", delta >= 0 ? "text-success" : "text-danger")}>
             <i className={`ti ${delta >= 0 ? "ti-trending-up" : "ti-trending-down"} text-xs`} />
             {delta >= 0 ? "+" : ""}{delta}%
           </div>
         )}
       </div>
-      <div className="mt-4 font-display text-2xl font-bold tracking-tight text-text-pure">
+      <div className="mt-3.5 font-display text-2xl sm:text-3xl font-bold tracking-tight text-text-pure">
         {typeof value === "number" ? <AnimatedNumber value={value} /> : value}
       </div>
-      <div className="mt-0.5 text-[11px] font-medium text-text-ash">{label}</div>
+      <div className="mt-1 text-xs sm:text-sm font-medium text-text-fog">{label}</div>
       {deltaLabel && (
-        <div className="mt-1 text-[10px] text-text-ash">{deltaLabel}</div>
+        <div className="mt-1 text-xs text-text-ash">{deltaLabel}</div>
       )}
     </motion.div>
   );
@@ -206,14 +206,14 @@ export function Pill({
     lime:    "bg-emerald-500/10 text-emerald-500 border-emerald-500/25",
   };
   const sizeStyles = {
-    sm: "px-2 py-0.5 text-[10px]",
-    md: "px-2.5 py-0.5 text-[11px]",
-    lg: "px-3 py-1 text-xs",
+    sm: "px-2 py-0.5 text-xs font-semibold",
+    md: "px-2.5 py-1 text-xs font-semibold",
+    lg: "px-3.5 py-1.5 text-sm font-semibold",
   };
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border font-medium tracking-normal",
+        "inline-flex items-center gap-1.5 rounded-full border font-semibold tracking-normal",
         tones[tone] ?? tones.default,
         sizeStyles[size],
         className
@@ -301,14 +301,14 @@ export function EmptyState({
       <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl border border-border bg-surface-elevated">
         <i className={`ti ${icon} text-lg text-text-fog`} />
       </div>
-      <h3 className="font-display text-base font-semibold text-text-pure">{title}</h3>
+      <h3 className="font-display text-lg font-bold text-text-pure">{title}</h3>
       {description && (
-        <p className="mt-1.5 max-w-xs text-xs leading-relaxed text-text-fog">{description}</p>
+        <p className="mt-2 max-w-sm text-sm leading-relaxed text-text-fog">{description}</p>
       )}
       {actionLabel && onAction && (
         <button
           onClick={onAction}
-          className="btn-primary mt-6 rounded-xl px-4 py-2 text-xs font-semibold"
+          className="btn-primary mt-6 rounded-xl px-5 py-2.5 text-sm font-semibold cursor-pointer"
         >
           {actionLabel}
         </button>

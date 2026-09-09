@@ -34,12 +34,12 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 const MODULE_SANDBOX_MAP: Record<string, { label: string; slug: string }> = {
-  "cybersecurity-fundamentals": { label: "Rogue Wi-Fi Sandbox", slug: "mitm-attack" },
-  "password-account-security": { label: "Spear-Phishing Sandbox", slug: "phishing-email" },
-  "phishing-awareness": { label: "Spear-Phishing Sandbox", slug: "phishing-email" },
-  "social-engineering": { label: "Mobile Smishing Sandbox", slug: "social-engineering-call" },
-  "malware-ransomware": { label: "Ransomware Drill", slug: "ransomware-response" },
-  "network-security": { label: "Rogue Wi-Fi Sandbox", slug: "mitm-attack" },
+  "cybersecurity-fundamentals": { label: "Wi-Fi Simulation", slug: "mitm-attack" },
+  "password-account-security": { label: "Fake Email Simulation", slug: "phishing-email" },
+  "phishing-awareness": { label: "Fake Email Simulation", slug: "phishing-email" },
+  "social-engineering": { label: "SMS Scam Simulation", slug: "social-engineering-call" },
+  "malware-ransomware": { label: "Virus Emergency Drill", slug: "ransomware-response" },
+  "network-security": { label: "Wi-Fi Simulation", slug: "mitm-attack" },
 };
 
 export function TrainingPage() {
@@ -91,21 +91,21 @@ export function TrainingPage() {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/25 text-primary text-[10px] font-bold font-mono tracking-wider uppercase">
-                Interactive Cyber Defense Academy
+              <span className="px-3 py-1 rounded-full bg-primary/10 border border-primary/25 text-primary text-xs font-semibold">
+                Cyber Safety Lessons
               </span>
               <span className="text-text-muted text-xs">•</span>
-              <span className="text-xs text-emerald-400 font-mono flex items-center gap-1 font-semibold">
-                <i className="ti ti-circle-check" /> 6 Real-World Vectors
+              <span className="text-xs text-emerald-400 flex items-center gap-1 font-semibold">
+                <i className="ti ti-circle-check" /> 6 Everyday Topics
               </span>
             </div>
 
-            <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-text-pure">
-              Defense Training Curriculum
+            <h1 className="text-2xl sm:text-4xl font-bold tracking-tight text-text-pure">
+              Interactive Lessons
             </h1>
 
-            <p className="text-xs sm:text-sm text-text-fog leading-relaxed">
-              Step beyond boring slide decks. Master threat defense through tactical, story-driven lessons, real breach case studies, and interactive knowledge checks designed to build true defensive muscle memory.
+            <p className="text-sm sm:text-base text-text-fog leading-relaxed">
+              Learn how to spot real-world scams and protect your personal information with quick, story-based lessons and practice quizzes.
             </p>
           </div>
 
@@ -113,21 +113,21 @@ export function TrainingPage() {
           <div className="flex flex-wrap items-center gap-4 lg:flex-col lg:items-end shrink-0">
             <div className="p-4 rounded-2xl bg-surface-elevated border border-border min-w-[200px] space-y-2">
               <div className="flex justify-between items-center text-xs">
-                <span className="text-text-ash font-medium">Academy Mastery</span>
-                <span className="font-mono text-primary font-bold">{overallPercent}%</span>
+                <span className="text-text-ash font-medium">Your Progress</span>
+                <span className="font-semibold text-primary">{overallPercent}%</span>
               </div>
               <ProgressBar value={overallPercent} />
-              <div className="flex justify-between text-[11px] text-text-ash pt-1 font-mono">
-                <span>{completedCount} of {moduleList.length} Mastered</span>
+              <div className="flex justify-between text-xs text-text-ash pt-1 font-medium">
+                <span>{completedCount} of {moduleList.length} Lessons Finished</span>
                 <span className="text-emerald-400 font-semibold">+{completedCount * 65} XP</span>
               </div>
             </div>
 
             {nextToLearn && (
               <Link to={`/training/${nextToLearn.slug}`}>
-                <Button variant="primary" size="sm" className="font-semibold text-xs shadow-md">
+                <Button variant="primary" size="sm" className="font-semibold text-sm shadow-md">
                   <i className="ti ti-player-play mr-1.5" />
-                  {completedCount > 0 ? "Resume Learning" : "Start First Module"}
+                  {completedCount > 0 ? "Continue Learning" : "Start First Lesson"}
                 </Button>
               </Link>
             )}
@@ -138,15 +138,15 @@ export function TrainingPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-border text-xs">
           <div className="flex items-center gap-2 text-text-fog">
             <i className="ti ti-book-2 text-primary text-base" />
-            <span><strong>18</strong> In-Depth Lessons</span>
+            <span><strong>18</strong> Short Lessons</span>
           </div>
           <div className="flex items-center gap-2 text-text-fog">
             <i className="ti ti-clipboard-check text-emerald-400 text-base" />
-            <span><strong>6</strong> Scenario Quizzes</span>
+            <span><strong>6</strong> Practice Quizzes</span>
           </div>
           <div className="flex items-center gap-2 text-text-fog">
             <i className="ti ti-device-gamepad-2 text-warn text-base" />
-            <span><strong>4</strong> Threat Sandboxes</span>
+            <span><strong>4</strong> Hands-on Simulations</span>
           </div>
           <div className="flex items-center gap-2 text-text-fog">
             <i className="ti ti-award text-cyan-400 text-base" />
@@ -162,7 +162,7 @@ export function TrainingPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search modules by vector, threat keyword (e.g. 'ransomware', 'phishing', 'passwords')..."
+            placeholder="Search lessons (e.g. 'passwords', 'fake emails', 'Wi-Fi')..."
             className="input pl-10"
             aria-label="Search modules"
           />
@@ -268,7 +268,7 @@ export function TrainingPage() {
                         <div className="flex items-center gap-1.5">
                           {isDone ? (
                             <Pill tone="emerald" size="sm">
-                              ✓ Mastered
+                              ✓ Completed
                             </Pill>
                           ) : inProgress ? (
                             <Pill tone="primary" size="sm">
@@ -284,18 +284,18 @@ export function TrainingPage() {
 
                       {/* Title & Description */}
                       <div>
-                        <h3 className="font-display text-base font-bold text-text-pure group-hover:text-primary transition-colors leading-snug">
+                        <h3 className="font-display text-base sm:text-lg font-bold text-text-pure group-hover:text-primary transition-colors leading-snug">
                           {m.title}
                         </h3>
-                        <p className="mt-2 text-xs leading-relaxed text-text-fog line-clamp-2">
+                        <p className="mt-2 text-sm leading-relaxed text-text-fog line-clamp-2">
                           {m.description}
                         </p>
                       </div>
 
                       {/* Learning Objectives Preview */}
                       {m.learning_objectives && m.learning_objectives.length > 0 && (
-                        <div className="pt-2 text-[11px] text-text-ash space-y-1">
-                          <div className="font-semibold text-text-pure/80">Key takeaways:</div>
+                        <div className="pt-2 text-xs text-text-ash space-y-1">
+                          <div className="font-semibold text-text-pure/80">Key takeaway:</div>
                           <div className="truncate text-text-fog">
                             • {m.learning_objectives[0]}
                           </div>
@@ -304,7 +304,7 @@ export function TrainingPage() {
 
                       {/* Threat Sandbox Link Badge */}
                       {sandbox && (
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-semibold">
+                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-semibold">
                           <i className="ti ti-device-gamepad-2" />
                           <span>Includes {sandbox.label}</span>
                         </div>
@@ -325,8 +325,8 @@ export function TrainingPage() {
                         </span>
                       </div>
 
-                      <span className="text-primary font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1 text-xs">
-                        {isDone ? "Review" : inProgress ? "Continue" : "Start Module"}
+                      <span className="text-primary font-semibold group-hover:translate-x-1 transition-transform flex items-center gap-1 text-xs sm:text-sm">
+                        {isDone ? "Review" : inProgress ? "Continue" : "Start Lesson"}
                         <i className="ti ti-arrow-right text-xs" />
                       </span>
                     </div>

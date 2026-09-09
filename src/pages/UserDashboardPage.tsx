@@ -60,63 +60,63 @@ interface DefenseVector {
 const DEFENSE_VECTORS: DefenseVector[] = [
   {
     id: "phishing",
-    name: "Phishing & Fake Portals Reflex",
+    name: "Fake Emails & Links",
     icon: "ti-mail-bolt",
     score: 92,
     status: "Fortified",
     statusTone: "success",
     drillLink: "/simulations/phishing-email",
-    drillLabel: "Inspect Headers",
+    drillLabel: "Practice",
   },
   {
     id: "passwords",
-    name: "Password Entropy & MFA Health",
+    name: "Password Habits",
     icon: "ti-key",
     score: 88,
     status: "Fortified",
     statusTone: "success",
     drillLink: "/tools",
-    drillLabel: "Audit Entropy",
+    drillLabel: "Check",
   },
   {
     id: "smishing",
-    name: "Mobile SMS & WhatsApp Defense",
+    name: "Scam Texts & Calls",
     icon: "ti-device-mobile-message",
     score: 75,
     status: "Solid",
     statusTone: "cyan",
     drillLink: "/simulations/social-engineering-call",
-    drillLabel: "Smishing Lab",
+    drillLabel: "Practice",
   },
   {
     id: "social_eng",
-    name: "Social Engineering & Deepfakes",
+    name: "AI & Impersonation Scams",
     icon: "ti-robot",
     score: 64,
     status: "Moderate",
     statusTone: "warn",
     drillLink: "/training/social-engineering",
-    drillLabel: "Strengthen Vector",
+    drillLabel: "Learn",
   },
   {
     id: "malware",
-    name: "Malware & Ransomware Containment",
+    name: "Viruses & Suspicious Files",
     icon: "ti-file-lock",
     score: 80,
     status: "Solid",
     statusTone: "cyan",
     drillLink: "/simulations/ransomware-response",
-    drillLabel: "Quarantine Drill",
+    drillLabel: "Practice",
   },
   {
     id: "wifi_mitm",
-    name: "Public Wi-Fi & MITM Interception",
+    name: "Safe Public Wi-Fi",
     icon: "ti-wifi",
     score: 85,
     status: "Fortified",
     statusTone: "success",
     drillLink: "/simulations/mitm-attack",
-    drillLabel: "MITM Sandbox",
+    drillLabel: "Practice",
   },
 ];
 
@@ -263,7 +263,7 @@ export function UserDashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* ── 1. OPERATOR TACTICAL STATUS BANNER ── */}
+      {/* ── 1. WELCOME & STATUS BANNER ── */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -281,16 +281,16 @@ export function UserDashboardPage() {
             </div>
             <div>
               <div className="flex items-center gap-2 text-xs text-text-ash">
-                <span className="font-mono text-[11px] text-emerald-500 font-bold uppercase tracking-wider flex items-center gap-1">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> SENTRY ACTIVE
+                <span className="text-xs font-semibold text-emerald-500 uppercase tracking-wide flex items-center gap-1">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> Protected
                 </span>
                 <span>•</span>
                 <span>{timeGreeting()}</span>
                 <span>•</span>
-                <span className="text-text-pure font-medium">Clearance Level {profile?.level ?? 1}</span>
+                <span className="text-text-pure font-medium">Level {profile?.level ?? 1}</span>
               </div>
               <h1 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-text-pure mt-0.5">
-                {profile?.full_name ?? "Cyber Defender"}
+                Welcome back, {profile?.full_name ?? "Friend"}
               </h1>
             </div>
           </div>
@@ -298,19 +298,19 @@ export function UserDashboardPage() {
           <div className="flex flex-wrap items-center gap-2">
             <a href="#daily-drill">
               <Button variant="secondary" size="sm" icon={<i className="ti ti-target" />}>
-                Daily 60s Drill
+                Daily 60s Quiz
               </Button>
             </a>
             <Link to="/tools">
               <Button variant="secondary" size="sm" icon={<i className="ti ti-tools" />}>
-                Security Toolkit
+                Safety Tools
               </Button>
             </Link>
             <button
               onClick={() => setShowSosGuide(!showSosGuide)}
-              className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-danger/10 border border-danger/30 text-danger hover:bg-danger/20 transition-colors flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-danger/10 border border-danger/30 text-danger hover:bg-danger/20 transition-colors flex items-center gap-1.5 cursor-pointer"
             >
-              <i className="ti ti-sos text-sm" /> Emergency SOS
+              <i className="ti ti-sos text-base" /> Emergency Help (SOS)
             </button>
           </div>
         </div>
@@ -322,39 +322,39 @@ export function UserDashboardPage() {
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
-              className="mt-4 pt-4 border-t border-danger/20 bg-danger/5 p-4 rounded-xl"
+              className="mt-4 pt-4 border-t border-danger/20 bg-danger/5 p-4 sm:p-5 rounded-xl"
             >
-              <div className="flex items-center justify-between pb-2 border-b border-danger/20 text-xs">
+              <div className="flex items-center justify-between pb-2 border-b border-danger/20 text-xs sm:text-sm">
                 <span className="font-bold text-danger flex items-center gap-1.5">
-                  <i className="ti ti-alert-triangle" /> ACTIVE INCIDENT RESPONSE PROTOCOL
+                  <i className="ti ti-alert-triangle text-base" /> EMERGENCY CHECKLIST: WHAT TO DO IF YOU SUSPECT A SCAM
                 </span>
                 <button
                   onClick={() => setShowSosGuide(false)}
-                  className="text-text-ash hover:text-text-pure text-xs"
+                  className="text-text-ash hover:text-text-pure text-xs sm:text-sm font-semibold cursor-pointer"
                 >
                   Close
                 </button>
               </div>
-              <div className="grid gap-3 sm:grid-cols-4 mt-3 text-xs">
-                <div className="p-2.5 rounded-lg bg-surface border border-border">
-                  <span className="font-mono text-danger font-bold text-[10px]">01. DISCONNECT</span>
-                  <p className="font-semibold text-text-pure mt-0.5">Sever Wi-Fi / Net</p>
-                  <p className="text-[11px] text-text-fog mt-0.5">Halt live credential exfiltration.</p>
+              <div className="grid gap-3 sm:grid-cols-4 mt-3 text-xs sm:text-sm">
+                <div className="p-3 rounded-xl bg-surface border border-border">
+                  <span className="text-xs font-bold text-danger">01. DISCONNECT</span>
+                  <p className="font-bold text-text-pure mt-1">Turn Off Wi-Fi &amp; Data</p>
+                  <p className="text-xs text-text-fog mt-1 leading-relaxed">Immediately stop any active data transfer or remote control.</p>
                 </div>
-                <div className="p-2.5 rounded-lg bg-surface border border-border">
-                  <span className="font-mono text-danger font-bold text-[10px]">02. SECOND DEVICE</span>
-                  <p className="font-semibold text-text-pure mt-0.5">Reset Master Pwds</p>
-                  <p className="text-[11px] text-text-fog mt-0.5">Change email &amp; banking passwords.</p>
+                <div className="p-3 rounded-xl bg-surface border border-border">
+                  <span className="text-xs font-bold text-danger">02. SECOND DEVICE</span>
+                  <p className="font-bold text-text-pure mt-1">Change Passwords</p>
+                  <p className="text-xs text-text-fog mt-1 leading-relaxed">Use another device to reset your email and bank passwords.</p>
                 </div>
-                <div className="p-2.5 rounded-lg bg-surface border border-border">
-                  <span className="font-mono text-danger font-bold text-[10px]">03. REVOKE TOKENS</span>
-                  <p className="font-semibold text-text-pure mt-0.5">Force Sign-Out</p>
-                  <p className="text-[11px] text-text-fog mt-0.5">Log out of all other active sessions.</p>
+                <div className="p-3 rounded-xl bg-surface border border-border">
+                  <span className="text-xs font-bold text-danger">03. SIGN OUT</span>
+                  <p className="font-bold text-text-pure mt-1">Log Out Everywhere</p>
+                  <p className="text-xs text-text-fog mt-1 leading-relaxed">In account settings, click &apos;Sign out of all other devices&apos;.</p>
                 </div>
-                <div className="p-2.5 rounded-lg bg-surface border border-border">
-                  <span className="font-mono text-danger font-bold text-[10px]">04. REPORT SCAM</span>
-                  <p className="font-semibold text-text-pure mt-0.5">Notify CyberGuard</p>
-                  <p className="text-[11px] text-text-fog mt-0.5">File incident report for analysis.</p>
+                <div className="p-3 rounded-xl bg-surface border border-border">
+                  <span className="text-xs font-bold text-danger">04. CALL YOUR BANK</span>
+                  <p className="font-bold text-text-pure mt-1">Alert Official Support</p>
+                  <p className="text-xs text-text-fog mt-1 leading-relaxed">Call the number on the back of your card to freeze accounts.</p>
                 </div>
               </div>
             </motion.div>
@@ -363,33 +363,33 @@ export function UserDashboardPage() {
       </motion.div>
 
       {/* ── BEGINNER-FRIENDLY QUICK START ROADMAP ── */}
-      <div className="p-4 sm:p-5 rounded-2xl border border-primary/20 bg-primary/5 shadow-sm space-y-3">
+      <div className="p-5 rounded-2xl border border-primary/20 bg-primary/5 shadow-sm space-y-3.5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <span className="text-[10px] font-bold font-mono text-primary uppercase tracking-wider">
+            <span className="text-xs font-semibold text-primary uppercase tracking-wider">
               Beginner Friendly Roadmap
             </span>
-            <h2 className="text-sm sm:text-base font-bold text-text-pure mt-0.5">
+            <h2 className="text-base sm:text-lg font-bold text-text-pure mt-0.5">
               New to cyber safety? Start here in 3 simple steps:
             </h2>
           </div>
-          <span className="text-xs text-text-ash">Takes less than 5 minutes • 100% Safe</span>
+          <span className="text-xs font-medium text-text-ash">Takes less than 5 minutes • 100% Safe</span>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-3">
+        <div className="grid gap-3.5 sm:grid-cols-3">
           <Link
             to="/simulations/phishing-email"
-            className="p-3.5 rounded-xl bg-surface border border-border hover:border-primary/50 transition-all group flex flex-col justify-between"
+            className="p-4 rounded-xl bg-surface border border-border hover:border-primary/50 transition-all group flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary font-mono">STEP 1</span>
-                <span className="text-xs text-text-ash group-hover:text-primary transition-colors flex items-center gap-1 font-medium">
-                  Play Game <i className="ti ti-arrow-right text-[10px]" />
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary">STEP 1</span>
+                <span className="text-xs text-text-ash group-hover:text-primary transition-colors flex items-center gap-1 font-semibold">
+                  Play Game <i className="ti ti-arrow-right text-xs" />
                 </span>
               </div>
-              <h4 className="font-bold text-xs text-text-pure">Phishing Mail Game</h4>
-              <p className="text-[11px] text-text-fog mt-1 leading-relaxed">
+              <h4 className="font-bold text-sm text-text-pure">Phishing Mail Game</h4>
+              <p className="text-xs sm:text-sm text-text-fog mt-1 leading-relaxed">
                 Can you spot a fake Microsoft login email? Hover the button and find the 4 clues.
               </p>
             </div>
@@ -397,17 +397,17 @@ export function UserDashboardPage() {
 
           <Link
             to="/simulations/social-engineering-call"
-            className="p-3.5 rounded-xl bg-surface border border-border hover:border-cyan-500/50 transition-all group flex flex-col justify-between"
+            className="p-4 rounded-xl bg-surface border border-border hover:border-cyan-500/50 transition-all group flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-500 font-mono">STEP 2</span>
-                <span className="text-xs text-text-ash group-hover:text-cyan-500 transition-colors flex items-center gap-1 font-medium">
-                  Try Lab <i className="ti ti-arrow-right text-[10px]" />
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-cyan-500">STEP 2</span>
+                <span className="text-xs text-text-ash group-hover:text-cyan-500 transition-colors flex items-center gap-1 font-semibold">
+                  Try Lab <i className="ti ti-arrow-right text-xs" />
                 </span>
               </div>
-              <h4 className="font-bold text-xs text-text-pure">Fake Bank SMS Test</h4>
-              <p className="text-[11px] text-text-fog mt-1 leading-relaxed">
+              <h4 className="font-bold text-sm text-text-pure">Fake Bank SMS Test</h4>
+              <p className="text-xs sm:text-sm text-text-fog mt-1 leading-relaxed">
                 Experience a scam text asking for an OTP on a simulated smartphone screen.
               </p>
             </div>
@@ -415,17 +415,17 @@ export function UserDashboardPage() {
 
           <Link
             to="/tools"
-            className="p-3.5 rounded-xl bg-surface border border-border hover:border-emerald-500/50 transition-all group flex flex-col justify-between"
+            className="p-4 rounded-xl bg-surface border border-border hover:border-emerald-500/50 transition-all group flex flex-col justify-between"
           >
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 font-mono">STEP 3</span>
-                <span className="text-xs text-text-ash group-hover:text-emerald-500 transition-colors flex items-center gap-1 font-medium">
-                  Check Now <i className="ti ti-arrow-right text-[10px]" />
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500">STEP 3</span>
+                <span className="text-xs text-text-ash group-hover:text-emerald-500 transition-colors flex items-center gap-1 font-semibold">
+                  Check Now <i className="ti ti-arrow-right text-xs" />
                 </span>
               </div>
-              <h4 className="font-bold text-xs text-text-pure">Password Strength Check</h4>
-              <p className="text-[11px] text-text-fog mt-1 leading-relaxed">
+              <h4 className="font-bold text-sm text-text-pure">Password Strength Check</h4>
+              <p className="text-xs sm:text-sm text-text-fog mt-1 leading-relaxed">
                 Find out how many seconds or centuries it takes supercomputers to guess your password.
               </p>
             </div>
@@ -439,13 +439,13 @@ export function UserDashboardPage() {
         <Card className="lg:col-span-1 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-text-pure">Personal Defense Index</span>
+              <span className="text-sm font-bold text-text-pure">Overall Safety Score</span>
               <Pill tone={score >= 75 ? "success" : score >= 50 ? "warn" : "danger"}>
-                {score >= 75 ? "Fortified Posture" : score >= 50 ? "Moderate Risk" : "High Exposure"}
+                {score >= 75 ? "Well Protected" : score >= 50 ? "Fair Protection" : "Needs Practice"}
               </Pill>
             </div>
-            <p className="text-[11px] text-text-ash mt-1 leading-normal">
-              Calculated from phishing detection reflexes, password entropy health, and simulation containment speed.
+            <p className="text-xs sm:text-sm text-text-fog mt-1 leading-relaxed">
+              Your overall safety score based on completed lessons, simulations, and quiz checks.
             </p>
           </div>
 
@@ -464,63 +464,63 @@ export function UserDashboardPage() {
                 <div className="font-display text-3xl font-bold text-text-pure">
                   <AnimatedNumber value={score} />
                 </div>
-                <div className="text-[10px] text-text-ash font-medium">/ 100 PTS</div>
+                <div className="text-xs text-text-ash font-medium">/ 100 PTS</div>
               </div>
             </div>
             <span className="mt-2 text-xs font-semibold text-success">
-              Optimal Defense Readiness
+              Active Protection
             </span>
           </div>
 
-          <div className="space-y-1.5 pt-3 border-t border-border text-xs">
+          <div className="space-y-2 pt-3 border-t border-border text-xs sm:text-sm">
             <div className="flex justify-between items-center text-text-fog">
-              <span>Curriculum Mastery</span>
-              <span className="font-mono font-bold text-primary">{overallPct}% ({completedModules}/{totalModules})</span>
+              <span>Lessons Finished</span>
+              <span className="font-semibold text-primary">{overallPct}% ({completedModules}/{totalModules})</span>
             </div>
             <div className="flex justify-between items-center text-text-fog">
-              <span>Threats Neutralized</span>
-              <span className="font-mono font-bold text-text-pure">{simulationsCompleted + completedModules}</span>
+              <span>Simulations Completed</span>
+              <span className="font-semibold text-text-pure">{simulationsCompleted + completedModules}</span>
             </div>
             <div className="flex justify-between items-center text-text-fog">
-              <span>Knowledge Quizzes Passed</span>
-              <span className="font-mono font-bold text-text-pure">{quizzesCompleted}</span>
+              <span>Quizzes Passed</span>
+              <span className="font-semibold text-text-pure">{quizzesCompleted}</span>
             </div>
             <div className="flex justify-between items-center text-text-fog">
-              <span>Security Badges Earned</span>
-              <span className="font-mono font-bold text-text-pure">{badgesEarned}</span>
+              <span>Badges Earned</span>
+              <span className="font-semibold text-text-pure">{badgesEarned}</span>
             </div>
           </div>
         </Card>
 
-        {/* Right: 5-Vector Cyber Threat Resilience Matrix */}
+        {/* Right: Category Safety Matrix */}
         <Card className="lg:col-span-2 flex flex-col justify-between">
           <div className="flex items-center justify-between pb-3 border-b border-border">
             <div>
-              <h2 className="text-sm font-bold text-text-pure">
-                5-Vector Threat Resilience Matrix
+              <h2 className="text-base font-bold text-text-pure">
+                Safety Score by Category
               </h2>
-              <p className="text-[11px] text-text-ash">
-                Breakdown of your readiness across key attack surfaces with direct drill actions.
+              <p className="text-xs text-text-ash">
+                Track which areas you know well and which ones you can practice.
               </p>
             </div>
-            <Link to="/assessment" className="text-xs font-semibold text-primary hover:underline">
-              Full Assessment
+            <Link to="/assessment" className="text-xs sm:text-sm font-semibold text-primary hover:underline">
+              Take Safety Test
             </Link>
           </div>
 
           <div className="space-y-3.5 my-3">
             {DEFENSE_VECTORS.map((v) => (
-              <div key={v.id} className="p-3 rounded-xl bg-surface-elevated border border-border">
-                <div className="flex items-center justify-between text-xs mb-1.5">
+              <div key={v.id} className="p-3.5 rounded-xl bg-surface-elevated border border-border">
+                <div className="flex items-center justify-between text-xs sm:text-sm mb-2">
                   <div className="flex items-center gap-2">
                     <i className={`ti ${v.icon} text-base text-primary`} />
                     <span className="font-semibold text-text-pure">{v.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Pill tone={v.statusTone}>{v.status}</Pill>
-                    <span className="font-mono font-bold text-text-pure">{v.score}%</span>
+                    <span className="font-bold text-text-pure">{v.score}%</span>
                     <Link to={v.drillLink}>
-                      <button className="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-surface border border-border text-primary hover:bg-primary/10 transition-colors cursor-pointer">
+                      <button className="px-3 py-1 text-xs font-semibold rounded-lg bg-surface border border-border text-primary hover:bg-primary/10 transition-colors cursor-pointer">
                         {v.drillLabel}
                       </button>
                     </Link>
@@ -531,10 +531,10 @@ export function UserDashboardPage() {
             ))}
           </div>
 
-          <div className="pt-2 border-t border-border flex items-center justify-between text-xs text-text-ash">
-            <span>Focus vector: Social Engineering &amp; AI Voice Phishing</span>
+          <div className="pt-2 border-t border-border flex items-center justify-between text-xs sm:text-sm text-text-ash">
+            <span>Tip: Try our lesson on spotting AI and phone scams</span>
             <Link to="/training" className="font-semibold text-primary hover:underline flex items-center gap-1">
-              Level Up All Vectors <i className="ti ti-arrow-right text-[10px]" />
+              Browse All Lessons <i className="ti ti-arrow-right text-xs" />
             </Link>
           </div>
         </Card>
@@ -545,15 +545,15 @@ export function UserDashboardPage() {
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded bg-primary text-white text-[10px] font-mono font-bold uppercase">
-                Daily Scenario Challenge
+              <span className="px-2.5 py-0.5 rounded-full bg-primary text-white text-xs font-semibold uppercase tracking-wide">
+                Daily Scam Spotter (1 Min)
               </span>
-              <span className="text-xs text-text-ash font-mono">• Refreshed Daily • +25 Defense XP</span>
+              <span className="text-xs text-text-ash font-medium">• New every day • +25 XP</span>
             </div>
             <h3 className="font-display text-base sm:text-lg font-bold text-text-pure mt-1.5">
-              Urgent Postal Delivery Fee Text (Courier Smishing)
+              Urgent Package Delivery Fee Text (Fake Courier SMS)
             </h3>
-            <p className="text-xs text-text-fog mt-1 max-w-2xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-text-fog mt-1 max-w-2xl leading-relaxed">
               You receive an SMS from <strong>"USPS-UPDATE"</strong>:{" "}
               <em>"Package #US-91823 has an invalid delivery address. A $1.50 handling fee is required to confirm redelivery: http://usps-parcel-redelivery.me/confirm"</em>.
             </p>
@@ -566,8 +566,8 @@ export function UserDashboardPage() {
 
         {/* Options */}
         <div className="mt-4 space-y-2">
-          <p className="text-xs font-semibold text-text-pure">What is your immediate action?</p>
-          <div className="grid gap-2 sm:grid-cols-3">
+          <p className="text-xs sm:text-sm font-semibold text-text-pure">What is your immediate action?</p>
+          <div className="grid gap-2.5 sm:grid-cols-3">
             {[
               {
                 id: 0,
@@ -594,7 +594,7 @@ export function UserDashboardPage() {
                   key={opt.id}
                   disabled={dailyAnswered}
                   onClick={() => handleDailyAnswer(opt.id)}
-                  className={`p-3 rounded-xl border text-xs text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  className={`p-3.5 rounded-xl border text-xs sm:text-sm text-left transition-all cursor-pointer flex flex-col justify-between ${
                     dailyAnswered
                       ? opt.correct
                         ? "border-success bg-success/10 text-success font-medium"
@@ -606,8 +606,8 @@ export function UserDashboardPage() {
                 >
                   <span>{opt.text}</span>
                   {dailyAnswered && isSelected && (
-                    <span className="mt-2 text-[11px] font-bold block">
-                      {opt.correct ? "✓ Correct Defense" : "✗ Vulnerable Trap"}
+                    <span className="mt-2 text-xs font-bold block">
+                      {opt.correct ? "✓ Correct Choice" : "✗ Risky Choice"}
                     </span>
                   )}
                 </button>
@@ -620,45 +620,49 @@ export function UserDashboardPage() {
           <motion.div
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-4 p-3 rounded-xl bg-surface border border-border text-xs"
+            className="mt-4 p-4 rounded-xl border border-primary/20 bg-surface text-xs sm:text-sm leading-relaxed"
           >
-            <span className="font-semibold text-primary">Cyber Defense Takeaway:</span>
-            <p className="text-text-fog mt-0.5">
-              Courier smishing is the #1 mobile scam worldwide. Attackers register domains ending in <code>.me</code>, <code>.info</code>, or <code>.top</code> to bypass basic spam filters. Always inspect the URL domain carefully.
+            <span className="font-bold text-primary block mb-1">
+              {dailySelectedOpt === 1 ? "✓ Threat Successfully Neutralized" : "⚠️ Scam Vulnerability Identified"}
+            </span>
+            <p className="text-text-fog">
+              Courier phishing scams (like fake USPS, FedEx, or DHL texts) spike heavily around holidays and shopping seasons.
+              Attackers register disposable domains like <code>.me</code>, <code>.top</code>, or <code>.xyz</code> to impersonate shipping portals.
+              Always use the official mobile app or visit the verified courier portal directly.
             </p>
           </motion.div>
         )}
       </div>
 
-      {/* ── 4. TACTICAL DEFENSE TOOLBOX (QUICK ACCESS) ── */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Quick Password Entropy Meter */}
+      {/* ── 4. QUICK MINI-TOOLS CARDS ── */}
+      <div className="grid gap-6 sm:grid-cols-2">
+        {/* Quick Password Strength Analyzer */}
         <Card>
-          <div className="flex items-center justify-between pb-2 border-b border-border text-xs">
+          <div className="flex items-center justify-between pb-2 border-b border-border text-xs sm:text-sm">
             <div className="flex items-center gap-2">
               <i className="ti ti-key text-primary text-base" />
-              <span className="font-semibold text-text-pure">Quick Password Entropy Check</span>
+              <span className="font-semibold text-text-pure">Quick Password Check</span>
             </div>
-            <Link to="/tools" className="text-primary hover:underline font-medium">
-              Full Analyzer
+            <Link to="/tools" className="text-primary hover:underline font-semibold text-xs sm:text-sm">
+              Full Tool
             </Link>
           </div>
 
           <div className="mt-3 space-y-2">
-            <p className="text-xs text-text-fog">
-              Test a sample passphrase to evaluate if it can withstand offline GPU brute-force attacks:
+            <p className="text-xs sm:text-sm text-text-fog">
+              Type a test password below to see how strong it is:
             </p>
             <input
               type="text"
-              placeholder="Enter a test passphrase (e.g. Blue!River#2026)..."
+              placeholder="Enter a sample password (e.g. Blue!River#2026)..."
               value={quickPass}
               onChange={(e) => setQuickPass(e.target.value)}
-              className="w-full px-3 py-2 text-xs rounded-xl border border-border bg-surface-elevated text-text-pure focus:outline-none focus:border-primary font-mono"
+              className="w-full px-4 py-2.5 text-sm rounded-xl border border-border bg-surface-elevated text-text-pure focus:outline-none focus:border-primary font-sans"
             />
 
             {pwdAnalysis && (
-              <div className="p-2.5 rounded-lg border border-border bg-surface text-xs flex items-center justify-between">
-                <span className="text-text-ash">Crack Resistance:</span>
+              <div className="p-3 rounded-xl border border-border bg-surface text-xs sm:text-sm flex items-center justify-between">
+                <span className="text-text-ash">How Strong It Is:</span>
                 <span className={`font-semibold ${
                   pwdAnalysis.tone === "success" ? "text-success" : pwdAnalysis.tone === "warn" ? "text-warn" : "text-danger"
                 }`}>
@@ -671,19 +675,19 @@ export function UserDashboardPage() {
 
         {/* Quick Suspicious URL Scanner */}
         <Card>
-          <div className="flex items-center justify-between pb-2 border-b border-border text-xs">
+          <div className="flex items-center justify-between pb-2 border-b border-border text-xs sm:text-sm">
             <div className="flex items-center gap-2">
               <i className="ti ti-link text-primary text-base" />
-              <span className="font-semibold text-text-pure">Quick URL Typosquatting Scanner</span>
+              <span className="font-semibold text-text-pure">Quick Link Safety Checker</span>
             </div>
-            <Link to="/tools" className="text-primary hover:underline font-medium">
-              Advanced Scanner
+            <Link to="/tools" className="text-primary hover:underline font-semibold text-xs sm:text-sm">
+              Full Tool
             </Link>
           </div>
 
           <div className="mt-3 space-y-2">
-            <p className="text-xs text-text-fog">
-              Check a link for suspicious TLDs, IP addresses, or lookalike typosquatting:
+            <p className="text-xs sm:text-sm text-text-fog">
+              Paste a link to check for suspicious signs, weird domain endings, or misspelled brand names:
             </p>
             <div className="flex gap-2">
               <input
@@ -691,18 +695,18 @@ export function UserDashboardPage() {
                 placeholder="Paste link (e.g. http://paypa1-account.xyz)..."
                 value={quickUrl}
                 onChange={(e) => setQuickUrl(e.target.value)}
-                className="flex-1 px-3 py-2 text-xs rounded-xl border border-border bg-surface-elevated text-text-pure focus:outline-none focus:border-primary font-mono"
+                className="flex-1 px-4 py-2.5 text-sm rounded-xl border border-border bg-surface-elevated text-text-pure focus:outline-none focus:border-primary font-sans"
               />
               <button
                 onClick={handleQuickUrlScan}
-                className="px-3 py-2 text-xs font-semibold rounded-xl bg-primary text-white hover:bg-primary-hover transition-colors cursor-pointer"
+                className="px-4 py-2.5 text-sm font-semibold rounded-xl bg-primary text-white hover:bg-primary-hover transition-colors cursor-pointer"
               >
                 Scan
               </button>
             </div>
 
             {urlScanResult && (
-              <div className="p-2.5 rounded-lg border border-border bg-surface text-xs text-text-pure">
+              <div className="p-3 rounded-xl border border-border bg-surface text-xs sm:text-sm text-text-pure leading-relaxed">
                 {urlScanResult}
               </div>
             )}
@@ -710,47 +714,47 @@ export function UserDashboardPage() {
         </Card>
       </div>
 
-      {/* ── 5. REAL-WORLD THREAT RADAR & RECENT SECURITY TELEMETRY ── */}
+      {/* ── 5. RECENT SCAM WARNINGS & YOUR ACTIVITY ── */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Real-World Threat Radar */}
         <Card>
           <div className="flex items-center justify-between pb-3 border-b border-border">
             <div className="flex items-center gap-2">
               <span className="h-2 w-2 rounded-full bg-danger animate-ping" />
-              <h3 className="font-display text-sm font-semibold text-text-pure">Active Threats This Week</h3>
+              <h3 className="font-display text-base font-bold text-text-pure">Recent Scam Warnings</h3>
             </div>
-            <Link to="/threats" className="text-xs font-semibold text-primary hover:underline">
-              Live Intel Feed
+            <Link to="/threats" className="text-xs sm:text-sm font-semibold text-primary hover:underline">
+              View All Warnings
             </Link>
           </div>
 
           <div className="space-y-3 mt-3">
             {ACTIVE_THREAT_NOTICES.map((t) => (
-              <div key={t.id} className="p-3 rounded-xl bg-surface-elevated border border-border text-xs space-y-1">
+              <div key={t.id} className="p-3.5 rounded-xl bg-surface-elevated border border-border text-xs sm:text-sm space-y-1">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-text-pure">{t.title}</span>
                   <Pill tone={t.severity === "critical" ? "danger" : t.severity === "high" ? "warn" : "info"}>
                     {t.category}
                   </Pill>
                 </div>
-                <p className="text-text-fog text-[11px] leading-relaxed">{t.description}</p>
-                <p className="text-primary text-[11px] font-medium pt-1">
-                  🛡️ Defense Rule: {t.action}
+                <p className="text-text-fog text-xs sm:text-sm leading-relaxed">{t.description}</p>
+                <p className="text-primary text-xs sm:text-sm font-semibold pt-1">
+                  🛡️ Safety Rule: {t.action}
                 </p>
               </div>
             ))}
           </div>
         </Card>
 
-        {/* Recent Security Telemetry Audit */}
+        {/* Recent Activity */}
         <Card>
           <div className="flex items-center justify-between pb-3 border-b border-border">
             <div>
-              <h3 className="font-display text-sm font-semibold text-text-pure">Recent Security Telemetry</h3>
-              <p className="text-[11px] text-text-ash">Audit log of your defense actions</p>
+              <h3 className="font-display text-base font-bold text-text-pure">Your Recent Activity</h3>
+              <p className="text-xs text-text-ash">Lessons and quizzes you recently completed</p>
             </div>
-            <Link to="/progress" className="text-xs font-semibold text-primary hover:underline">
-              Detailed Analytics
+            <Link to="/progress" className="text-xs sm:text-sm font-semibold text-primary hover:underline">
+              View Progress
             </Link>
           </div>
 
@@ -760,18 +764,18 @@ export function UserDashboardPage() {
                 {recentActivity.map((act) => {
                   const conf = ACTION_CONFIG[act.action] ?? { label: act.action, icon: "ti-activity" };
                   return (
-                    <div key={act.id} className="flex items-center justify-between p-2.5 rounded-xl bg-surface-elevated text-xs border border-border">
+                    <div key={act.id} className="flex items-center justify-between p-3 rounded-xl bg-surface-elevated text-xs sm:text-sm border border-border">
                       <div className="flex items-center gap-2.5">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-surface border border-border text-primary">
-                          <i className={`ti ${conf.icon} text-sm`} />
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface border border-border text-primary">
+                          <i className={`ti ${conf.icon} text-base`} />
                         </div>
                         <div>
                           <p className="font-medium text-text-pure">{conf.label}</p>
-                          <p className="text-[10px] text-text-ash">{relativeTime(act.created_at)}</p>
+                          <p className="text-xs text-text-ash">{relativeTime(act.created_at)}</p>
                         </div>
                       </div>
                       {act.points_earned > 0 && (
-                        <span className="font-mono text-[11px] font-semibold text-success">
+                        <span className="text-xs sm:text-sm font-bold text-success">
                           +{act.points_earned} XP
                         </span>
                       )}
@@ -784,11 +788,11 @@ export function UserDashboardPage() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface-elevated border border-border text-text-ash mb-2">
                   <i className="ti ti-shield text-lg" />
                 </div>
-                <p className="text-xs font-medium text-text-pure">No defense telemetry logged yet</p>
-                <p className="text-[11px] text-text-ash mt-0.5">Start your first training drill to build defensive muscle memory.</p>
+                <p className="text-sm font-medium text-text-pure">No activity logged yet</p>
+                <p className="text-xs text-text-ash mt-0.5">Complete your first lesson to build your safety score.</p>
                 <Link to="/training" className="mt-4">
-                  <Button variant="secondary" size="xs">
-                    Start Training Drill
+                  <Button variant="secondary" size="sm">
+                    Start First Lesson
                   </Button>
                 </Link>
               </div>

@@ -32,10 +32,10 @@ const TOPIC_MODULE_MAP: Record<string, { slug: string; name: string }> = {
 };
 
 function bandFor(score: number) {
-  if (score >= 85) return "Security Specialist (Elite)";
-  if (score >= 61) return "Verified Competent (Good)";
-  if (score >= 41) return "Basic Awareness (Developing)";
-  return "High Risk (Foundational)";
+  if (score >= 85) return "Security Pro";
+  if (score >= 61) return "Good Understanding";
+  if (score >= 41) return "Getting Started";
+  return "Needs Practice";
 }
 
 export function AssessmentPage() {
@@ -152,71 +152,71 @@ export function AssessmentPage() {
           className="space-y-6"
         >
           {/* Header Banner */}
-          <div className="rounded-3xl border border-primary/30 bg-surface p-6 sm:p-10 shadow-lg space-y-6">
+          <div className="rounded-3xl border border-primary/20 bg-surface p-6 sm:p-8 shadow-sm space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="px-2.5 py-0.5 rounded-full bg-primary/10 border border-primary/25 text-primary text-[10px] font-bold font-mono tracking-wider uppercase">
-                    Official Competency Benchmark
+                    Safety Check
                   </span>
                   <span className="text-text-muted text-xs">•</span>
                   <span className="text-xs text-emerald-400 font-mono font-semibold">
-                    100% Adaptive Sandbox
+                    100% Safe Quiz
                   </span>
                 </div>
-                <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-text-pure">
-                  Cybersecurity Awareness Assessment
+                <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-text-pure">
+                  Cyber Safety Test
                 </h1>
-                <p className="text-xs sm:text-sm text-text-fog leading-relaxed">
-                  Evaluate your instinctual defense readiness across all 6 critical threat vectors. Pass with 61% or higher to earn your verified <strong>Cybersecurity Awareness Certificate</strong>.
+                <p className="text-xs sm:text-sm text-text-fog leading-relaxed max-w-xl">
+                  Test how well you spot scams, protect your passwords, and keep your data secure. Score <strong>61% or higher</strong> to unlock your verified Safety Certificate.
                 </p>
               </div>
 
-              <div className="shrink-0 flex items-center justify-center h-20 w-20 rounded-3xl bg-primary/10 text-primary border border-primary/25 text-4xl shadow-inner">
+              <div className="shrink-0 flex items-center justify-center h-16 w-16 rounded-2xl bg-primary/10 text-primary border border-primary/20 text-3xl shadow-inner">
                 <i className="ti ti-certificate" />
               </div>
             </div>
 
-            {/* Diagnostic Parameters Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-border text-xs">
-              <div className="p-3 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                <span className="text-[10px] font-mono text-text-ash uppercase">Questions</span>
-                <div className="font-bold text-text-pure text-base">12 Scenarios</div>
+            {/* Simple Stats Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-border text-xs">
+              <div className="p-3 rounded-xl bg-surface-elevated border border-border space-y-1">
+                <span className="text-[10px] text-text-ash font-medium">Questions</span>
+                <div className="font-bold text-text-pure text-base">12 Questions</div>
               </div>
-              <div className="p-3 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                <span className="text-[10px] font-mono text-text-ash uppercase">Estimated Time</span>
-                <div className="font-bold text-text-pure text-base">6–8 Minutes</div>
+              <div className="p-3 rounded-xl bg-surface-elevated border border-border space-y-1">
+                <span className="text-[10px] text-text-ash font-medium">Estimated Time</span>
+                <div className="font-bold text-text-pure text-base">5–7 Minutes</div>
               </div>
-              <div className="p-3 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                <span className="text-[10px] font-mono text-text-ash uppercase">Pass Threshold</span>
+              <div className="p-3 rounded-xl bg-surface-elevated border border-border space-y-1">
+                <span className="text-[10px] text-text-ash font-medium">To Pass</span>
                 <div className="font-bold text-emerald-400 text-base">61% Score</div>
               </div>
-              <div className="p-3 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                <span className="text-[10px] font-mono text-text-ash uppercase">Specialist Badge</span>
+              <div className="p-3 rounded-xl bg-surface-elevated border border-border space-y-1">
+                <span className="text-[10px] text-text-ash font-medium">Pro Badge</span>
                 <div className="font-bold text-primary text-base">85% Score</div>
               </div>
             </div>
 
-            {/* 6 Evaluated Threat Domains */}
-            <div className="space-y-3 pt-2">
-              <span className="text-xs font-bold text-text-pure uppercase tracking-wider font-mono">
-                Evaluated Threat Domains:
+            {/* Topics Included */}
+            <div className="space-y-2.5 pt-1">
+              <span className="text-xs font-semibold text-text-pure">
+                Topics Covered in This Test:
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                 {[
-                  { icon: "ti-key", label: "Passwords & Identity Entropy" },
-                  { icon: "ti-mail-exclamation", label: "Email Spoofing & Spear-Phishing" },
-                  { icon: "ti-device-mobile-message", label: "Mobile Smishing & Pretexting" },
-                  { icon: "ti-virus", label: "Malware & Ransomware First Response" },
-                  { icon: "ti-wifi", label: "Public Wi-Fi & SSL/TLS Interception" },
-                  { icon: "ti-server", label: "Incident Containment & 3-2-1 Backups" },
+                  { icon: "ti-key", label: "Password Safety & Habits" },
+                  { icon: "ti-mail-exclamation", label: "Fake Emails & Phishing Links" },
+                  { icon: "ti-device-mobile-message", label: "Scam Texts & Phone Calls" },
+                  { icon: "ti-virus", label: "Viruses & Dangerous Downloads" },
+                  { icon: "ti-wifi", label: "Safe Public Wi-Fi" },
+                  { icon: "ti-server", label: "Emergency Steps & Backups" },
                 ].map((d, i) => (
                   <div
                     key={i}
                     className="flex items-center gap-2.5 p-2.5 rounded-xl bg-surface-elevated/70 border border-border text-text-fog"
                   >
                     <i className={`ti ${d.icon} text-primary text-sm`} />
-                    <span className="font-medium text-text-pure/90">{d.label}</span>
+                    <span className="font-medium text-text-pure">{d.label}</span>
                   </div>
                 ))}
               </div>
@@ -224,11 +224,11 @@ export function AssessmentPage() {
 
             {/* User status alert if already certified */}
             {isAlreadyCertified && (
-              <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between text-xs text-emerald-300">
+              <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-between text-xs text-emerald-300">
                 <div className="flex items-center gap-2">
                   <i className="ti ti-certificate text-lg" />
                   <span>
-                    Current Awareness Index: <strong>{currentScore}/100</strong> (Certificate Unlocked)
+                    Your current score: <strong>{currentScore}/100</strong> (Certificate Unlocked)
                   </span>
                 </div>
                 <Link to="/certificate" className="font-bold underline hover:text-emerald-200">
@@ -242,16 +242,16 @@ export function AssessmentPage() {
               <Button
                 variant="primary"
                 onClick={() => setPhase("taking")}
-                className="w-full sm:w-auto font-bold text-sm px-8 py-3 shadow-md"
+                className="w-full sm:w-auto font-bold text-sm px-6 py-2.5 shadow-sm"
               >
-                <i className="ti ti-player-play mr-2" /> Start Comprehensive Assessment
+                <i className="ti ti-player-play mr-2" /> Start Safety Test
               </Button>
               <Button
                 variant="secondary"
                 onClick={() => navigate("/training")}
                 className="w-full sm:w-auto text-xs"
               >
-                Review Training Modules First
+                Review Lessons First
               </Button>
             </div>
           </div>
@@ -296,13 +296,13 @@ export function AssessmentPage() {
           <Card className="text-center p-6 sm:p-10 space-y-6">
             <div className="space-y-2">
               <span className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary font-mono text-[10px] font-bold uppercase tracking-wider">
-                Diagnostic Telemetry Complete
+                Test Completed!
               </span>
-              <h1 className="text-2xl sm:text-3xl font-black text-text-pure">
-                Awareness Index Calibrated
+              <h1 className="text-2xl sm:text-3xl font-bold text-text-pure">
+                Your Safety Score
               </h1>
               <p className="text-xs text-text-fog max-w-md mx-auto">
-                Your performance across 12 scenario vectors has been scored and synchronized to your defense profile.
+                Here is how you performed across the 12 questions and what you can do to stay even safer online.
               </p>
             </div>
 
@@ -361,10 +361,10 @@ export function AssessmentPage() {
                   </div>
                   <div>
                     <strong className="block text-sm font-bold text-emerald-300">
-                      Official Certificate Unlocked!
+                      Safety Certificate Unlocked!
                     </strong>
                     <span className="text-xs text-emerald-200/90 leading-relaxed">
-                      You met the 61+ score requirement to claim your verified Cybersecurity Awareness Certificate.
+                      You passed with a score of 61% or higher and earned your official Safety Certificate.
                     </span>
                   </div>
                 </div>
@@ -376,7 +376,7 @@ export function AssessmentPage() {
               </motion.div>
             ) : (
               <div className="rounded-2xl border border-danger/30 bg-danger/10 p-4 text-xs text-danger text-left">
-                <strong>Certificate Locked (Score under 61):</strong> Review the domain breakdowns below and retake the assessment to earn your certificate!
+                <strong>Certificate Locked (Score under 61%):</strong> Review your answers below, practice with our lessons, and retake the test anytime!
               </div>
             )}
 
@@ -386,10 +386,10 @@ export function AssessmentPage() {
                 <i className="ti ti-award text-2xl text-primary shrink-0" />
                 <div className="text-xs">
                   <strong className="block text-text-pure font-bold">
-                    Specialist Honor Earned (Score 85+)
+                    Pro Security Badge Earned! (Score 85+)
                   </strong>
                   <span className="text-text-fog">
-                    You have unlocked the elite &quot;Security Specialist&quot; badge in your profile.
+                    You unlocked the &quot;Security Pro&quot; badge on your profile.
                   </span>
                 </div>
               </div>
@@ -398,7 +398,7 @@ export function AssessmentPage() {
             {/* ── DOMAIN COMPETENCY MATRIX ── */}
             <div className="space-y-3 text-left pt-4 border-t border-border">
               <h3 className="text-xs font-bold text-text-pure uppercase tracking-wider font-mono">
-                Threat Vector Competency Matrix:
+                Score by Topic:
               </h3>
               <div className="grid gap-2.5 sm:grid-cols-2">
                 {Object.entries(domainScores).map(([topic, stat]) => {
@@ -461,7 +461,7 @@ export function AssessmentPage() {
                   className="space-y-4 text-left pt-4 border-t border-border overflow-hidden"
                 >
                   <h4 className="text-xs font-bold text-text-pure uppercase tracking-wider font-mono">
-                    Detailed Question Audit:
+                    Review All Answers:
                   </h4>
 
                   {questions.map((q, idx) => {
@@ -514,7 +514,7 @@ export function AssessmentPage() {
 
                         {q.explanation && (
                           <div className="p-2.5 rounded-lg bg-surface border border-border text-[11px] text-text-fog leading-relaxed">
-                            <strong className="text-text-pure block mb-0.5">Defensive Insight:</strong>
+                            <strong className="text-text-pure block mb-0.5">Helpful Tip:</strong>
                             {q.explanation}
                           </div>
                         )}
@@ -534,10 +534,10 @@ export function AssessmentPage() {
             {/* Bottom Actions */}
             <div className="pt-4 border-t border-border flex flex-col sm:flex-row gap-3">
               <Button variant="secondary" onClick={handleRetake} className="flex-1 text-xs">
-                <i className="ti ti-rotate-clockwise mr-1.5" /> Retake Assessment
+                <i className="ti ti-rotate-clockwise mr-1.5" /> Retake Test
               </Button>
               <Button variant="primary" onClick={() => navigate("/dashboard")} className="flex-1 text-xs font-semibold">
-                Back to Security Console <i className="ti ti-arrow-right ml-1.5" />
+                Back to Dashboard <i className="ti ti-arrow-right ml-1.5" />
               </Button>
             </div>
           </Card>
@@ -675,7 +675,7 @@ export function AssessmentPage() {
                   onClick={submitAssessment}
                   className="text-xs font-bold px-6 shadow-md"
                 >
-                  {saving ? "Calibrating..." : "Submit Assessment →"}
+                  {saving ? "Saving..." : "Submit Safety Test →"}
                 </Button>
               )}
             </div>

@@ -171,9 +171,9 @@
   --color-text:              var(--color-text);
   --color-text-dim:          var(--color-text-dim);
 
-  --font-sans:               -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", "Segoe UI", Roboto, sans-serif;
-  --font-display:            -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", sans-serif;
-  --font-mono:               "SF Mono", "JetBrains Mono", ui-monospace, Menlo, Monaco, Consolas, monospace;
+  --font-sans:               "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-display:            "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono:               "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
   --radius-xs:               4px;
   --radius-sm:               8px;
@@ -205,6 +205,10 @@ body {
   color: var(--color-text);
   overflow-x: hidden;
   position: relative;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
+  letter-spacing: -0.011em;
 }
 
 /* Clean background grid */
@@ -225,25 +229,31 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   letter-spacing: -0.025em;
   color: var(--color-text-pure);
-  font-weight: 600;
+  font-weight: 700;
+  line-height: 1.28;
 }
 
 .gradient-heading {
   color: var(--color-text-pure);
   letter-spacing: -0.025em;
+  font-weight: 700;
 }
 
 .gradient-heading-violet {
   color: var(--color-text-pure);
+  font-weight: 700;
 }
 
 .eyebrow {
-  font-family: var(--font-mono);
-  font-size: 11px;
+  font-family: var(--font-sans);
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   color: var(--color-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 /* ── macOS Cards & Window Surfaces ── */
@@ -334,8 +344,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .segmented-item {
   position: relative;
-  padding: 5px 12px;
-  font-size: 12px;
+  padding: 6px 14px;
+  font-size: 13px;
   font-weight: 500;
   border-radius: var(--radius-sm);
   color: var(--color-text-fog);
@@ -363,8 +373,8 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border-strong);
   background: var(--color-canvas);
-  padding: 0.65rem 0.95rem;
-  font-size: 0.875rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
   font-family: var(--font-sans);
   color: var(--color-text-pure);
   outline: none;
@@ -390,6 +400,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-primary {
   background: var(--color-primary);
   color: #ffffff;
+  font-weight: 600;
   border: 1px solid rgba(255, 255, 255, 0.18);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   transition: all 0.15s ease;
@@ -402,6 +413,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-secondary {
   background: var(--color-surface-elevated);
   color: var(--color-text-pure);
+  font-weight: 600;
   border: 1px solid var(--color-border);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: all 0.15s ease;
@@ -414,6 +426,7 @@ h1, h2, h3, h4, h5, h6 {
 .btn-google {
   background: var(--color-surface);
   color: var(--color-text-pure);
+  font-weight: 600;
   border: 1px solid var(--color-border-strong);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: all 0.15s ease;
@@ -428,9 +441,9 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--color-border);
   color: var(--color-text-frost);
   font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
   border-radius: var(--radius-sm);
 }
 
@@ -439,9 +452,9 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid rgba(16, 185, 129, 0.25);
   color: #10b981;
   font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 500;
-  padding: 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
   border-radius: var(--radius-sm);
 }
 

@@ -1,21 +1,32 @@
 <div align="center">
 
-# 🛡️ CyberGuard
-### *Next-Generation Cybersecurity Awareness, Simulation & Defense Portal*
+```
+ ██████╗██╗   ██╗██████╗ ███████╗██████╗  ██████╗ ██╗   ██╗ █████╗ ██████╗ ██████╗ 
+██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔══██╗██╔════╝ ██║   ██║██╔══██╗██╔══██╗██╔══██╗
+██║      ╚████╔╝ ██████╔╝█████╗  ██████╔╝██║  ███╗██║   ██║███████║██████╔╝██║  ██║
+██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗██║   ██║██║   ██║██╔══██║██╔══██╗██║  ██║
+╚██████╗   ██║   ██████╔╝███████╗██║  ██║╚██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝
+ ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ 
+```
+
+### *Next-Generation Cybersecurity Awareness, Simulation & Incident Defense Portal*
 
 **Transforming Human Vulnerabilities into a Hardened First Line of Cyber Defense.**
 
-[![React 19](https://img.shields.io/badge/React-19.0.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+<br />
+
+[![React 19](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript 6](https://img.shields.io/badge/TypeScript-6.0-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite 8](https://img.shields.io/badge/Vite-8.2-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Tailwind CSS v4](https://img.shields.io/badge/Tailwind-v4.0-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-[![Supabase & LocalDB](https://img.shields.io/badge/Storage-Supabase_%26_Offline_LocalDB-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
-[![Build Status](https://img.shields.io/badge/Build-Passing_%280_Errors%29-brightgreen?style=for-the-badge)](https://github.com/)
-[![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
+[![Tailwind CSS v4](https://img.shields.io/badge/Tailwind-v4.3-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Storage Dual-Engine](https://img.shields.io/badge/Engine-Offline_LocalDB_%2B_Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com/)
+[![MITRE ATT&CK Aligned](https://img.shields.io/badge/Framework-MITRE_ATT%26CK-E65100?style=for-the-badge)](https://attack.mitre.org/)
+[![Build Passing](https://img.shields.io/badge/Build-Passing_%280_Errors%29-brightgreen?style=for-the-badge)](https://github.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)](LICENSE)
 
 <br />
 
-[⚡ Quick Start](#-quick-start-30-seconds) • [🌟 What Makes CyberGuard Different?](#-what-makes-cyberguard-different) • [🎯 Benefits & Impact](#-benefits--value-proposition) • [🧩 Feature Deep-Dive](#-comprehensive-feature-tour) • [🏗️ Architecture](#️-technical-architecture) • [🚀 Setup Guide](#-setup--deployment)
+[⚡ 30-Second Quick Start](#-30-second-quick-start) • [🌟 What Makes CyberGuard Radically Different?](#-what-makes-cyberguard-radically-different) • [🎯 Benefits & Impact](#-benefits--value-proposition) • [🧩 Feature Deep-Dive](#-comprehensive-feature-tour) • [🏗️ Technical Architecture](#️-technical-architecture) • [🚀 Setup & Cloud Deployment](#-setup--cloud-deployment)
 
 </div>
 
@@ -23,51 +34,102 @@
 
 ## 📌 Executive Summary
 
-Over **90% of all organizational security breaches** originate not from unpatched firewall zero-days, but from **social engineering, deceptive phishing links, credential reuse, and human manipulation**. 
+Over **91% of all successful cyberattacks and data breaches** originate not from unpatched software zero-days, but from **social engineering, deceptive phishing links, unencrypted public Wi-Fi interception, credential reuse, and psychological manipulation**.
 
-Traditional annual corporate slideshows fail because passive compliance videos do not build reflex memory. **CyberGuard** revolutionizes digital defense education by putting users inside **hyper-realistic, dual-perspective threat sandboxes**, story-driven attack narratives, an active **Live Threat Radar**, in-browser **Defensive Security Toolkits**, and real-world **SOC Incident Triage**.
+Traditional corporate training programs fail because **passive annual slideshows and static compliance videos do not build reflex memory**. When an employee receives an urgent payment lure or a citizen faces a "Digital Arrest" extortion call, abstract bullet points vanish under pressure.
 
-Whether used by **university computer science programs**, **enterprise IT security teams**, or **individual privacy-conscious operators**, CyberGuard bridges the human-factor gap with state-of-the-art interactive pedagogies.
+**CyberGuard** reinvents human cyber defense through **tactile, experiential learning**. Instead of reading about attacks, users enter **hyper-realistic dual-perspective threat sandboxes** (seeing both victim and adversary viewpoints simultaneously), conduct live investigations with **client-side security toolkits**, track global adversary telemetry on an interactive **Live Threat Radar**, and execute emergency response procedures via an integrated **Automated SOC Incident Triage Station**.
+
+Whether deployed as an **academic minor/major project**, an **enterprise security onboarding curriculum**, or a **community public awareness initiative**, CyberGuard bridges the critical human-factor gap with state-of-the-art web technology.
 
 ---
 
-## 🌟 What Makes CyberGuard Different?
+## 🌟 What Makes CyberGuard Radically Different?
 
-Most cybersecurity training tools provide abstract multi-choice quizzes without tactile context. CyberGuard is engineered around **real-world defensive muscle memory**:
+Most educational cybersecurity websites offer generic multiple-choice quizzes with textbook definitions. CyberGuard was engineered from the ground up with **7 foundational innovations** that set it apart from conventional security portals:
 
-| Feature Vector | Traditional Training (Slide Decks) | CyberGuard Defense Platform |
+| Dimension | Traditional Training Portals / LMS | 🛡️ CyberGuard Defense Platform |
 | :--- | :--- | :--- |
-| **Experience Model** | Passive video lectures & bullet points | **Dual-Perspective Interactive Sandboxes** (Simultaneous victim & attacker views) |
-| **Story Realism** | Generic corporate placeholders | **Hyper-Relatable Scenarios** (e.g. ₹1,499 café Wi-Fi payment, Friday 4:52 PM payroll lure) |
-| **Defense Utilities** | Abstract theory | **5 In-Browser Security Tools** (Live URL Dissector, Passphrase Vault, Wi-Fi Risk Auditor) |
-| **Threat Intelligence** | Outdated annual syllabus | **Live Threat Radar** (Real-time SVG attack vector canvas & MITRE ATT&CK mapping) |
-| **Emergency Response** | "Contact your IT department" | **Incident Command & National 1930 Helpline** integration with instant containment playbooks |
-| **Offline Architecture** | Requires live cloud subscription | **Zero-Config Dual Engine** (Runs 100% offline via LocalDB or connects to Supabase Postgres) |
-| **User Interface** | Clunky corporate portals | **Apple macOS Glassmorphism** (Subtle micro-animations, radial telemetry, dark/light themes) |
+| **Experience Architecture** | Passive video streams & 2D slideshows | **Dual-Perspective Interactive Sandboxes** (Simultaneous victim & attacker console views) |
+| **Scenario Realism** | Abstract corporate placeholders ("Company X") | **Hyper-Relatable Storylines** (The ₹1,499 Café Wi-Fi, 4:52 PM Payroll Lure, Digital Arrest) |
+| **Tactical Utilities** | Theoretical advice ("Use strong passwords") | **5 Client-Side Defensive Tools** (Entropy & GPU crack calculator, URL dissector, Wi-Fi auditor) |
+| **Situational Awareness** | Outdated annual syllabus PDFs | **Live Threat Radar** (Animated SVG vector canvas, live intercept feed, MITRE ATT&CK mapping) |
+| **Emergency Response** | Generic "Email your IT Helpdesk" | **SOC Incident Intake & National 1930 Helpline** integration with automated containment tickets |
+| **Zero-Barrier Setup** | Requires Docker, paid cloud APIs, or complex setup | **Zero-Config Dual Storage Engine** (Runs 100% offline out-of-the-box via LocalDB or links to Supabase) |
+| **Visual Aesthetics** | Clunky, dated enterprise forms | **Apple macOS Glassmorphism** (Subtle micro-animations, radial telemetry, dark/light themes) |
+
+---
+
+### The 7 Core Differentiators in Detail
+
+```
+┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                 THE 7 PILLARS OF CYBERGUARD                                    │
+└─────────────────────────────────────────────────────────────────────────────────────────────────┘
+     │                    │                    │                    │                    │
+     ▼                    ▼                    ▼                    ▼                    ▼
+[1. Dual-View       [2. Hyper-Real       [3. In-Browser       [4. Live Threat      [5. National SOC
+   Sandboxes]           Stories]           Defensive Tools]       Radar & MITRE]       Triage & 1930]
+     │                    │                    │                    │                    │
+     └──────────────┬─────┴────────────────────┴────────────────────┴─────┬──────────────┘
+                    ▼                                                     ▼
+           [6. Zero-Config Dual Engine]                         [7. macOS Glassmorphism &
+             (100% Offline + Supabase)                             Accredited Credentials]
+```
+
+#### 1. 👁️ Dual-Perspective Sandbox Technology
+In conventional phishing drills, users click a link and are simply told *"You failed!"*. CyberGuard features a synchronized **split-screen sandbox**. As you examine a weaponized Microsoft 365 lure or a banking SMS, an adjacent **Adversary Telemetry Terminal** demonstrates exactly how reverse-proxy bots capture session tokens, record keystrokes, and bypass 2FA in real time. Seeing what the adversary sees permanently eliminates curiosity-driven unsafe clicks.
+
+#### 2. 📖 Hyper-Relatable, Story-Driven Attack Narratives
+Rather than sterile corporate hypotheticals, scenarios are grounded in real-world psychology:
+- **The ₹1,499 Café Wi-Fi Scam**: An unencrypted payment at a coffee shop where an attacker performs ARP spoofing to alter the transaction payload to ₹9,499.
+- **The Digital Arrest & Video Extortion Call**: Impersonation of cybercrime police officers issuing fake supreme court warrants over video.
+- **The 4:52 PM Friday Payroll Lure**: Time-pressured executive impersonation requesting urgent banking detail re-validation before payroll processing cut-off.
+- **The Electricity Bill APK Trap**: Urgent disconnection notices baiting users into installing remote-access trojans (`.apk`).
+
+#### 3. 🧰 Five Client-Side Defensive Security Tools
+CyberGuard provides hands-on diagnostic utilities directly in the browser:
+- **Passphrase Entropy & GPU Crack Estimator**: Computes mathematical Shannon entropy and estimates cracking durations against an 8x NVIDIA RTX 4090 GPU cluster.
+- **Live URL & Subdomain Dissector**: Analyzes raw URLs for Punycode homographs, lookalike subdomains, suspicious TLDs, and executable extensions.
+- **Public Wi-Fi Risk Auditor**: Calculates venue-based interception exposure based on cipher suites (Open, WEP, WPA2, WPA3), captive portals, and SSL handshakes.
+- **Dark Web Breach Exposure Scanner**: Cross-references simulated intelligence dumps (Canva, Adobe, LinkedIn) to display compromised data classes and remediation checklists.
+- **Personal Cyber Hygiene Hardening Matrix**: An 8-point workstation hardening audit with defense XP rewards.
+
+#### 4. 📡 Live Threat Radar with MITRE ATT&CK Mapping
+Operators monitor active global cyber activity via an animated SVG world map connecting global telemetry nodes (Silicon Valley, Frankfurt, London, Bengaluru, Singapore, Tokyo). Real-time intercept feeds stream in-flight ransomware beaconing and credential stuffing surges. Threat bulletins provide full mapping to **MITRE ATT&CK Tactics & Techniques** with a 1-click **Export IOC Block** (IP addresses, C2 domains, SHA-256 hashes).
+
+#### 5. 🚨 Real-World SOC Incident Intake & "Golden Hour" Protocol
+CyberGuard bridges awareness with incident command. Operators practice reporting incidents with 1-click presets (CEO Wire Fraud, LockBit File Lock, APK Smishing). The system generates official dispatch tickets (`INC-2026-XXXXX`), calculates risk vectors, provides instant containment playbooks (quarantine commands, network isolation steps), and features direct callouts for the **National Cyber Crime Reporting Helpline (1930)** to freeze illicit wire transfers within the critical 2–3 hour window.
+
+#### 6. ⚡ Zero-Config Dual-Engine Architecture
+You can download, build, and run the entire platform **without configuring a single database or cloud account**. The built-in `localDb.ts` engine provides a complete in-browser relational model with pre-seeded modules, lessons, quizzes, operator leaderboards, and badges using `localStorage`. When ready for multi-user production, simply drop in Supabase credentials—the application automatically transitions to cloud PostgreSQL with Row Level Security (RLS).
+
+#### 7. 🎨 Apple macOS Glassmorphism & Accredited Digital Credentials
+Designed like a state-of-the-art defense command console rather than a generic LMS. Features dark/light themes, subtle frosted-glass backdrops, physics-driven Framer Motion micro-interactions, 3D champion podiums, 12 achievement insignias across 4 rarity tiers, and an **Accredited Digital Certificate** with cryptographically structured credential IDs (`CG-2026-XXXXX`) generated upon passing the comprehensive 12-question diagnostic assessment.
 
 ---
 
 ## 🎯 Benefits & Value Proposition
 
-### 🎓 For Students & Learners
-- **Tactile Learning**: Gain deep technical intuition into how attackers manipulate headers, intercept network packets, and harvest credentials.
-- **Portfolio-Ready Credentials**: Earn cryptographically logged **Cybersecurity Awareness Certificates** with unique verification IDs and index scores.
-- **Gamified Mastery**: Level up from *Tier 1 Cyber Recruit* to *Tier 5 Cyber Sentinel* across 12 distinct achievement insignias.
+### 🎓 For Students, Colleges & Academic Institutions
+* **Capstone Minor/Major Project Standard**: Built to demonstrate advanced software engineering practices: strict TypeScript type safety, modular component architecture, reactive state management, and modern CSS.
+* **Resume & Portfolio Ready**: Students learn real defensive security concepts (CIA Triad, MITRE ATT&CK, FIDO2 WebAuthn, Shannon Entropy, ARP Spoofing) with a demonstrable interactive platform.
+* **Earn Verified Credentials**: Passing the comprehensive assessment generates a downloadable, printable credential with a verifiable verification index score.
 
-### 🏢 For Teams & Organizations
-- **Drastically Lower Phishing Click Rates**: Employees learn to spot lookalike subdomains (`account-reauth.shop`), spoofed senders, and macro droppers before clicking.
-- **Incident Response Muscle Memory**: Staff learn exact containment protocols (air-gapping machines, avoiding RAM key reboots, stopping wire transfers).
-- **Zero Ongoing Infrastructure Cost**: Deploy as a serverless static application on Vercel/Netlify backed by Supabase with Row Level Security (RLS).
+### 🏢 For Enterprises & IT Security Teams
+* **Measurable Phishing Reduction**: Interactive dual-perspective sandboxes produce higher retention and behavioral change compared to passive annual compliance slideshows.
+* **Automated Incident Response Drills**: Trains employees on the crucial first 5 minutes of an incident—disconnecting from networks, avoiding destructive reboots, preserving evidence, and reporting early.
+* **Zero Infrastructure Overhead**: Runs as a lightweight static web app on Vercel, Netlify, or Cloudflare Pages with zero server maintenance costs.
 
-### 🛡️ For Everyday Citizens
-- **Protection Against Real Scams**: Relatable defense against **Digital Arrest** police extortion calls, electricity bill disconnection APKs, and fake delivery fees.
-- **The Golden Hour Rule**: Clear instructions on how dialing **1930** within 2–3 hours triggers instant bank account freezes under national financial fraud protocols.
+### 🛡️ For Everyday Citizens & Non-Technical Users
+* **Protection Against Prevalent Scams**: Demystifies UPI payment fraud, digital arrest extortion scams, fake electricity bill disconnection messages, and remote screen-sharing traps.
+* **Actionable Emergency Guidance**: Educates users on the **National Helpline 1930** and the critical "Golden Hour" financial freeze protocol before stolen funds exit banking systems.
 
 ---
 
-## ⚡ Quick Start (30 Seconds)
+## ⚡ 30-Second Quick Start
 
-CyberGuard includes a **self-contained zero-configuration local database engine** (`localDb.ts`). You can run and explore the entire platform without creating any external database accounts!
+CyberGuard is configured to run immediately with zero external dependencies using the integrated **LocalDB Engine**:
 
 ```bash
 # 1. Clone the repository
@@ -77,231 +139,385 @@ cd cyberguard
 # 2. Install dependencies
 npm install
 
-# 3. Start the development server
+# 3. Start the local development server
 npm run dev
 ```
 
-Open your browser at **`http://localhost:5174/`**. Everything works immediately out of the box!
+Open your browser and navigate to **`http://localhost:5174/`**. 
+
+> [!TIP]
+> **Zero Configuration Required**: All modules, interactive lessons, sandboxes, tools, leaderboards, and assessment quizzes are pre-seeded and ready to use immediately!
 
 ---
 
 ## 🧩 Comprehensive Feature Tour
 
 ### 1. 🎮 Dual-Perspective Interactive Threat Sandboxes (`/simulations`)
-Step into safe virtual attack drills where mistakes carry zero operational risk:
 
-* **Spear-Phishing & Cloned Portal Lab** (`/simulations/phishing-email`):  
-  Inspect suspicious Microsoft 365 password expiration notices. Examine weaponized headers, reveal the hidden reverse-proxy redirect, and watch how automated adversary bots log keystrokes in real time.
-* **Live Rogue Wi-Fi & MITM Payment Interception** (`/simulations/mitm-attack`):  
-  Connect to a simulated coffee shop network (`Cafe_Free_WiFi`). Watch live packet eavesdropping as an unencrypted transaction for ₹1,499 is intercepted and modified to ₹9,499. Learn how VPN tunneling renders intercepted data useless.
-* **Double-Click Ransomware & Containment Drill** (`/simulations/ransomware-response`):  
-  Watch an endpoint get hijacked by a disguised `.pdf.exe` payload. Experience real-time file extension corruption (`.DARKVAULT_LOCKED`), dark-web ransom countdowns, and practice immediate network air-gapping.
-* **Mobile Bank Smishing & Fake Cancellation Scam** (`/simulations/social-engineering-call`):  
-  Examine an urgent 9:15 PM SMS claiming an unauthorized bank debit. Watch the side-by-side view as attackers harvest credentials and weaponize the "Cancellation OTP" trick.
+Experience realistic simulated attacks inside a zero-risk virtual containment environment:
+
+| Simulation Lab | Attack Vector | Victim Perspective | Adversary Telemetry View | Key Takeaway |
+| :--- | :--- | :--- | :--- | :--- |
+| **Spear-Phishing & Cloned Portal** | Credential Harvesting | Interactive Microsoft 365 password expiry notice with fake auth prompt | Live terminal capturing POST requests, keystrokes, and session cookies | Always inspect the root domain, not just the prefix subdomain. |
+| **Rogue Wi-Fi & MITM Interception** | ARP Spoofing / Packet Sniffing | Café Wi-Fi portal making a simulated ₹1,499 payment | Wireshark-style packet capture altering amount to ₹9,499 in transit | Unencrypted Wi-Fi exposes raw payloads; VPN shields traffic. |
+| **Double-Click Ransomware Lab** | Disguised Executable (`.pdf.exe`) | Corporate desktop infected by an urgent resume attachment | File system cipher encryption (`.DARKVAULT_LOCKED`) & countdown clock | Disconnect network cable immediately; never reboot or pay ransom. |
+| **Mobile Smishing & Cancellation Scam** | SMS Urgent Bank Pretexting | Smartphone interface with urgent debit warning & cancellation link | Cloud C2 panel harvesting online banking credentials and OTPs | Banks never send cancellation links via SMS or request OTPs over the phone. |
 
 ---
 
-### 2. 🎓 Comprehensive Training Academy (`/training`)
-A structured 6-module curriculum featuring **18 story-driven lessons**:
-* **Module 1: Cybersecurity Fundamentals** (CIA Triad, Threat Actor Profiles, The Human Perimeter)
-* **Module 2: Password & Account Security** (Entropy Mechanics, Password Managers, FIDO2 & Multi-Factor Auth)
-* **Module 3: Phishing & Spear-Phishing Awareness** (Anatomy of Lures, Domain Typosquatting, Weaponized Attachments)
-* **Module 4: Social Engineering & Pretexting** (Executive Impersonation, Digital Arrest Extortion, Deepfake Voice Cloning)
-* **Module 5: Malware & Ransomware Defense** (Infection Vectors, Lateral Movement, The 3-2-1 Air-Gapped Backup Rule)
-* **Module 6: Network Security & Safe Browsing** (Public Wi-Fi Risks, SSL/TLS Encryption, DNS Spoofing & VPN Shields)
+### 2. 🎓 Training Academy (`/training`)
 
-> **Rich Pedagogical Blocks**: Every lesson contains **Interactive Concept Checks** (with confetti celebrations), **Real-World Breach Case Studies** (MGM Resorts, Colonial Pipeline, Uber, Emotet), **Terminal Command Demonstrations**, and **Defense Takeaway Checklists**.
+A structured 6-module curriculum containing **18 story-driven lessons** engineered for maximum retention:
+
+```
+[Module 1: Fundamentals] ──► [Module 2: Passwords & MFA] ──► [Module 3: Phishing & Lures]
+                                                                     │
+[Module 6: Network & Wi-Fi] ◄── [Module 5: Ransomware Defense] ◄─────┘
+                                  & Malware Containment
+```
+
+* **Module 1: Cybersecurity Fundamentals**
+  * *Lesson 1.1*: The CIA Triad in Everyday Life (Confidentiality, Integrity, Availability)
+  * *Lesson 1.2*: Threat Actors & Attack Motives (Script Kiddies to Nation-State APTs)
+  * *Lesson 1.3*: The Human Factor: The New Security Perimeter
+* **Module 2: Password Security & Authentication**
+  * *Lesson 2.1*: Anatomy of a Strong Password & Entropy Mechanics
+  * *Lesson 2.2*: Password Managers: Your Digital Security Vault
+  * *Lesson 2.3*: Multi-Factor Authentication: Beyond Traditional Passwords (SMS vs TOTP vs FIDO2)
+* **Module 3: Phishing, Spear-Phishing & Whaling**
+  * *Lesson 3.1*: Anatomy of a Phishing Email: Deconstructing Weaponized Headers
+  * *Lesson 3.2*: Spear-Phishing & CEO Fraud: Targeted Social Engineering
+  * *Lesson 3.3*: Domain Spoofing, Lookalikes & Weaponized Attachments
+* **Module 4: Social Engineering & Psychological Triggers**
+  * *Lesson 4.1*: The Psychology of Manipulation: Urgency, Authority & Fear
+  * *Lesson 4.2*: Pretexting, Vishing & Digital Arrest Scams
+  * *Lesson 4.3*: Deepfakes & AI-Powered Social Engineering Attacks
+* **Module 5: Malware, Spyware & Ransomware Defense**
+  * *Lesson 5.1*: Malware Types: Trojans, Worms, Keyloggers & Stealers
+  * *Lesson 5.2*: Ransomware Anatomy: From Initial Foothold to Domain Encryption
+  * *Lesson 5.3*: Incident Containment & The 3-2-1 Air-Gapped Backup Strategy
+* **Module 6: Network Security & Safe Browsing**
+  * *Lesson 6.1*: The Dangers of Public & Rogue Wi-Fi Networks
+  * *Lesson 6.2*: SSL/TLS, HTTPS & DNS Spoofing Explained
+  * *Lesson 6.3*: Securing Your Digital Footprint with VPNs & Secure DNS
+
+> **Rich Pedagogical Elements**: Every lesson features **Interactive Concept Check Quizzes** (with confetti feedback), **Real-World Breach Breakdowns** (MGM Resorts, Colonial Pipeline, Uber, Emotet), **Terminal Command Previews**, and **Defense Summary Checklists**.
 
 ---
 
 ### 3. 🧰 Tactical Defensive Security Toolkit (`/tools`)
-Five client-side defensive utilities designed for everyday operational hygiene:
 
-1. **Password Health & Passphrase Vault Engine**:  
-   Calculates mathematical entropy bits, tests against top leaked dictionary breach tables, estimates crack times across an 8x RTX 4090 GPU cluster rig, and generates memorable 4-word cryptographic passphrases.
+A suite of 5 client-side utilities engineered for operational digital hygiene:
+
+```
+┌─────────────────────────┬─────────────────────────┬─────────────────────────┐
+│   Passphrase Entropy    │    Live URL Dissector   │    Public Wi-Fi Risk    │
+│    & GPU Crack Time     │    & Phishing Parser    │     Auditing Engine     │
+├─────────────────────────┼─────────────────────────┴─────────────────────────┤
+│   Dark Web Credential   │         Personal Workstation Cyber Hygiene        │
+│    Exposure Scanner     │                 Hardening Matrix                  │
+└─────────────────────────┴───────────────────────────────────────────────────┘
+```
+
+1. **Password Health & Passphrase Vault**:  
+   Calculates mathematical Shannon entropy ($H = L \cdot \log_2(N)$), checks against common breach wordlists, estimates crack times across an 8x NVIDIA RTX 4090 GPU cluster (164 GH/s for NTLM), and generates cryptographically secure 4-word passphrases.
 2. **Live URL & Domain Phishing Dissector**:  
-   Deep lexical parser identifying lookalike subdomains (e.g. `login.microsoft.com.account-update.ru`), unencrypted HTTP endpoints, credential-harvesting keywords, and executable downloads (`.exe`, `.apk`). Includes 3 adversary email samples with red flag annotations.
+   Performs deep lexical parsing of URLs to expose lookalike subdomains (e.g., `login.microsoft.com.account-update.ru`), unencrypted HTTP protocols, credential-harvesting parameters, and hidden file extensions (`.exe`, `.scr`, `.apk`).
 3. **Public Wi-Fi & Network Security Auditor**:  
-   Calculates interception exposure based on encryption (Open, WEP, WPA2, WPA3), physical venue (Airport, Café, Office), SSL certificate handshake warnings, and active VPN tunneling.
-4. **Dark Web Data Breach & Credential Exposure Scanner**:  
-   Queries simulated threat intelligence databases (Canva, LinkedIn, Adobe, Dropbox) to highlight correlated historical dumps, exposed data classes, and mandatory remediation protocols.
-5. **Personal Cyber Hygiene Scorecard**:  
-   Interactive 8-point workstation hardening checklist (MFA, password managers, auto-updates, remote wipe, 3-2-1 backups, untrusted Wi-Fi VPN) with persistent progress tracking and defense XP rewards.
+   Analyzes connection risks across venue types (Café, Airport, Hotel, Office), encryption ciphers (Open, WEP, WPA2, WPA3), captive portal redirects, and provides real-time risk scores with VPN recommendations.
+4. **Dark Web Breach & Credential Exposure Scanner**:  
+   Simulates threat intelligence queries across known historical breach databases (Canva, LinkedIn, Adobe, Dropbox), highlighting compromised data classes (hashes, emails, phone numbers) and immediate mitigation actions.
+5. **Personal Cyber Hygiene Hardening Matrix**:  
+   An interactive 8-point workstation hardening audit covering MFA, password managers, automated OS updates, remote wipe capabilities, air-gapped backups, and DNS-over-HTTPS.
 
 ---
 
 ### 4. 📡 Live Threat Radar & Tactical Intelligence (`/threats`)
-Real-time situational awareness inspired by enterprise SOC consoles:
-* **Interactive SVG World Projection**: Animated laser attack trajectories linking global sensor hubs (Silicon Valley, Frankfurt, London, Bengaluru, Singapore, Tokyo).
-* **Live Intercept Telemetry Stream**: Automated feed logging in-flight ransomware beaconing, credential stuffing spikes, and mobile smishing campaigns with pause/resume controls.
-* **DEFCON Cyber Readiness Posture**: Current global threat status indicators tracking active zero-days and emerging exploits.
-* **Curated 2025–2026 Bulletins**: 10 real-world advisories with **MITRE ATT&CK Framework Mapping** (Tactics & Techniques) and an instant **"Export IOC Block"** for IP addresses, C2 domains, and SHA-256 hashes.
+
+Enterprise-grade situational awareness directly in your browser:
+* **Interactive SVG Attack Vector Canvas**: Animated glowing laser trajectories visualizing simulated cyber skirmishes between major global hubs (Silicon Valley, Frankfurt, London, Bengaluru, Singapore, Tokyo).
+* **Live Intercept Telemetry Stream**: Streaming feed logging in-flight ransomware C2 beacons, credential stuffing surges, and SMS phishing campaigns with pause/resume controls.
+* **DEFCON Cyber Readiness Posture**: Real-time threat readiness level with indicator rings tracking active threat vectors.
+* **Curated Threat Bulletins**: 10 real-world advisories mapped to the **MITRE ATT&CK Framework** (Techniques & Tactics) with a 1-click **Export IOC Block** for defensive firewall imports.
 
 ---
 
-### 5. 🚨 Incident Intake & Automated SOC Triage Station (`/report`)
-Empowers users to report suspicious events and immediately receive actionable containment guidance:
-* **National Helpline 1930 & Golden Hour Callout**: Real-world emergency guidance for stopping unauthorized financial fraud before funds leave banking networks.
-* **1-Click Realistic Lure Presets**: Instant loading for *CEO Urgent Wire Requests*, *Digital Arrest Video Extortion*, *Electricity Bill Smishing*, and *LockBit Ransomware File Locks*.
-* **Dynamic Attack Questionnaires**: Vector-specific questions assessing credential entry, APK installations, and file modifications.
-* **Automated Containment Playbooks**: Generates official incident dispatch tickets (`INC-2026-XXXXX`), risk scoring, automated perimeter firewall quarantine actions, and step-by-step containment instructions (+30 Defense XP).
+### 5. 🚨 SOC Incident Intake & Automated Triage (`/report`)
+
+Empowers operators to report suspicious events and immediately receive step-by-step containment playbooks:
+* **National Helpline 1930 & Golden Hour Protocol**: Critical emergency guidance detailing how to freeze fraudulent financial transactions before stolen money leaves the banking network.
+* **1-Click Realistic Incident Presets**:
+  * *CEO Urgent Wire Fraud*: Payroll diversion lure with spoofed executive email.
+  * *Digital Arrest Police Video Extortion*: Video call extortion with fake Supreme Court warrants.
+  * *Electricity Bill APK Disconnection*: Urgent SMS with fake bill payment APK.
+  * *LockBit Ransomware File Lock*: Disguised invoice attachment encrypting local directories.
+* **Automated Containment Dispatch**: Generates unique tracking tickets (`INC-2026-XXXXX`), computes severity scores, logs simulated perimeter firewall quarantines, and awards +30 Defense XP.
 
 ---
 
 ### 6. 🏆 Rankings, Badges & Tiers Hierarchy (`/leaderboard`)
-* **Podium of Champions**: Top 3 cyber defense operators rendered with 3D medal styling (🥇 Gold, 🥈 Silver, 🥉 Bronze).
-* **Personal Standing Card**: Highlights current rank, tier status, and the exact XP gap needed to overtake the next operator.
-* **12 Achievement Insignias**: Badges with rarity ratings (*Common, Rare, Epic, Legendary*) tracking milestones across phishing defense, ransomware containment, threat intelligence, and hygiene audits.
-* **5-Tier Operator Progression Roadmap**: Visual career ladder from *Tier 1 Cyber Recruit* to *Tier 5 Cyber Sentinel* with unlockable tooling privileges.
+
+* **Podium of Champions**: Top 3 cyber defense operators displayed on a 3D medal podium (🥇 Gold, 🥈 Silver, 🥉 Bronze).
+* **Operator Standing Card**: Displays your active rank, tier progress, and the exact XP gap required to overtake the next operator.
+* **12 Achievement Insignias**: Badges with distinct rarity tiers (*Common, Rare, Epic, Legendary*) covering phishing detection, ransomware containment, threat intelligence, and hygiene audits.
+* **5-Tier Operator Progression Roadmap**: Career progression hierarchy from *Tier 1 Cyber Recruit* to *Tier 5 Cyber Sentinel* with unlockable platform privileges.
 
 ---
 
 ### 7. 🎯 Diagnostic Assessment & Verified Credentialing (`/assessment` & `/certificate`)
-* **Comprehensive 12-Question Diagnostic**: Covers all 6 core attack surfaces with randomized question sequences and an interactive navigation ribbon.
-* **Domain-by-Domain Readiness Matrix**: Detailed competency grading across Fundamentals, Passwords, Phishing, Social Engineering, Ransomware, and Wi-Fi.
-* **Accredited Digital Certificate**: Operators scoring **61%+** unlock a printable, verified **Cybersecurity Awareness Certificate** with unique Credential IDs.
+
+* **Comprehensive 12-Question Diagnostic**: Randomized questions spanning all 6 defense categories with an interactive jump-navigation ribbon.
+* **Domain Readiness Breakdown**: Evaluates competency across Fundamentals, Passwords, Phishing, Social Engineering, Ransomware, and Wi-Fi.
+* **Accredited Digital Certificate**: Operators scoring **61%+** unlock a printable, verifiable certificate featuring official verification IDs (`CG-2026-XXXXX`) and defense index scores.
 
 ---
 
 ## 🏗️ Technical Architecture
 
-CyberGuard is built using a modern, reactive single-page architecture with a dual-persistence abstraction layer:
+CyberGuard utilizes a modern, reactive single-page architecture with a dual-persistence abstraction layer:
+
+```
+                                  ┌─────────────────────────────────┐
+                                  │      Browser Client (SPA)       │
+                                  │   React 19 + TypeScript + Vite  │
+                                  └────────────────┬────────────────┘
+                                                   │
+                         ┌─────────────────────────┴─────────────────────────┐
+                         ▼                                                   ▼
+         ┌───────────────────────────────┐                   ┌───────────────────────────────┐
+         │     UI & Interaction Layer    │                   │      State & Context Layer    │
+         │  Tailwind CSS v4 + Motion     │                   │   AuthContext • ThemeContext  │
+         │  Apple macOS Glassmorphism    │                   │   ToastContext • ContentHook  │
+         └───────────────┬───────────────┘                   └───────────────┬───────────────┘
+                         │                                                   │
+                         └─────────────────────────┬─────────────────────────┘
+                                                   │
+                                  ┌────────────────▼────────────────┐
+                                  │    Dual-Persistence Adapter     │
+                                  └────────┬────────────────┬───────┘
+                                           │                │
+                ┌──────────────────────────┘                └──────────────────────────┐
+                ▼                                                                      ▼
+ ┌───────────────────────────────┐                                      ┌───────────────────────────────┐
+ │   Mode A: Offline LocalDB     │                                      │     Mode B: Supabase Cloud    │
+ │  In-Browser Relational Store  │                                      │    PostgreSQL 15 + RLS Engine │
+ │  Zero-Config • Instant Start  │                                      │  Row-Level Security • Auth    │
+ └───────────────────────────────┘                                      └───────────────────────────────┘
+```
+
+### Component & Data Flow Architecture
 
 ```mermaid
 graph TD
-    A[Browser Client / React 19 SPA] --> B[Framer Motion & Tailwind v4 UI]
-    A --> C[Defense Context Layer]
-    C --> D[AuthContext / ThemeContext / ToastContext]
+    A[Browser Client / React 19] --> B[App Shell & Routing / App.tsx]
+    B --> C[macOS Glassmorphism UI Components]
+    B --> D[Defense Subsystems]
     
-    A --> E[Dual-Engine Storage Abstraction]
-    E -->|Mode A: Zero-Config Offline| F[LocalDB Engine / localStorage v4]
-    E -->|Mode B: Production Cloud| G[Supabase Postgres + RLS Policies]
+    D --> D1[Interactive Threat Sandboxes]
+    D --> D2[Training Academy & Story Lessons]
+    D --> D3[5-Tool Security Utility Suite]
+    D --> D4[Live Threat Radar & SVG Map]
+    D --> D5[SOC Incident Intake & Playbooks]
+    D --> D6[12-Question Diagnostic Assessment]
     
-    A --> H[Gamification Engine]
-    H --> I[XP Calculation & Level Tiers]
-    H --> J[Badge Evaluation & Insignias]
-    H --> K[Activity Audit Logging]
+    C --> E[Dual-Engine Storage Abstraction]
+    D --> E
     
-    A --> L[Defense Subsystems]
-    L --> M[Dual-Perspective Sandboxes]
-    L --> N[Security Toolkit Utilities]
-    L --> O[Live Threat Radar & SVG Map]
-    L --> P[SOC Incident Intake & Playbooks]
+    E -->|Default: Zero-Config| F[LocalDB Engine / localStorage]
+    E -->|Cloud: Production| G[Supabase Postgres DB + RLS]
+    
+    F --> H[Gamification Engine]
+    G --> H
+    H --> H1[XP Calculation & Multipliers]
+    H --> H2[12 Achievement Insignias]
+    H --> H3[Leaderboard Rankings & Tiers]
 ```
 
-### 💻 Technology Stack
+### 💻 Technology Stack & Justification
 
-| Layer | Technology | Rationale |
-| :--- | :--- | :--- |
-| **Frontend Core** | React 19 + TypeScript | High performance, strict type safety, zero runtime prop mismatches |
-| **Build & Bundler** | Vite 8 + ESBuild | Instant Hot Module Replacement (HMR) and sub-500ms production builds |
-| **Styling & Design** | Tailwind CSS v4 | Clean utility classes, Apple macOS dark/light glassmorphism |
-| **Animations** | Framer Motion | Fluid physics-based transitions, micro-interactions, modal drawers |
-| **Icons & Typography** | Tabler Icons + Space Grotesk / Inter | Curated developer aesthetics with crisp vector glyphs |
-| **Cloud Backend** | Supabase (PostgreSQL 15) | Row Level Security (RLS), JWT authentication, automated triggers |
-| **Offline Engine** | `localDb.ts` In-Memory Adapter | 100% offline functionality without requiring Docker or cloud accounts |
+| Layer | Technology | Version | Purpose & Architectural Rationale |
+| :--- | :--- | :--- | :--- |
+| **Runtime Core** | [React](https://react.dev/) | `19.2.8` | Latest concurrent features, optimized reconciliation, zero unnecessary re-renders |
+| **Language** | [TypeScript](https://www.typescriptlang.org/) | `6.0.2` | Strict end-to-end type safety across modules, simulations, quizzes, and telemetry |
+| **Build & Bundler** | [Vite](https://vitejs.dev/) | `8.2.0` | Sub-second cold starts, instant Hot Module Replacement (HMR), optimized tree-shaking |
+| **Styling Framework** | [Tailwind CSS](https://tailwindcss.com/) | `4.3.3` | Next-generation engine with native CSS cascade layers and glassmorphism styling |
+| **Physics Animations**| [Framer Motion](https://www.framer.com/motion/) | `13.1.1` | Fluid physics-based card transitions, spring-loaded buttons, and modal drawers |
+| **Icons** | [Lucide React](https://lucide.dev/) | `1.33.0` | Comprehensive cybersecurity vector glyph set with crisp, uniform visual weight |
+| **Celebrations** | [Canvas Confetti](https://www.npmjs.com/package/canvas-confetti) | `1.9.4` | High-performance canvas-based particle bursts for quiz and module completion |
+| **Offline Database** | `localDb.ts` In-Memory Adapter | Custom | Self-contained relational database with automatic seeding and zero external dependencies |
+| **Cloud Database** | [Supabase (PostgreSQL)](https://supabase.com/) | `2.112.3` | Production relational backend with Row-Level Security (RLS) and JWT auth |
 
 ---
 
-## 📁 Repository Structure
+## 📁 Detailed Directory Structure
 
 ```text
 cyberguard/
-├── public/                     # Static assets, SVG logos, and icons
+├── public/                         # Public static assets & favicon
 ├── src/
 │   ├── components/
-│   │   ├── layout/             # Public navbar, dashboard shell, route guards
-│   │   ├── simulations/        # Interactive sandboxes (Phishing, Ransomware, Mitm, Smishing)
-│   │   └── ui/                 # Primitives (MacOsWindow, Buttons, Cards, Pills, ProgressBars)
-│   ├── context/                # AuthContext, ThemeContext, ToastContext
-│   ├── hooks/                  # useContent.ts (Data hooks for modules, quizzes, leaderboards)
+│   │   ├── layout/
+│   │   │   ├── Navbar.tsx          # Public navigation bar with active route indicators
+│   │   │   ├── DashboardShell.tsx  # macOS-style sidebar, top command bar, breadcrumbs
+│   │   │   └── ProtectedRoute.tsx  # Role-based route guard (User vs Admin)
+│   │   ├── simulations/
+│   │   │   ├── PhishingEmailSimulation.tsx       # Cloned Microsoft 365 credential harvester
+│   │   │   ├── MitmAttackSimulation.tsx          # Rogue Wi-Fi ARP spoofing & packet modifier
+│   │   │   ├── RansomwareResponseSimulation.tsx  # File encryption drill with countdown clock
+│   │   │   └── SocialEngineeringCallSimulation.tsx # Mobile SMS bank scam with OTP trap
+│   │   └── ui/
+│   │       ├── MacOsWindow.tsx     # Window container with traffic-light control dots
+│   │       ├── Button.tsx          # Reusable button with variants (primary, secondary, danger)
+│   │       ├── Card.tsx            # Frosted glass card containers
+│   │       ├── Pill.tsx            # Status pills and category badges
+│   │       └── ProgressBar.tsx     # Animated progress and readiness indicator bars
+│   ├── context/
+│   │   ├── AuthContext.tsx         # Unified auth provider (LocalDB + Supabase)
+│   │   ├── ThemeContext.tsx        # Dark / Light / System theme state
+│   │   └── ToastContext.tsx        # Non-blocking animated toast notifications
+│   ├── hooks/
+│   │   └── useContent.ts           # Unified data hooks for modules, quizzes, leaderboards
 │   ├── lib/
-│   │   ├── localDb.ts          # Offline local database engine with pre-seeded curriculum
-│   │   ├── supabase.ts         # Supabase client connector
-│   │   ├── gamification.ts     # XP calculation, level evaluation, badge unlocking
-│   │   ├── celebrate.ts        # Canvas confetti celebration engine
-│   │   └── utils.ts            # ClassNames merger (clsx + tailwind-merge)
+│   │   ├── localDb.ts              # Self-contained offline relational database engine
+│   │   ├── supabase.ts             # Supabase client connector
+│   │   ├── gamification.ts         # XP calculation, level progression, and badge triggers
+│   │   ├── celebrate.ts            # Canvas confetti trigger helper
+│   │   └── utils.ts                # Class name merging utility (clsx + twMerge)
 │   ├── pages/
-│   │   ├── UserDashboardPage.tsx       # Defense Center dashboard with 5-vector matrix
-│   │   ├── TrainingPage.tsx            # Training Academy syllabus
-│   │   ├── ModuleDetailPage.tsx        # Story-driven lessons & interactive checks
-│   │   ├── SimulationsPage.tsx         # Sandbox catalog
-│   │   ├── SimulationPlayerPage.tsx    # Live simulation orchestrator
-│   │   ├── SecurityToolsPage.tsx       # 5-tool security utility suite
-│   │   ├── ThreatIntelligencePage.tsx  # Live Threat Radar & SVG attack canvas
-│   │   ├── AssessmentPage.tsx          # 12-question readiness diagnostic
-│   │   ├── ReportIncidentPage.tsx      # Incident intake & SOC containment playbooks
-│   │   ├── LeaderboardPage.tsx         # Rankings, Badges & Tiers Command
-│   │   ├── CertificatePage.tsx         # Printable verified credential
-│   │   ├── SettingsPage.tsx            # System preferences & telemetry export
-│   │   └── admin/                      # Admin CRUD portals for courses, quizzes, reports
-│   ├── types/                  # TypeScript interfaces for modules, lessons, simulations
-│   ├── App.tsx                 # Route declarations & layout wrappers
-│   └── main.tsx                # Application bootstrap
+│   │   ├── HomePage.tsx            # Hero landing page with live interactive showcase
+│   │   ├── LoginPage.tsx           # Authentication page with demo operator credentials
+│   │   ├── UserDashboardPage.tsx   # Operator Defense Center with 5-vector matrix
+│   │   ├── TrainingPage.tsx        # Training Academy syllabus catalog
+│   │   ├── ModuleDetailPage.tsx    # Interactive lessons, concept checks, and case studies
+│   │   ├── SimulationsPage.tsx     # Threat Sandbox catalog
+│   │   ├── SimulationPlayerPage.tsx# Live simulation orchestrator with slug resolution
+│   │   ├── SecurityToolsPage.tsx   # 5-tool tactical defensive security suite
+│   │   ├── ThreatIntelligencePage.tsx # Live Threat Radar with SVG world attack canvas
+│   │   ├── AssessmentPage.tsx      # 12-question diagnostic assessment exam
+│   │   ├── ReportIncidentPage.tsx  # Incident intake & automated SOC triage playbooks
+│   │   ├── LeaderboardPage.tsx     # Rankings, Badges & Tiers Command Center
+│   │   ├── CertificatePage.tsx     # Printable accredited digital certificate
+│   │   ├── ProfilePage.tsx         # User dossier with activity timeline & achievements
+│   │   ├── SettingsPage.tsx        # System preferences, notifications & telemetry export
+│   │   └── admin/                  # Admin CRUD management portals
+│   │       ├── AdminDashboardPage.tsx
+│   │       ├── AdminModulesPage.tsx
+│   │       ├── AdminLessonsPage.tsx
+│   │       ├── AdminQuizzesPage.tsx
+│   │       └── AdminIncidentsPage.tsx
+│   ├── types/                      # Central TypeScript type definitions
+│   │   ├── index.ts
+│   │   └── database.ts
+│   ├── App.tsx                     # Route definitions & layout wrappers
+│   └── main.tsx                    # Application entry point
 ├── supabase/
-│   ├── schema.sql              # PostgreSQL DDL schema with RLS security policies
-│   └── seed.sql                # Production starter seed dataset
-├── package.json                # Project dependencies & scripts
-└── vite.config.ts              # Vite configuration (Port 5174)
+│   ├── schema.sql                  # Complete PostgreSQL schema with RLS security policies
+│   └── seed.sql                    # Production starter dataset for cloud deployment
+├── package.json                    # Project scripts & dependencies
+└── vite.config.ts                  # Vite development server configuration
 ```
 
 ---
 
-## 🚀 Setup & Deployment
+## 🚀 Setup & Cloud Deployment
 
-### Mode 1: Offline Local Mode (Default)
-No setup required! Clone, run `npm install`, then `npm run dev`. The in-browser database engine (`localDb.ts`) automatically manages state, profiles, scores, and lessons inside `localStorage`.
+### Mode 1: Offline Local Mode (Recommended for Demos & Testing)
 
-### Mode 2: Supabase Cloud Database Mode (Optional)
-To connect CyberGuard to a dedicated Supabase PostgreSQL cloud instance:
+CyberGuard runs right out of the box with zero external dependencies:
+
+```bash
+# 1. Clone repository
+git clone https://github.com/your-username/cyberguard.git
+cd cyberguard
+
+# 2. Install dependencies
+npm install
+
+# 3. Launch local development server
+npm run dev
+```
+
+Visit **`http://localhost:5174/`** in your browser. All data persists to your browser's local storage automatically.
+
+---
+
+### Mode 2: Supabase Cloud Mode (Production Multi-User Setup)
+
+To connect CyberGuard to a live PostgreSQL cloud database:
 
 1. Create a free project at [supabase.com](https://supabase.com/).
-2. In your Supabase project dashboard, navigate to the **SQL Editor**.
-3. Copy and run the contents of [`supabase/schema.sql`](supabase/schema.sql).
-4. Copy and run the contents of [`supabase/seed.sql`](supabase/seed.sql).
-5. Create a `.env` file in the root of this project:
+2. In the Supabase Dashboard, open the **SQL Editor**.
+3. Execute the contents of [`supabase/schema.sql`](supabase/schema.sql) to create all 11 tables and Row-Level Security policies.
+4. Execute the contents of [`supabase/seed.sql`](supabase/seed.sql) to populate initial modules, quizzes, and simulations.
+5. Create a `.env` file in the project root:
    ```env
    VITE_SUPABASE_URL=https://your-project-id.supabase.co
    VITE_SUPABASE_ANON_KEY=your-anon-public-key
    ```
-6. Run `npm run dev`. CyberGuard will now authenticate and synchronize with your live cloud database!
+6. Run `npm run dev`. The application will automatically detect your credentials and switch to cloud storage.
+
+---
+
+### Mode 3: 1-Click Production Web Deployment
+
+Deploy CyberGuard to any modern static hosting provider:
+
+#### Deploying on Vercel
+```bash
+npm install -g vercel
+vercel
+```
+
+#### Deploying on Netlify
+```bash
+npm install -g netlify-cli
+npm run build
+netlify deploy --prod --dir=dist
+```
 
 ---
 
 ## 👑 Accessing the Admin Management Console
 
-CyberGuard includes a comprehensive administrative portal (`/admin`) for adding modules, updating quizzes, reviewing telemetry, and managing user roles:
+CyberGuard includes an administrative console (`/admin`) for adding courses, editing quizzes, monitoring incidents, and managing users:
 
-1. Register an account within the app.
-2. In your Supabase dashboard (or `localDb.ts`), locate your user record in the `profiles` table.
-3. Change your `role` column from `"user"` to `"admin"`.
-4. Log in. CyberGuard will automatically display the **Admin Console** in your navigation!
+1. Sign up or log in to an account in the portal.
+2. In your browser console (for LocalDB) or Supabase SQL Editor:
+   ```sql
+   -- For Supabase PostgreSQL:
+   UPDATE profiles SET role = 'admin' WHERE email = 'your-email@example.com';
+   ```
+   *For LocalDB mode*: Open DevTools → Application → Local Storage → `cyberguard_local_db_v4`, locate your profile record in the `profiles` array, and set `"role": "admin"`.
+3. Refresh the page. An **"Admin Console"** link will appear in your top navigation and sidebar, granting full CRUD access to courses, lessons, quizzes, and incident tickets.
 
 ---
 
-## 🛠️ Build & Verification Scripts
+## 🛠️ Verification & Build Commands
 
-| Script | Description |
+| Command | Purpose |
 | :--- | :--- |
-| `npm run dev` | Boots local development server on port **5174** with instant HMR |
-| `npm run build` | Compiles TypeScript (`tsc -b`) and bundles for production via Vite |
-| `npm run preview` | Previews the optimized production bundle locally |
-| `npm run lint` | Runs fast code quality and static analysis checks |
+| `npm run dev` | Starts local dev server at `http://localhost:5174/` with instant HMR |
+| `npm run build` | Compiles TypeScript (`tsc -b`) and generates optimized production bundle in `dist/` |
+| `npm run preview` | Spins up a local static server to test the production build |
+| `npm run lint` | Runs fast code quality and syntax checks via `oxlint` |
 
 ---
 
 ## 🔒 Security & Ethical Disclaimer
 
 > [!IMPORTANT]
-> **Educational & Defensive Purpose Only**: CyberGuard simulations (phishing lures, ransomware screens, Wi-Fi interceptions, and smishing portals) are executed within **sandboxed, simulated client-side environments**. They do not execute malicious binary code, infect operating systems, or intercept real network traffic.  
-> The purpose of this project is strictly defensive: to educate operators on how to identify, neutralize, and report malicious campaigns.
+> **Defensive & Educational Use Only**: CyberGuard simulations (phishing email inspectors, ransomware screens, Wi-Fi packet interceptors, and smishing portals) execute entirely within **safe, client-side browser memory**. They do not execute malicious binary payloads, modify local operating system files, or intercept real network traffic.  
+> The sole purpose of this platform is **defensive awareness**: training operators to recognize deception, contain compromises, and report incidents through authorized emergency channels.
 
 ---
 
-## 📄 License
+## 📜 MIT License
 
-This project is licensed under the **MIT License**. Feel free to use, modify, and deploy this portal for academic institutions, corporate security training, or non-profit awareness initiatives.
+This project is licensed under the **MIT License**. You are free to use, modify, distribute, and integrate this project for academic institutions, enterprise training programs, or open-source research. See [`LICENSE`](LICENSE) for complete terms.
 
 <div align="center">
-  <sub>Engineered with precision for modern cyber defense. Stay vigilant. Protect the perimeter.</sub>
+  <br />
+  <sub>Designed and engineered for modern cyber defense. Stay vigilant. Protect the perimeter.</sub>
+  <br /><br />
+  <b><a href="#">Back to Top ↑</a></b>
 </div>

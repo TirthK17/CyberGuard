@@ -664,14 +664,14 @@ export function TopicsPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-600 text-white">
+                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-600 text-white">
                   Citizen Helpline 1930
                 </span>
-                <span className="text-[11px] font-semibold text-rose-300">
+                <span className="text-xs font-semibold text-rose-300">
                   ⏱️ Golden Hour (2-3 hrs) Protocol
                 </span>
               </div>
-              <p className="text-xs text-text-pure font-medium mt-0.5">
+              <p className="text-xs sm:text-sm text-text-pure font-medium mt-0.5">
                 Targeted right now or money debited? Call <strong>1930</strong> immediately to freeze stolen funds in bank accounts.
               </p>
             </div>
@@ -700,13 +700,13 @@ export function TopicsPage() {
         <div className="text-center max-w-3xl mx-auto space-y-2.5 pt-2">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-subtle px-3.5 py-1 text-xs font-semibold text-primary">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            Stay Safe Online • National Cyber Awareness Library
+            Stay Safe Online • Safety Guides
           </div>
           <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-text-pure">
-            Cyber Threat &amp; Scam Encyclopedia
+            Cyber Safety &amp; Scam Directory
           </h1>
-          <p className="text-xs sm:text-sm text-text-fog leading-relaxed max-w-2xl mx-auto">
-            Practical, zero-jargon protection guides to help you recognize online deception, protect your family, and know exactly what to do when targeted.
+          <p className="text-sm sm:text-base text-text-fog leading-relaxed max-w-2xl mx-auto">
+            Practical, easy-to-understand guides to help you recognize online scams, protect your family, and know exactly what to do if targeted.
           </p>
         </div>
       </div>
@@ -722,7 +722,7 @@ export function TopicsPage() {
               Experiencing a Suspicious Situation Right Now?
             </h2>
           </div>
-          <span className="text-[11px] font-mono text-text-ash">
+          <span className="text-xs text-text-ash font-medium">
             Click any scenario for immediate 1-click advice
           </span>
         </div>
@@ -734,19 +734,19 @@ export function TopicsPage() {
               <button
                 key={sc.id}
                 onClick={() => matched && setSelectedTopic(matched)}
-                className="flex flex-col justify-between text-left p-3 rounded-xl border border-border bg-surface-elevated hover:border-primary/50 hover:bg-surface hover:-translate-y-0.5 transition-all cursor-pointer group"
+                className="flex flex-col justify-between text-left p-3.5 rounded-xl border border-border bg-surface-elevated hover:border-primary/50 hover:bg-surface hover:-translate-y-0.5 transition-all cursor-pointer group"
               >
                 <div className="flex items-center gap-2 mb-1.5">
                   <i className={`ti ${sc.icon} text-base text-primary group-hover:scale-110 transition-transform`} />
-                  <span className="font-display text-xs font-bold text-text-pure group-hover:text-primary transition-colors line-clamp-1">
+                  <span className="font-display text-xs sm:text-sm font-semibold text-text-pure group-hover:text-primary transition-colors line-clamp-1">
                     {sc.label}
                   </span>
                 </div>
-                <p className="text-[11px] text-text-fog leading-snug line-clamp-2">
+                <p className="text-xs text-text-fog leading-relaxed line-clamp-2">
                   {sc.trigger}
                 </p>
-                <span className="mt-2 text-[10px] font-mono text-primary font-semibold flex items-center gap-0.5">
-                  Open Quick Guide <i className="ti ti-arrow-right text-[10px]" />
+                <span className="mt-2 text-xs text-primary font-semibold flex items-center gap-1">
+                  Open Quick Guide <i className="ti ti-arrow-right text-xs" />
                 </span>
               </button>
             );
@@ -781,20 +781,20 @@ export function TopicsPage() {
                     <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30 group-hover:scale-105 transition-transform">
                       <i className={`ti ${topic.icon} text-xl`} />
                     </div>
-                    <span className="text-[10px] font-mono font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-rose-500/20 text-rose-300">
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300">
                       High Priority
                     </span>
                   </div>
 
-                  <h3 className="font-display text-sm font-bold text-text-pure group-hover:text-primary transition-colors min-h-[2.5rem]">
+                  <h3 className="font-display text-base font-bold text-text-pure group-hover:text-primary transition-colors min-h-[2.5rem]">
                     {topic.title}
                   </h3>
 
-                  <p className="mt-1 text-xs text-text-fog leading-relaxed line-clamp-2">
+                  <p className="mt-1 text-sm text-text-fog leading-relaxed line-clamp-2">
                     {topic.summary}
                   </p>
 
-                  <div className="mt-3 p-2.5 rounded-xl bg-danger/10 border border-danger/20 text-[11px] text-text-pure leading-snug">
+                  <div className="mt-3 p-2.5 rounded-xl bg-danger/10 border border-danger/20 text-xs sm:text-sm text-text-pure leading-relaxed">
                     <span className="font-bold text-danger">⚠️ Warning Sign: </span>
                     {topic.keyRedFlag}
                   </div>
@@ -802,9 +802,9 @@ export function TopicsPage() {
 
                 <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs">
                   <span className="font-semibold text-primary group-hover:underline flex items-center gap-1">
-                    Open Defense Dossier <i className="ti ti-chevron-right text-xs" />
+                    Read Safety Guide <i className="ti ti-chevron-right text-xs" />
                   </span>
-                  <span className="text-[10px] font-mono text-text-ash">
+                  <span className="text-xs font-medium text-text-ash">
                     ⏱️ {topic.readTimeMinutes} min
                   </span>
                 </div>
@@ -837,7 +837,7 @@ export function TopicsPage() {
             )}
           </div>
 
-          <div className="text-xs font-mono text-text-ash self-end sm:self-center">
+          <div className="text-xs font-medium text-text-ash self-end sm:self-center">
             Showing <strong className="text-text-pure">{filteredTopics.length}</strong> of {AWARENESS_TOPICS.length} guides
           </div>
         </div>
@@ -856,7 +856,7 @@ export function TopicsPage() {
             >
               <span>{cat.label}</span>
               <span
-                className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
                   activeCategory === cat.id ? "bg-white/20 text-white" : "bg-surface-elevated text-text-ash"
                 }`}
               >
@@ -868,7 +868,7 @@ export function TopicsPage() {
 
         {/* Audience Sub-Filters */}
         <div className="flex items-center gap-2 overflow-x-auto text-xs text-text-ash">
-          <span className="font-mono text-[10px] uppercase shrink-0">Target Audience:</span>
+          <span className="text-xs font-semibold uppercase tracking-wider shrink-0">Target Audience:</span>
           {audienceFilters.map((aud) => (
             <button
               key={aud.id}
@@ -930,12 +930,12 @@ export function TopicsPage() {
                 </h3>
 
                 {/* Card Summary */}
-                <p className="mt-1.5 text-xs text-text-fog leading-relaxed line-clamp-2">
+                <p className="mt-1.5 text-sm text-text-fog leading-relaxed line-clamp-2">
                   {topic.summary}
                 </p>
 
                 {/* Prominent Red Flag Callout */}
-                <div className="mt-3 p-2.5 rounded-xl bg-surface-elevated border border-border text-[11px] text-text-pure leading-snug">
+                <div className="mt-3 p-2.5 rounded-xl bg-surface-elevated border border-border text-xs sm:text-sm text-text-pure leading-relaxed">
                   <span className="font-bold text-warn">⚠️ Key Clue: </span>
                   {topic.keyRedFlag}
                 </div>
@@ -945,7 +945,7 @@ export function TopicsPage() {
                   {topic.targetAudience.slice(0, 2).map((aud) => (
                     <span
                       key={aud}
-                      className="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-elevated text-text-ash border border-border"
+                      className="text-xs font-medium px-2.5 py-0.5 rounded-md bg-surface-elevated text-text-ash border border-border"
                     >
                       {aud}
                     </span>
@@ -956,9 +956,9 @@ export function TopicsPage() {
               {/* Bottom Card Footer */}
               <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs">
                 <span className="font-semibold text-primary flex items-center gap-1 group-hover:underline">
-                  Open Full Dossier <i className="ti ti-arrow-right text-xs" />
+                  Read Safety Guide <i className="ti ti-arrow-right text-xs" />
                 </span>
-                <span className="text-[10px] font-mono text-text-ash">
+                <span className="text-xs font-medium text-text-ash">
                   ⏱️ {topic.readTimeMinutes} min read
                 </span>
               </div>
@@ -1017,13 +1017,13 @@ export function TopicsPage() {
               <div className="space-y-2 pr-8">
                 <div className="flex items-center gap-2">
                   <Pill tone={selectedTopic.badgeTone}>{selectedTopic.categoryLabel}</Pill>
-                  <span className="text-xs text-text-ash font-mono">• ⏱️ {selectedTopic.readTimeMinutes} min defense guide</span>
+                  <span className="text-xs text-text-ash font-medium">• ⏱️ {selectedTopic.readTimeMinutes} min read</span>
                 </div>
                 <h2 className="font-display text-lg sm:text-2xl font-bold text-text-pure flex items-center gap-2.5">
                   <i className={`ti ${selectedTopic.icon} text-primary`} />
                   {selectedTopic.title}
                 </h2>
-                <p className="text-xs sm:text-sm text-text-fog leading-relaxed">
+                <p className="text-sm sm:text-base text-text-fog leading-relaxed">
                   {selectedTopic.summary}
                 </p>
               </div>
@@ -1031,9 +1031,9 @@ export function TopicsPage() {
               {/* Primary Key Rule Callout */}
               <div className="p-3.5 rounded-xl bg-danger/10 border border-danger/30 flex items-start gap-3">
                 <i className="ti ti-alert-triangle text-danger text-lg shrink-0 mt-0.5" />
-                <div className="text-xs text-text-pure leading-relaxed">
-                  <strong className="text-danger block mb-0.5 font-mono uppercase text-[10px] tracking-wider">
-                    Golden Defense Rule:
+                <div className="text-sm text-text-pure leading-relaxed">
+                  <strong className="text-danger block mb-0.5 text-xs font-bold uppercase tracking-wider">
+                    Golden Rule to Remember:
                   </strong>
                   {selectedTopic.keyRedFlag}
                 </div>
@@ -1041,13 +1041,13 @@ export function TopicsPage() {
 
               {/* Step-by-Step Modus Operandi */}
               <div className="p-4 rounded-xl bg-surface-elevated border border-border space-y-2.5">
-                <div className="font-bold text-xs uppercase tracking-wider text-primary font-mono flex items-center gap-1.5">
-                  <i className="ti ti-eye" /> How Scammers Operate (Step-by-Step):
+                <div className="font-bold text-xs uppercase tracking-wider text-primary flex items-center gap-1.5">
+                  <i className="ti ti-eye" /> How The Scam Works (Step-by-Step):
                 </div>
-                <ol className="space-y-2 text-xs text-text-pure">
+                <ol className="space-y-2 text-sm text-text-pure">
                   {selectedTopic.howItWorks.map((step, idx) => (
                     <li key={idx} className="flex items-start gap-2.5 leading-relaxed">
-                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary text-[10px] font-bold font-mono">
+                      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary text-xs font-bold">
                         {idx + 1}
                       </span>
                       <span>{step}</span>
@@ -1058,12 +1058,12 @@ export function TopicsPage() {
 
               {/* Warning Signs & Red Flags */}
               <div className="space-y-2">
-                <div className="font-bold text-xs uppercase tracking-wider text-danger font-mono flex items-center gap-1.5">
+                <div className="font-bold text-xs uppercase tracking-wider text-danger flex items-center gap-1.5">
                   <i className="ti ti-alert-octagon" /> Critical Warning Signs &amp; Red Flags:
                 </div>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {selectedTopic.redFlags.map((flag, idx) => (
-                    <div key={idx} className="p-2.5 rounded-xl bg-danger/5 border border-danger/20 text-xs text-text-pure flex items-start gap-2 leading-relaxed">
+                    <div key={idx} className="p-2.5 rounded-xl bg-danger/5 border border-danger/20 text-xs sm:text-sm text-text-pure flex items-start gap-2 leading-relaxed">
                       <i className="ti ti-x text-danger shrink-0 mt-0.5" />
                       <span>{flag}</span>
                     </div>
@@ -1074,10 +1074,10 @@ export function TopicsPage() {
               {/* Do's and Don'ts */}
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="p-4 rounded-xl bg-success/5 border border-success/20 space-y-2">
-                  <div className="font-bold text-xs uppercase tracking-wider text-success font-mono flex items-center gap-1.5">
+                  <div className="font-bold text-xs uppercase tracking-wider text-success flex items-center gap-1.5">
                     <i className="ti ti-shield-check" /> Do&apos;s (Protective Habits):
                   </div>
-                  <ul className="space-y-1.5 text-xs text-text-pure">
+                  <ul className="space-y-1.5 text-xs sm:text-sm text-text-pure">
                     {selectedTopic.dos.map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2 leading-relaxed">
                         <i className="ti ti-check text-success shrink-0 mt-0.5" />
@@ -1088,10 +1088,10 @@ export function TopicsPage() {
                 </div>
 
                 <div className="p-4 rounded-xl bg-danger/5 border border-danger/20 space-y-2">
-                  <div className="font-bold text-xs uppercase tracking-wider text-danger font-mono flex items-center gap-1.5">
+                  <div className="font-bold text-xs uppercase tracking-wider text-danger flex items-center gap-1.5">
                     <i className="ti ti-shield-x" /> Don&apos;ts (Never Do This):
                   </div>
-                  <ul className="space-y-1.5 text-xs text-text-pure">
+                  <ul className="space-y-1.5 text-xs sm:text-sm text-text-pure">
                     {selectedTopic.donts.map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2 leading-relaxed">
                         <i className="ti ti-ban text-danger shrink-0 mt-0.5" />
@@ -1103,8 +1103,8 @@ export function TopicsPage() {
               </div>
 
               {/* Emergency Action */}
-              <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 space-y-1.5 text-xs">
-                <div className="font-bold text-rose-400 flex items-center gap-1.5 uppercase font-mono text-[11px] tracking-wider">
+              <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 space-y-1.5 text-xs sm:text-sm">
+                <div className="font-bold text-rose-400 flex items-center gap-1.5 uppercase text-xs tracking-wider">
                   <i className="ti ti-sos text-sm" /> Emergency Action If Targeted:
                 </div>
                 <p className="text-text-pure leading-relaxed">

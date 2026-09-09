@@ -42,74 +42,74 @@ interface IncidentCategory {
 const INCIDENT_CATEGORIES: IncidentCategory[] = [
   {
     id: "phish",
-    label: "Phishing / Malicious Email",
+    label: "Fake Email (Phishing)",
     icon: "ti-mail-alert",
-    description: "Spoofed executive emails, fake invoice attachments, credential harvesting login portals.",
+    description: "Emails pretending to be Netflix, Amazon, your bank, or company IT with fake login links.",
     defaultUrgency: "high",
     triagePrompts: [
       "Did you click any link in the email?",
-      "Were any usernames, passwords, or MFA codes typed?",
-      "Was any file or archive (.zip, .exe, .pdf) downloaded or executed?",
+      "Did you type your password or one-time verification code?",
+      "Did you download or open any file attachment (.zip, .exe, .pdf)?",
     ],
   },
   {
     id: "digital-arrest",
-    label: "Digital Arrest & Police Extortion",
+    label: "Fake Police / Video Call Scam",
     icon: "ti-video-off",
-    description: "Coercive video/audio calls impersonating Police, CBI, or Customs over narcotics courier parcels.",
+    description: "Threatening video or phone calls pretending to be Police, CBI, or Customs claiming illegal parcels.",
     defaultUrgency: "critical",
     triagePrompts: [
-      "Are the callers demanding you remain on a video call (Skype/WhatsApp)?",
-      "Have they sent forged arrest warrants or CBI summons letters?",
-      "Did you transfer money under the pretext of 'secret verification'?",
+      "Are they telling you not to disconnect or stay on video call?",
+      "Did they show fake police ID cards or forged arrest warrants?",
+      "Did you send money for 'verification' or to 'clear your name'?",
     ],
   },
   {
     id: "ransomware",
-    label: "Ransomware & Malware Infection",
+    label: "Virus / Locked Files",
     icon: "ti-virus",
-    description: "Inaccessible or encrypted files, strange file extensions (.lockbit, .akira), ransom note popups.",
+    description: "Files refusing to open, strange file extensions, or popups asking for money to unlock files.",
     defaultUrgency: "critical",
     triagePrompts: [
-      "Are documents or drives refusing to open or showing altered extensions?",
-      "Did a text or HTML ransom note appear on the desktop?",
-      "Has the machine been disconnected from local Wi-Fi and Ethernet?",
+      "Are your photos or documents unable to open?",
+      "Did a note or popup appear asking for money to restore files?",
+      "Have you disconnected your computer from Wi-Fi and the internet?",
     ],
   },
   {
     id: "smishing",
-    label: "Mobile Smishing & Fake APK",
+    label: "Scam Text (SMS / WhatsApp)",
     icon: "ti-device-mobile-message",
-    description: "SMS claiming electricity cutoff, bank KYC suspension, or links asking to install APK apps.",
+    description: "Texts about bill cutoffs, courier delays, or links asking you to install apps outside app stores.",
     defaultUrgency: "high",
     triagePrompts: [
-      "Did you receive an SMS from a 10-digit mobile number threatening service cutoff?",
-      "Did you download or install an APK file from outside the Google Play Store?",
-      "Did you share any banking OTP received over SMS?",
+      "Did you get a text threatening power cutoff or bank account block?",
+      "Did you download or install an app file (.apk) from a link in the text?",
+      "Did you share any verification code (OTP) from your phone?",
     ],
   },
   {
     id: "credential",
-    label: "Account Compromise & Session Theft",
+    label: "Hacked Account / Strange Logins",
     icon: "ti-key-off",
-    description: "Unexplained MFA fatigue prompts, unfamiliar login alerts, or unauthorized password resets.",
+    description: "Unexpected login alerts, password reset emails you didn't request, or unfamiliar devices logged in.",
     defaultUrgency: "high",
     triagePrompts: [
-      "Are you receiving push notifications for MFA logins you didn't initiate?",
-      "Have recovery email addresses or phone numbers been altered?",
-      "Are emails or messages being sent from your account without your knowledge?",
+      "Are you getting login approval prompts you didn't request?",
+      "Was your recovery email or phone number changed?",
+      "Are strange messages or emails being sent from your account?",
     ],
   },
   {
     id: "hardware",
-    label: "Stolen Device or Rogue Network",
+    label: "Lost Device or Unsafe Wi-Fi",
     icon: "ti-wifi-off",
-    description: "Lost/stolen laptop or phone containing work data, or connection to suspected rogue Wi-Fi.",
+    description: "Lost or stolen laptop/phone, or entering passwords while connected to suspicious public Wi-Fi.",
     defaultUrgency: "medium",
     triagePrompts: [
-      "Was the lost device encrypted with BitLocker or FileVault?",
-      "Is remote wipe capability (Find My Device) active?",
-      "Did you enter work credentials while connected to an untrusted public Wi-Fi?",
+      "Did the lost device have a password or biometric lock enabled?",
+      "Can you remotely lock or erase it using Find My Device / Apple Find My?",
+      "Did you type sensitive passwords while connected to public Wi-Fi?",
     ],
   },
 ];
@@ -126,40 +126,40 @@ interface IncidentSample {
 
 const INCIDENT_SAMPLES: IncidentSample[] = [
   {
-    name: "CEO Urgent Wire Request",
+    name: "Urgent Money Request Email",
     categoryId: "phish",
     urgency: "high",
-    subject: "URGENT: Confidential Vendor Settlement Wire before 11:00 AM",
-    source: "ceo-office@corp-management-review.com (Reply: exec-vance992@gmail.com)",
+    subject: "URGENT: Confidential Payment Needed Before 11:00 AM",
+    source: "ceo-office@corp-management-review.com",
     targetUrl: "http://wire-portal.secure-banking-auth.ru/invoice.pdf.exe",
-    details: "Received email allegedly from CEO Robert Vance requesting immediate wire transfer of $48,200 for vendor acquisition. Claimed to be boarding a flight and unable to take phone calls. I did NOT send the wire or click the attachment.",
+    details: "Received email allegedly from CEO requesting immediate transfer of funds. Claimed to be boarding a flight and unable to take calls. I did NOT send money or click the attachment.",
   },
   {
-    name: "Digital Arrest Courier Extortion",
+    name: "Fake Police Video Call",
     categoryId: "digital-arrest",
     urgency: "critical",
-    subject: "FedEx Mumbai Customs & Mumbai Police Narcotics Summons Call",
+    subject: "Caller claiming illegal parcel sent in my name",
     source: "+91 98450 11928 (WhatsApp Video Call with Police Logo)",
     targetUrl: "https://mumbai-police-cyber-verification.info",
-    details: "Caller claimed a parcel sent in my name to Cambodia was seized containing 5 passports and 140g of MDMA. Transferred call to a man in police uniform who showed a fake CBI arrest warrant on Skype and told me I was under 'Digital Arrest' until I transferred funds for verification.",
+    details: "Caller claimed a courier parcel in my name was seized with illegal items. Transferred to a man in police uniform demanding money for 'verification'.",
   },
   {
-    name: "Electricity Bill APK Smishing",
+    name: "Electricity Bill Scam SMS",
     categoryId: "smishing",
     urgency: "high",
-    subject: "Urgent SMS: Electricity Power cut off tonight at 9:30 PM",
+    subject: "Urgent SMS: Power disconnection notice tonight at 9:30 PM",
     source: "+91 91204 88392",
     targetUrl: "http://powerbill-update-quickpay.top/update.apk",
-    details: "Received SMS stating 'Dear consumer, your electricity power will be disconnected at 9:30 PM because previous bill was not updated. Call electricity officer at 9120488392 or update app.' I checked my power utility account separately and no dues were pending.",
+    details: "Received SMS claiming electricity will be disconnected tonight unless I update my bill via a download link. Checked my official account and had zero dues.",
   },
   {
-    name: "LockBit Ransomware File Lock",
+    name: "Suspicious Virus Popup",
     categoryId: "ransomware",
     urgency: "critical",
-    subject: "All accounting spreadsheets renamed to .lockbit_encrypted",
+    subject: "Spreadsheets renamed to .lockbit and ransom note on screen",
     source: "Desktop popup: README_TO_RESTORE_FILES.txt",
     targetUrl: "http://lockbit773829.onion",
-    details: "At 3:15 PM, several departmental shared files suddenly became corrupted with extension .lockbit. A text file appeared on the desktop demanding 2.4 Bitcoin to recover files. I immediately unplugged the network cable.",
+    details: "Files suddenly showed strange extensions and a note demanded money to restore them. Immediately disconnected Wi-Fi.",
   },
 ];
 
@@ -367,8 +367,8 @@ export function ReportIncidentPage() {
     setSubmitting(false);
 
     toast({
-      title: "Security Incident Dispatched!",
-      description: `Ticket ${reportId} created. +30 XP awarded for active defense reporting.`,
+      title: "Report Submitted!",
+      description: `Report ${reportId} created. +30 XP awarded for reporting.`,
       variant: "success",
     });
     await refreshProfile();
@@ -395,14 +395,14 @@ export function ReportIncidentPage() {
             <div className="flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-400" />
               <p className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-400">
-                Security Operations Center (SOC) Intake Terminal
+                Help &amp; Incident Desk
               </p>
             </div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-text-pure sm:text-3xl mt-1">
-              Report Security Incident &amp; Threat Triage
+              Report a Scam or Security Issue
             </h1>
             <p className="mt-1 text-xs text-text-fog">
-              Submit suspected phishing, ransomware infections, mobile smishing, or digital arrest scams for real-time automated triage and containment playbooks.
+              Encountered a fake email, suspicious call, or think your account was compromised? Submit the details below to get immediate step-by-step guidance.
             </p>
           </div>
 
@@ -414,7 +414,7 @@ export function ReportIncidentPage() {
                 icon={<i className="ti ti-radar" />}
                 className="text-xs"
               >
-                View Live Threat Radar
+                View Recent Scams
               </Button>
             </Link>
           </div>
@@ -430,21 +430,21 @@ export function ReportIncidentPage() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="font-display text-sm font-bold text-text-pure">
-                    Active Financial Fraud or Criminal Extortion in Progress?
+                    Lost Money or On a Threatening Call Right Now?
                   </span>
-                  <span className="rounded bg-danger/20 px-2 py-0.5 font-mono text-[10px] font-bold text-danger uppercase border border-danger/30">
+                  <span className="rounded-full bg-danger/20 px-2.5 py-0.5 text-xs font-semibold text-danger uppercase border border-danger/30">
                     National Helpline 1930
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-text-fog max-w-3xl leading-relaxed">
-                  If money was deducted from your bank account in the last 2-3 hours (The <strong className="text-warn">Golden Hour</strong>) or you are being coerced under a fake &quot;Digital Arrest&quot; video call, call <strong>1930</strong> immediately to trigger the Citizen Financial Cyber Fraud freeze protocol.
+                <p className="mt-1 text-xs sm:text-sm text-text-fog max-w-3xl leading-relaxed">
+                  If money was taken from your bank account recently or you are being threatened on a fake &quot;police video call&quot;, dial <strong>1930</strong> immediately to freeze the transaction and alert the cybercrime helpline.
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2.5 shrink-0">
               <a
                 href="tel:1930"
-                className="inline-flex items-center gap-2 rounded-xl bg-danger px-4 py-2 font-mono text-xs font-bold text-white shadow-lg shadow-danger/30 transition-transform hover:scale-105"
+                className="inline-flex items-center gap-2 rounded-xl bg-danger px-4 py-2 text-xs sm:text-sm font-bold text-white shadow-lg shadow-danger/30 transition-transform hover:scale-105"
               >
                 <i className="ti ti-phone" />
                 Dial 1930
@@ -453,10 +453,10 @@ export function ReportIncidentPage() {
                 href="https://cybercrime.gov.in"
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3.5 py-2 text-xs font-medium text-text-pure hover:border-primary/50 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3.5 py-2 text-xs sm:text-sm font-semibold text-text-pure hover:border-primary/50 transition-colors"
               >
                 cybercrime.gov.in
-                <i className="ti ti-external-link text-[10px] text-text-ash" />
+                <i className="ti ti-external-link text-xs text-text-ash" />
               </a>
             </div>
           </div>
@@ -466,10 +466,10 @@ export function ReportIncidentPage() {
       {/* ── 2. QUICK LOAD INCIDENT SAMPLE PRESETS ── */}
       <div className="p-4 rounded-2xl bg-surface border border-border space-y-3">
         <div className="flex items-center justify-between">
-          <span className="font-mono text-[11px] font-bold text-text-pure uppercase tracking-wider flex items-center gap-1.5">
-            <i className="ti ti-bolt text-primary" /> Test With Realistic Incident Templates (1-Click Load):
+          <span className="text-xs sm:text-sm font-bold text-text-pure uppercase tracking-wide flex items-center gap-1.5">
+            <i className="ti ti-bolt text-primary" /> Try a Sample Scenario (Click to Fill):
           </span>
-          <span className="font-mono text-[10px] text-text-ash">Instant Scenario Sandbox</span>
+          <span className="text-xs text-text-ash font-medium">Interactive Demo</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {INCIDENT_SAMPLES.map((sample, idx) => (
@@ -477,9 +477,9 @@ export function ReportIncidentPage() {
               key={idx}
               type="button"
               onClick={() => handleLoadSample(sample)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-surface-elevated text-xs font-medium text-text-fog hover:text-text-pure hover:border-primary/50 transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-border bg-surface-elevated text-xs sm:text-sm font-medium text-text-fog hover:text-text-pure hover:border-primary/50 transition-all cursor-pointer"
             >
-              <i className="ti ti-file-text text-primary text-xs" />
+              <i className="ti ti-file-text text-primary text-sm" />
               <span>{sample.name}</span>
             </button>
           ))}
@@ -491,21 +491,21 @@ export function ReportIncidentPage() {
         {/* Left Column: Intake Form */}
         <Card className="p-6 sm:p-7 space-y-6">
           <div>
-            <h2 className="font-display text-base font-bold text-text-pure">
-              Incident Intake &amp; Classification
+            <h2 className="font-display text-base sm:text-lg font-bold text-text-pure">
+              Tell Us What Happened
             </h2>
-            <p className="mt-1 text-xs text-text-fog">
-              Provide incident parameters. The SOC automated triage engine parses indicators of compromise and generates an immediate containment playbook.
+            <p className="mt-1 text-xs sm:text-sm text-text-fog leading-relaxed">
+              Fill in the details below. We'll give you clear, actionable steps to secure your accounts right away.
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* 1. Category Grid */}
             <div>
-              <label className="mb-2 block font-mono text-[11px] uppercase tracking-wider text-text-ash font-bold">
-                1. Incident Threat Category
+              <label className="mb-2 block text-xs sm:text-sm font-semibold text-text-moon">
+                1. What kind of scam or threat is this?
               </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                 {INCIDENT_CATEGORIES.map((c) => {
                   const selected = category === c.id;
                   return (
@@ -513,16 +513,16 @@ export function ReportIncidentPage() {
                       type="button"
                       key={c.id}
                       onClick={() => handleSelectCategory(c.id)}
-                      className={`flex items-start gap-3 rounded-xl border p-3 text-left transition-all ${
+                      className={`flex items-start gap-3 rounded-xl border p-3.5 text-left transition-all cursor-pointer ${
                         selected
                           ? "border-primary bg-primary/10 text-primary shadow-sm font-semibold"
                           : "border-border bg-surface-elevated text-text-fog hover:border-border-strong hover:text-text-pure"
                       }`}
                     >
-                      <i className={`ti ${c.icon} text-lg shrink-0 mt-0.5`} />
+                      <i className={`ti ${c.icon} text-xl shrink-0 mt-0.5`} />
                       <div className="min-w-0">
-                        <div className="text-xs font-bold text-text-pure truncate">{c.label}</div>
-                        <p className="text-[10px] text-text-ash line-clamp-2 mt-0.5 leading-tight">
+                        <div className="text-xs sm:text-sm font-bold text-text-pure truncate">{c.label}</div>
+                        <p className="text-xs text-text-ash line-clamp-2 mt-0.5 leading-relaxed">
                           {c.description}
                         </p>
                       </div>
@@ -534,13 +534,13 @@ export function ReportIncidentPage() {
 
             {/* Dynamic Assessment Checklist for Selected Category */}
             <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-primary font-bold block">
-                Critical Assessment Indicators ({activeCat.label}):
+              <span className="text-xs font-semibold uppercase tracking-wider text-primary block">
+                Quick check for {activeCat.label}:
               </span>
-              <div className="space-y-1.5 text-xs text-text-fog">
+              <div className="space-y-1.5 text-xs sm:text-sm text-text-fog">
                 {activeCat.triagePrompts.map((prompt, i) => (
                   <div key={i} className="flex items-start gap-2">
-                    <i className="ti ti-help-circle text-primary shrink-0 mt-0.5 text-sm" />
+                    <i className="ti ti-help-circle text-primary shrink-0 mt-0.5 text-base" />
                     <span>{prompt}</span>
                   </div>
                 ))}
@@ -549,21 +549,21 @@ export function ReportIncidentPage() {
 
             {/* 2. Urgency Selector */}
             <div>
-              <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-text-ash font-bold">
-                2. Assessed Urgency / Impact
+              <label className="mb-2 block text-xs sm:text-sm font-semibold text-text-moon">
+                2. How urgent is this?
               </label>
               <div className="flex flex-wrap gap-2">
                 {[
-                  { id: "low", label: "Low (General Suspicion)" },
-                  { id: "medium", label: "Medium (Targeted Lure)" },
-                  { id: "high", label: "High (Clicked / Typed Data)" },
-                  { id: "critical", label: "Critical (Device Locked / Extortion)" },
+                  { id: "low", label: "Low (Just suspicious, no action taken)" },
+                  { id: "medium", label: "Medium (Targeted message)" },
+                  { id: "high", label: "High (Clicked link or shared info)" },
+                  { id: "critical", label: "Critical (Money lost or device locked)" },
                 ].map((u) => (
                   <button
                     type="button"
                     key={u.id}
                     onClick={() => setUrgency(u.id as UrgencyLevel)}
-                    className={`rounded-full border px-3 py-1 font-mono text-[11px] font-medium transition-colors ${
+                    className={`rounded-full border px-3.5 py-1.5 text-xs sm:text-sm font-semibold transition-colors cursor-pointer ${
                       urgency === u.id
                         ? u.id === "critical"
                           ? "border-danger bg-danger/20 text-danger font-bold"
@@ -579,73 +579,73 @@ export function ReportIncidentPage() {
 
             {/* 3. Subject / Headline */}
             <div>
-              <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-text-ash font-bold">
-                3. Incident Subject / Headline
+              <label className="mb-1.5 block text-xs sm:text-sm font-semibold text-text-moon">
+                3. Short Summary
               </label>
               <input
                 required
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                placeholder="e.g. Urgent email claiming CEO requested wire payment before 11 AM..."
-                className="input py-2 text-xs sm:text-sm font-medium"
+                placeholder="e.g. Urgent email claiming my electricity bill is overdue..."
+                className="input py-2.5 text-xs sm:text-sm font-medium"
               />
             </div>
 
-            {/* 4. Sender / Threat Actor Contact & Destination URL */}
+            {/* 4. Sender & Destination URL */}
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-text-ash font-bold">
-                  Sender Email or Phone Number
+                <label className="mb-1.5 block text-xs sm:text-sm font-semibold text-text-moon">
+                  Sender's Email or Phone Number
                 </label>
                 <input
                   required
                   value={source}
                   onChange={(e) => setSource(e.target.value)}
-                  placeholder="e.g. alert-payroll@company-verification.ru"
-                  className="input font-mono text-xs py-2"
+                  placeholder="e.g. alert-payroll@company-notice.org"
+                  className="input text-xs sm:text-sm py-2.5"
                 />
               </div>
 
               <div>
-                <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-text-ash font-bold">
-                  Suspicious Destination URL / Domain
+                <label className="mb-1.5 block text-xs sm:text-sm font-semibold text-text-moon">
+                  Suspicious Website or Link (if any)
                 </label>
                 <input
                   value={targetUrl}
                   onChange={(e) => setTargetUrl(e.target.value)}
                   placeholder="e.g. http://login.bank-update.xyz/pay"
-                  className="input font-mono text-xs py-2"
+                  className="input text-xs sm:text-sm py-2.5"
                 />
               </div>
             </div>
 
-            {/* 5. What Happened (Narrative Details) */}
+            {/* 5. What Happened */}
             <div>
-              <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-text-ash font-bold">
-                5. Incident Narrative (What Happened &amp; Red Flags Observed)
+              <label className="mb-1.5 block text-xs sm:text-sm font-semibold text-text-moon">
+                4. What happened? (Describe what you saw)
               </label>
               <textarea
                 rows={4}
                 required
                 value={details}
                 onChange={(e) => setDetails(e.target.value)}
-                placeholder="Detail what triggered suspicion, whether credentials or OTPs were shared, if attachments were executed, or if ransom notes appeared..."
-                className="input resize-none text-xs leading-relaxed"
+                placeholder="Explain what happened: Did you click any links? Were any passwords or OTP codes shared? Did you download any files?..."
+                className="input resize-none text-xs sm:text-sm leading-relaxed"
               />
             </div>
 
-            {/* 6. Evidence Artifacts (Simulated Screenshots & Files) */}
+            {/* 6. Evidence Attachments */}
             <div>
-              <label className="mb-1.5 block font-mono text-[11px] uppercase tracking-wider text-text-ash font-bold">
-                6. Attach Evidence Artifacts (Screenshots, Headers, Logs)
+              <label className="mb-1.5 block text-xs sm:text-sm font-semibold text-text-moon">
+                5. Attach Screenshots or File Names (Optional)
               </label>
               <div className="flex gap-2">
                 <input
                   type="text"
                   value={newFileName}
                   onChange={(e) => setNewFileName(e.target.value)}
-                  placeholder="Filename or log label (e.g., suspicious_sms_screenshot.png)..."
-                  className="input font-mono text-xs flex-1 py-1.5"
+                  placeholder="e.g., scam_sms_screenshot.png..."
+                  className="input text-xs sm:text-sm flex-1 py-2"
                 />
                 <Button
                   type="button"
@@ -654,7 +654,7 @@ export function ReportIncidentPage() {
                   onClick={handleAddAttachment}
                   className="text-xs shrink-0"
                 >
-                  Add Artifact
+                  Add File
                 </Button>
               </div>
 
@@ -687,7 +687,7 @@ export function ReportIncidentPage() {
               className="w-full py-3 font-bold text-xs"
               icon={<i className="ti ti-send" />}
             >
-              Transmit Incident to SOC Engine (+30 XP)
+              Get Immediate Safety Advice (+30 XP)
             </Button>
           </form>
         </Card>
@@ -707,7 +707,7 @@ export function ReportIncidentPage() {
                 <div className="flex items-center justify-between pb-3 border-b border-border">
                   <div>
                     <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash block">
-                      Triage Dispatch Ticket
+                      Incident Ticket
                     </span>
                     <span className="font-mono text-sm font-bold text-primary">
                       {selectedIncident.id}
@@ -730,7 +730,7 @@ export function ReportIncidentPage() {
                 {/* Immediate Containment Playbook */}
                 <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 space-y-2.5">
                   <span className="font-mono text-[10px] uppercase tracking-widest text-emerald-400 font-bold flex items-center gap-1.5">
-                    <i className="ti ti-shield-check text-sm" /> Mandatory Containment Directives:
+                    <i className="ti ti-shield-check text-sm" /> What You Must Do Right Now:
                   </span>
                   <div className="space-y-2 text-xs leading-relaxed text-text-pure">
                     {selectedIncident.containmentPlaybook.map((rule, idx) => (
@@ -742,10 +742,10 @@ export function ReportIncidentPage() {
                   </div>
                 </div>
 
-                {/* Automated SOC Actions Taken */}
+                {/* Automated Actions Taken */}
                 <div className="p-4 rounded-2xl bg-surface border border-border space-y-2 text-xs">
                   <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash font-bold block">
-                    Automated SOC Quarantine Telemetry:
+                    Automated Actions &amp; Security Checks:
                   </span>
                   <div className="space-y-1.5 font-mono text-[11px] text-text-fog">
                     {selectedIncident.socActions.map((action, idx) => (
@@ -761,7 +761,7 @@ export function ReportIncidentPage() {
                 {selectedIncident.attachedFiles.length > 0 && (
                   <div className="pt-2 border-t border-border text-xs">
                     <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash block mb-1">
-                      Evidence Artifacts Logged:
+                      Attached Files:
                     </span>
                     <div className="flex flex-wrap gap-1">
                       {selectedIncident.attachedFiles.map((f, i) => (
@@ -777,10 +777,10 @@ export function ReportIncidentPage() {
               <div className="rounded-3xl border border-dashed border-border bg-surface p-8 text-center space-y-2">
                 <i className="ti ti-shield-check text-3xl text-text-ash block" />
                 <h3 className="font-display text-sm font-bold text-text-pure">
-                  No Active Ticket Selected
+                  No Report Selected
                 </h3>
                 <p className="text-xs text-text-fog max-w-xs mx-auto">
-                  Submit an incident using the intake form or choose a record from your log below to inspect containment directives.
+                  Submit the form on the left or select a previous report below to view emergency instructions.
                 </p>
               </div>
             )}
@@ -790,7 +790,7 @@ export function ReportIncidentPage() {
           <Card className="p-6">
             <div className="flex items-center justify-between border-b border-border pb-3.5">
               <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash font-bold flex items-center gap-1.5">
-                <i className="ti ti-history text-primary" /> Verified Incident Log
+                <i className="ti ti-history text-primary" /> Your Reported Incidents
               </span>
               <span className="font-mono text-xs text-text-fog">{history.length} logged</span>
             </div>
@@ -798,7 +798,7 @@ export function ReportIncidentPage() {
             {history.length === 0 ? (
               <div className="py-8 text-center text-xs text-text-ash">
                 <i className="ti ti-archive text-2xl text-text-ash block mb-2" />
-                No incident reports filed yet. Use this console whenever you observe suspicious activity.
+                No incident reports filed yet. Use this form whenever you spot suspicious activity.
               </div>
             ) : (
               <div className="mt-4 space-y-2.5 max-h-[360px] overflow-y-auto pr-1">
