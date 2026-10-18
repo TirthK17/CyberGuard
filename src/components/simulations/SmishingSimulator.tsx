@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/primitives";
 import { celebrate } from "@/lib/celebrate";
+import { simulationXp } from "@/lib/gamification";
 
 interface SmishingSimulatorProps {
   onComplete: (score: number, meta: Record<string, unknown>) => void;
@@ -17,6 +18,7 @@ type Act =
   | "money_drained"
   | "fraud_blocked"
   | "fake_helpline"
+  | "helpline_disconnected"
   | "how_smishing_works"
   | "final_score";
 
@@ -31,6 +33,8 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
   const [fakeCustId, setFakeCustId] = useState("98410294");
   const [fakePin, setFakePin] = useState("");
   const [fakeOtp, setFakeOtp] = useState("");
+  const [credError, setCredError] = useState<string | null>(null);
+  const [otpError, setOtpError] = useState<string | null>(null);
   const [userChoice, setUserChoice] = useState<"block" | "pay" | "call" | null>(null);
   const [scoreReported, setScoreReported] = useState(false);
 
@@ -102,6 +106,12 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
       );
     }
 
+    if (act === "helpline_disconnected") {
+      logs.push(
+        "[Target Escaped] Victim disconnected the call before giving OTP! No money stolen, but target dialled our number."
+      );
+    }
+
     return logs;
   };
 
@@ -110,16 +120,20 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
   };
 
   const handleSubmitCredentials = () => {
-    if (!fakePin) {
-      setFakePin("8492");
+    if (!fakePin.trim()) {
+      setCredError("Please enter your PIN or click 'Use Demo PIN'.");
+      return;
     }
+    setCredError(null);
     setAct("otp_trick");
   };
 
   const handleSubmitOtp = () => {
-    if (!fakeOtp) {
-      setFakeOtp("841920");
+    if (!fakeOtp.trim()) {
+      setOtpError("Please enter the 6-digit OTP or click 'Use Demo OTP'.");
+      return;
     }
+    setOtpError(null);
     setUserChoice("pay");
     setAct("money_drained");
   };
@@ -135,12 +149,17 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
     setAct("fake_helpline");
   };
 
+  const handleHangUpFakeHelpline = () => {
+    setUserChoice("call");
+    setAct("helpline_disconnected");
+  };
+
   const calculateScore = () => {
     if (userChoice === "block") {
       return inspectedSender && inspectedLink ? 100 : 90;
     }
     if (userChoice === "call") {
-      return 50;
+      return 60;
     }
     return 30;
   };
@@ -151,10 +170,12 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
       setScoreReported(true);
       onComplete(finalScore, {
         action: "smishing_simulation_completed",
+        simulation_slug: "social-engineering-call",
         score: finalScore,
         inspected_sender: inspectedSender,
         inspected_link: inspectedLink,
         blocked_fraud: userChoice === "block",
+        called_fake_helpline: userChoice === "call",
       });
     }
     setAct("final_score");
@@ -164,8 +185,11 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
     setAct("sms_arrives");
     setInspectedSender(false);
     setInspectedLink(false);
+    setFakeCustId("98410294");
     setFakePin("");
     setFakeOtp("");
+    setCredError(null);
+    setOtpError(null);
     setUserChoice(null);
     setScoreReported(false);
   };
@@ -482,15 +506,35 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
                         </div>
 
                         <div>
-                          <label className="text-[10px] text-zinc-400 block mb-1">4-Digit ATM PIN / Password</label>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="text-[10px] text-zinc-400">4-Digit ATM PIN / Password</label>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setFakePin("8492");
+                                setCredError(null);
+                              }}
+                              className="text-[10px] text-primary hover:underline cursor-pointer"
+                            >
+                              Use Demo PIN (8492)
+                            </button>
+                          </div>
                           <input
                             type="password"
                             placeholder="••••"
                             maxLength={4}
                             value={fakePin}
-                            onChange={(e) => setFakePin(e.target.value)}
-                            className="w-full h-8 px-2.5 rounded-lg bg-zinc-900 border border-red-500/80 text-xs font-mono text-white tracking-widest text-center"
+                            onChange={(e) => {
+                              setFakePin(e.target.value);
+                              if (credError) setCredError(null);
+                            }}
+                            className={`w-full h-8 px-2.5 rounded-lg bg-zinc-900 border text-xs font-mono text-white tracking-widest text-center ${
+                              credError ? "border-danger" : "border-red-500/80"
+                            }`}
                           />
+                          {credError && (
+                            <span className="text-[10px] text-danger mt-1 block">{credError}</span>
+                          )}
                         </div>
 
                         <div className="p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-[10px] text-red-400">
@@ -543,14 +587,35 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
                           Enter the 6-digit code received on your phone to reverse the transaction.
                         </p>
 
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] text-zinc-400">6-Digit SMS Code</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFakeOtp("841920");
+                              setOtpError(null);
+                            }}
+                            className="text-[10px] text-primary hover:underline cursor-pointer"
+                          >
+                            Use Demo OTP (841920)
+                          </button>
+                        </div>
                         <input
                           type="text"
                           maxLength={6}
                           placeholder="841920"
                           value={fakeOtp}
-                          onChange={(e) => setFakeOtp(e.target.value)}
-                          className="w-full h-10 px-3 rounded-lg bg-zinc-900 border border-danger text-center text-lg font-mono font-bold tracking-widest text-white"
+                          onChange={(e) => {
+                            setFakeOtp(e.target.value);
+                            if (otpError) setOtpError(null);
+                          }}
+                          className={`w-full h-10 px-3 rounded-lg bg-zinc-900 border text-center text-lg font-mono font-bold tracking-widest text-white ${
+                            otpError ? "border-danger" : "border-danger/80"
+                          }`}
                         />
+                        {otpError && (
+                          <span className="text-[10px] text-danger mt-1 block text-center">{otpError}</span>
+                        )}
 
                         <div className="p-2 rounded-lg bg-amber-500/15 border border-amber-500/30 text-[10px] text-amber-300 text-left space-y-1">
                           <strong>⚠️ SPOT THE FATAL TRICK:</strong>
@@ -685,11 +750,49 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
                     </div>
 
                     <button
-                      onClick={handleBlockScam}
-                      className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow-md"
+                      onClick={handleHangUpFakeHelpline}
+                      className="w-full py-2.5 px-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs transition cursor-pointer flex items-center justify-center gap-1.5 shadow-md"
                     >
-                      <i className="ti ti-phone-off" /> Hang Up &amp; Call Real Bank Number on Debit Card
+                      <i className="ti ti-phone-off" /> Hang Up Scam Call
                     </button>
+                  </motion.div>
+                )}
+
+                {/* ── ACT 4D: HELPLINE DISCONNECTED IN TIME ── */}
+                {act === "helpline_disconnected" && (
+                  <motion.div
+                    key="helpline_disconnected"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex-1 flex flex-col justify-between space-y-3 text-center pt-2"
+                  >
+                    <div className="space-y-3">
+                      <div className="w-14 h-14 rounded-full bg-amber-500/20 text-amber-400 border-2 border-amber-500 mx-auto flex items-center justify-center text-2xl">
+                        <i className="ti ti-phone-off" />
+                      </div>
+                      <h2 className="text-sm font-bold text-amber-400">CALL TERMINATED JUST IN TIME!</h2>
+
+                      <div className="p-3.5 rounded-2xl bg-zinc-950 border border-amber-500/30 text-left text-xs space-y-2 text-zinc-200">
+                        <p className="font-bold text-amber-300">
+                          ⚠️ Close Call: Partial Safety Reflex
+                        </p>
+                        <p className="text-[11px] leading-relaxed">
+                          You hung up before reading your OTP to the scam operator, preventing total fund loss.
+                        </p>
+                        <div className="p-2.5 rounded-xl bg-zinc-900 border border-amber-500/20 text-[11px] text-zinc-300">
+                          <strong>Key Lesson:</strong> Never dial phone numbers included in suspicious debit alerts. Always look up the official bank hotline printed on the back of your physical payment card.
+                        </div>
+                      </div>
+                    </div>
+
+                    <Button
+                      variant="primary"
+                      onClick={() => setAct("how_smishing_works")}
+                      className="w-full text-xs font-bold py-2.5"
+                    >
+                      Continue to Golden Anti-Smishing Rules &rarr;
+                    </Button>
                   </motion.div>
                 )}
 
@@ -841,7 +944,7 @@ export function SmishingSimulator({ onComplete }: SmishingSimulatorProps) {
                   Score: {score}/100
                 </div>
                 <div className="flex justify-center gap-2 pt-1">
-                  <Pill tone="primary" size="md">+{score} XP Earned</Pill>
+                  <Pill tone="primary" size="md">+{simulationXp(score)} XP Earned</Pill>
                   <Pill tone={score >= 70 ? "emerald" : "danger"} size="md">
                     {score >= 70 ? "🛡️ Mobile Awareness: EXCELLENT" : "⚠️ Compromised: Needs Practice"}
                   </Pill>

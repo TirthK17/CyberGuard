@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/primitives";
 import { celebrate } from "@/lib/celebrate";
+import { simulationXp } from "@/lib/gamification";
 
 interface MitmPaymentSandboxProps {
   onComplete: (score: number, meta: Record<string, unknown>) => void;
@@ -12,8 +13,10 @@ interface MitmPaymentSandboxProps {
 type Act =
   | "story_intro"
   | "wifi_select"
+  | "official_wifi_prompt"
   | "captive_snoop"
   | "payment_warning"
+  | "inspect_certificate"
   | "hacker_tamper"
   | "critical_decision"
   | "decision_outcome"
@@ -36,9 +39,18 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
   const getHackerLogs = () => {
     const baseLogs = [
       "[*] Fake Wi-Fi hotspot active and broadcasting",
-      "[*] Fake network created: 'Cafe_FREE_HighSpeed_WiFi'",
+      "[*] Rogue network SSID: 'Cafe_FREE_HighSpeed_WiFi'",
       "[*] Listening for nearby devices and network traffic...",
     ];
+
+    if (selectedWifi === "official") {
+      baseLogs.push(
+        "[-] VICTIM CONNECTED TO ENCRYPTED OFFICIAL NETWORK",
+        "[-] WPA2-Enterprise handshake established with official AP",
+        "[-] Rogue AP bypassed: attacker cannot monitor traffic on this network."
+      );
+      return baseLogs;
+    }
 
     if (selectedWifi === "fake") {
       baseLogs.push(
@@ -48,7 +60,7 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
       );
     }
 
-    if (act === "captive_snoop" || act === "payment_warning") {
+    if (act === "captive_snoop" || act === "payment_warning" || act === "inspect_certificate") {
       baseLogs.push(
         "[>] SNOOPED: User opened 'rahulelectronics.in/cart'",
         "[>] SNOOPED: Item 'Pro Wireless Headphones' - Amount: ₹1,499",
@@ -56,7 +68,13 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
       );
     }
 
-    if (act === "payment_warning" || act === "hacker_tamper") {
+    if (act === "inspect_certificate") {
+      baseLogs.push(
+        "[!] ALERT: Victim opened Security Certificate Details!",
+        "[!] Attacker fake certificate exposed: CN=hacker-proxy.local (Untrusted CA)",
+        "[!] Victim may abort connection..."
+      );
+    } else if (act === "payment_warning" || act === "hacker_tamper") {
       baseLogs.push(
         "[!] ATTEMPTING TO BREAK ENCRYPTION: Serving fake security certificate",
         "[!] Warning shown on victim phone: 'Security Certificate Not Trusted'..."
@@ -73,7 +91,10 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
       );
     }
 
-    if (vpnActive) {
+    // Outcome logs: user choice takes precedence
+    if (userDecision === "pay") {
+      baseLogs.push("[$$$] SUCCESS! Victim approved tampered amount: ₹9,499 credited to attacker mule!");
+    } else if (vpnActive) {
       baseLogs.push(
         "[SAFE] VICTIM ACTIVATED VPN (ENCRYPTED TUNNEL)",
         "[BLOCKED] Attacker cannot read or tamper with encrypted traffic",
@@ -82,8 +103,6 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
       );
     } else if (userDecision === "cancel") {
       baseLogs.push("[-] VICTIM REJECTED TRANSACTION: Payment cancelled by user!");
-    } else if (userDecision === "pay") {
-      baseLogs.push("[$$$] SUCCESS! Victim approved tampered amount: ₹9,499 credited to attacker mule!");
     }
 
     return baseLogs;
@@ -92,10 +111,10 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
   const handleSelectWifi = (type: "fake" | "official") => {
     setSelectedWifi(type);
     if (type === "official") {
-      // In real life, official requires password or staff
-      setSelectedWifi("fake");
+      setAct("official_wifi_prompt");
+    } else {
+      setAct("captive_snoop");
     }
-    setAct("captive_snoop");
   };
 
   const handleProceedToPayment = () => {
@@ -106,7 +125,7 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
     if (reaction === "rush") {
       setAct("hacker_tamper");
     } else {
-      setAct("hacker_tamper");
+      setAct("inspect_certificate");
     }
   };
 
@@ -124,8 +143,14 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
   };
 
   const calculateFinalScore = () => {
+    if (userDecision === "pay") {
+      return 30;
+    }
+    if (selectedWifi === "official") {
+      return 100;
+    }
     if (userDecision === "cancel" || vpnActive) {
-      return vpnActive ? 100 : 85;
+      return vpnActive ? 100 : 90;
     }
     return 30;
   };
@@ -376,18 +401,76 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
                         </button>
 
                         {/* OFFICIAL WI-FI */}
-                        <div className="p-2.5 rounded-xl bg-zinc-950 border border-zinc-800 text-zinc-500 text-xs flex items-center justify-between opacity-70">
-                          <div className="flex items-center gap-2">
-                            <i className="ti ti-lock text-zinc-500 text-sm" />
-                            <span className="text-xs text-zinc-400">Cafe_Official_Staff</span>
+                        <button
+                          type="button"
+                          onClick={() => handleSelectWifi("official")}
+                          className="w-full text-left p-3 rounded-xl bg-zinc-900 border border-zinc-700/80 hover:border-sky-400 hover:bg-zinc-800 transition-all cursor-pointer shadow-sm group"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <i className="ti ti-lock text-sky-400 text-sm" />
+                              <span className="text-xs font-bold text-white group-hover:text-sky-300">Cafe_Official_Staff</span>
+                            </div>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 font-semibold uppercase">WPA2 Protected</span>
                           </div>
-                          <span className="text-[10px] text-zinc-500">Locked 🔒 (Ask Barista)</span>
-                        </div>
+                          <div className="text-[10px] text-zinc-400 mt-1 flex items-center justify-between">
+                            <span>Requires WPA2 Password</span>
+                            <span className="text-sky-400 font-semibold">Tap for password access &rarr;</span>
+                          </div>
+                        </button>
                       </div>
                     </div>
 
                     <div className="text-center text-[10px] text-zinc-400 pb-1">
                       💡 Tip: Most people instantly tap the Open Free Wi-Fi without thinking twice!
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ── OFFICIAL WI-FI PROMPT SCENE ── */}
+                {act === "official_wifi_prompt" && (
+                  <motion.div
+                    key="official_wifi"
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex-1 flex flex-col justify-between space-y-3"
+                  >
+                    <div className="space-y-3 pt-2 text-center">
+                      <div className="w-14 h-14 rounded-full bg-sky-500/20 border-2 border-sky-500 text-sky-400 mx-auto flex items-center justify-center text-3xl">
+                        <i className="ti ti-key" />
+                      </div>
+                      <div>
+                        <h2 className="text-sm font-bold text-white">WPA2 Password Required</h2>
+                        <p className="text-[11px] text-zinc-400 mt-0.5">
+                          Network: &quot;Cafe_Official_Staff&quot;
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-xl bg-surface-elevated border border-border text-left text-xs space-y-2 text-zinc-300">
+                        <p className="text-[11px] leading-relaxed">
+                          Official café networks use encrypted authentication (WPA2/WPA3). In real life, you would ask the staff for the customer code, preventing rogue interception.
+                        </p>
+                        <p className="text-[11px] text-sky-300 font-semibold">
+                          🛡️ Connecting to an encrypted network blocks MITM rogue hotspots!
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-2">
+                      <Button
+                        variant="primary"
+                        onClick={() => handleSelectWifi("fake")}
+                        className="w-full text-xs font-bold py-2.5"
+                      >
+                        Connect to Free Open Wi-Fi (Experience Rogue Attack Drill) &rarr;
+                      </Button>
+                      <Button
+                        variant="secondary"
+                        onClick={() => handleChooseAction("cancel")}
+                        className="w-full text-xs font-medium py-2"
+                      >
+                        Stay on Secure Cellular / Ask Barista (Safe Exit +100 Score)
+                      </Button>
                     </div>
                   </motion.div>
                 )}
@@ -484,14 +567,79 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
                     </div>
 
                     <div className="space-y-2 pt-2">
-                      <p className="text-[10px] text-center text-zinc-400 italic">
-                        Most people think: &quot;I just want my headphones, I don&apos;t care about errors!&quot;
-                      </p>
+                      <button
+                        onClick={() => handleWarningReaction("inspect")}
+                        className="w-full py-2.5 px-3 rounded-xl bg-primary hover:bg-primary/90 text-white text-xs font-bold active:scale-98 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                      >
+                        <i className="ti ti-search" /> Inspect Security Certificate (Recommended)
+                      </button>
                       <button
                         onClick={() => handleWarningReaction("rush")}
-                        className="w-full py-2.5 px-3 rounded-xl bg-amber-500/20 border border-amber-500/50 text-amber-300 text-xs font-bold hover:bg-amber-500/30 active:scale-98 transition flex items-center justify-center gap-1.5 cursor-pointer"
+                        className="w-full py-2 px-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-medium hover:bg-amber-500/20 active:scale-98 transition flex items-center justify-center gap-1.5 cursor-pointer"
                       >
-                        <i className="ti ti-bolt" /> Ignore Warning &amp; Continue (In a Hurry)
+                        <i className="ti ti-bolt" /> Ignore Warning &amp; Continue (Simulate Risk)
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ── INSPECT CERTIFICATE SCENE ── */}
+                {act === "inspect_certificate" && (
+                  <motion.div
+                    key="inspect_cert"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex-1 flex flex-col justify-between space-y-3"
+                  >
+                    <div className="space-y-2.5 pt-1">
+                      <div className="flex items-center gap-2 border-b border-zinc-800 pb-2">
+                        <i className="ti ti-certificate text-danger text-xl" />
+                        <div>
+                          <h2 className="text-xs font-bold text-white">SSL Certificate Inspector</h2>
+                          <span className="text-[10px] text-danger font-mono font-bold">STATUS: UNTRUSTED / FORGED</span>
+                        </div>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-zinc-950 border border-danger/40 space-y-2 text-[11px] font-mono">
+                        <div className="flex justify-between">
+                          <span className="text-zinc-500">Requested Host:</span>
+                          <span className="text-zinc-200">rahulelectronics.in</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-zinc-500">Issued To (CN):</span>
+                          <span className="text-danger font-bold">hacker-proxy.local</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-zinc-500">Issuer Authority:</span>
+                          <span className="text-danger font-bold">Self-Signed Root CA</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-zinc-500">Public Key:</span>
+                          <span className="text-zinc-400">RSA 2048 (Attacker-Held)</span>
+                        </div>
+                      </div>
+
+                      <div className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-[11px] text-emerald-300 space-y-1">
+                        <strong className="block font-bold">Sharp eye! You caught the attacker!</strong>
+                        <p className="text-zinc-300 text-[10px] leading-relaxed">
+                          Because the certificate is self-signed and not from a trusted root like DigiCert or Let&apos;s Encrypt, you verified that an adversary is proxying and decrypting your payment stream!
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-1">
+                      <button
+                        onClick={() => handleChooseAction("cancel")}
+                        className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold active:scale-98 transition flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                      >
+                        <i className="ti ti-shield-check" /> Abort &amp; Disconnect From Rogue Hotspot (+Score)
+                      </button>
+                      <button
+                        onClick={() => setAct("hacker_tamper")}
+                        className="w-full py-1.5 px-3 rounded-xl text-zinc-400 hover:text-zinc-200 text-xs transition"
+                      >
+                        Continue anyway to see how payment is tampered &rarr;
                       </button>
                     </div>
                   </motion.div>
@@ -806,7 +954,7 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
                   Score: {score}/100
                 </div>
                 <div className="flex justify-center gap-2 pt-1">
-                  <Pill tone="primary" size="md">+{score} XP Earned</Pill>
+                  <Pill tone="primary" size="md">+{simulationXp(score)} XP Earned</Pill>
                   <Pill tone={score >= 70 ? "emerald" : "warning"} size="md">
                     {score >= 70 ? "🛡️ Threat Neutralized" : "⚠️ Needs Defense Practice"}
                   </Pill>

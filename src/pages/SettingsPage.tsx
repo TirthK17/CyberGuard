@@ -103,22 +103,49 @@ export function SettingsPage() {
   const handleExportData = () => {
     try {
       const dbRaw = localStorage.getItem("cyberguard_local_db_v4") || "{}";
-      const blob = new Blob([dbRaw], { type: "application/json" });
+      const db = JSON.parse(dbRaw);
+      const currentUserId = profile?.id;
+
+      // Extract only current user's profile and records
+      const userData = {
+        exported_at: new Date().toISOString(),
+        profile: profile || null,
+        activity_logs: Array.isArray(db.activity_logs)
+          ? db.activity_logs.filter((item: { user_id?: string }) => item.user_id === currentUserId)
+          : [],
+        quiz_attempts: Array.isArray(db.quiz_attempts)
+          ? db.quiz_attempts.filter((item: { user_id?: string }) => item.user_id === currentUserId)
+          : [],
+        assessment_results: Array.isArray(db.assessment_results)
+          ? db.assessment_results.filter((item: { user_id?: string }) => item.user_id === currentUserId)
+          : [],
+        simulation_results: Array.isArray(db.simulation_results)
+          ? db.simulation_results.filter((item: { user_id?: string }) => item.user_id === currentUserId)
+          : [],
+        user_badges: Array.isArray(db.user_badges)
+          ? db.user_badges.filter((item: { user_id?: string }) => item.user_id === currentUserId)
+          : [],
+        certificates: Array.isArray(db.certificates)
+          ? db.certificates.filter((item: { user_id?: string }) => item.user_id === currentUserId)
+          : [],
+      };
+
+      const blob = new Blob([JSON.stringify(userData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `cyberguard_defense_telemetry_${profile?.id || "operator"}.json`;
+      a.download = `cyberguard_user_data_${currentUserId || "operator"}.json`;
       a.click();
       URL.revokeObjectURL(url);
       toast({
-        title: "Telemetry Export Complete",
+        title: "User Data Export Complete",
         description: "Your local training, scorecards, and incident logs were downloaded.",
         variant: "success",
       });
     } catch {
       toast({
         title: "Export Failed",
-        description: "Could not export local storage telemetry.",
+        description: "Could not export user data.",
         variant: "error",
       });
     }

@@ -3,6 +3,7 @@ import { Card, Pill } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useToast } from "@/context/ToastContext";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    TYPES & INTERFACES
@@ -93,7 +94,7 @@ const ADVISORIES: ThreatAdvisory[] = [
   },
   {
     id: "ADV-2025-098",
-    cve: "CVE-2025-0994",
+    cve: "CVE-2024-21762",
     title: "Akira & LockBit 4.0 Dual-Ransomware Wave Targeting Unpatched VPN Appliances",
     category: "Ransomware",
     severity: "critical",
@@ -142,7 +143,7 @@ const ADVISORIES: ThreatAdvisory[] = [
   },
   {
     id: "ADV-2025-076",
-    cve: "CVE-2024-52741",
+    cve: "CVE-2024-5274",
     title: "Chromium V8 Engine Remote Code Execution (RCE) Active Zero-Day Exploit",
     category: "Zero-Day",
     severity: "high",
@@ -296,7 +297,7 @@ const ADVISORIES: ThreatAdvisory[] = [
     ],
     iocs: {
       domains: ["airport-wifi-login-portal.cc"],
-      ips: ["192.168.1.1"],
+      ips: ["185.220.101.44"],
       hashes: ["99887766554433221100ffeeddccbbaa99887766554433221100ffeeddccbbaa"],
     },
     simulationUrl: "/simulations/mitm",
@@ -374,6 +375,7 @@ function generateLiveAttack(id: number): LiveAttackEvent {
 ───────────────────────────────────────────────────────────────────────────── */
 
 export function ThreatIntelligencePage() {
+  const toast = useToast();
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedSeverity, setSelectedSeverity] = useState<string>("all");
@@ -437,7 +439,7 @@ export function ThreatIntelligencePage() {
     });
   }, [search, selectedCategory, selectedSeverity, sortBy]);
 
-  const handleCopyIocs = (adv: ThreatAdvisory) => {
+  const handleCopyIocs = async (adv: ThreatAdvisory) => {
     const text = [
       `=== IOC EXPORT: ${adv.title} (${adv.id}) ===`,
       `CVE: ${adv.cve || "N/A"}`,
@@ -446,9 +448,22 @@ export function ThreatIntelligencePage() {
       `Hashes: ${adv.iocs.hashes.join(", ")}`,
     ].join("\n");
 
-    navigator.clipboard.writeText(text);
-    setCopiedIoc(adv.id);
-    setTimeout(() => setCopiedIoc(null), 2500);
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedIoc(adv.id);
+      setTimeout(() => setCopiedIoc(null), 2500);
+      toast({
+        title: "IOCs Copied",
+        description: `Exported indicators of compromise for ${adv.id}.`,
+        variant: "info",
+      });
+    } catch {
+      toast({
+        title: "Copy Failed",
+        description: "Clipboard access was denied by your browser.",
+        variant: "error",
+      });
+    }
   };
 
   const severityTone = (sev: ThreatSeverity): "danger" | "warn" | "violet" | "cyan" => {
@@ -506,7 +521,7 @@ export function ThreatIntelligencePage() {
                   Trending Scams
                 </span>
                 <span className="font-display text-sm sm:text-base font-bold text-text-pure">
-                  18 Active Waves
+                  {ADVISORIES.length} Active Bulletins
                 </span>
               </div>
             </div>

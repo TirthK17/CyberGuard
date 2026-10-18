@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/primitives";
 import { celebrate } from "@/lib/celebrate";
+import { simulationXp } from "@/lib/gamification";
 
 interface PhishingMailSandboxProps {
   onComplete: (score: number, meta: Record<string, unknown>) => void;
@@ -31,6 +32,8 @@ export function PhishingMailSandbox({ onComplete }: PhishingMailSandboxProps) {
   const [fakeEmailInput, setFakeEmailInput] = useState("rahul.sharma@gmail.com");
   const [fakePasswordInput, setFakePasswordInput] = useState("");
   const [otpInput, setOtpInput] = useState("");
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [otpError, setOtpError] = useState<string | null>(null);
   const [hasReported, setHasReported] = useState(false);
   const [scoreReported, setScoreReported] = useState(false);
 
@@ -61,7 +64,7 @@ export function PhishingMailSandbox({ onComplete }: PhishingMailSandboxProps) {
         "[+] LINK CLICKED: Victim reached fake login page",
         `[CAPTURED] Account email: ${fakeEmailInput || "rahul.sharma@gmail.com"}`,
         fakePasswordInput
-          ? `[CAPTURED] Password: ${"*".repeat(fakePasswordInput.length)} (${fakePasswordInput})`
+          ? `[CAPTURED] Password: ${"*".repeat(fakePasswordInput.length)} (${fakePasswordInput.length} chars, masked)`
           : "[WAITING] Waiting for user to enter password..."
       );
     }
@@ -111,16 +114,20 @@ export function PhishingMailSandbox({ onComplete }: PhishingMailSandboxProps) {
   };
 
   const handleSubmitFakePassword = () => {
-    if (!fakePasswordInput) {
-      setFakePasswordInput("P@ssw0rd2026!");
+    if (!fakePasswordInput.trim()) {
+      setPasswordError("Please enter a password or click 'Use Demo Password'.");
+      return;
     }
+    setPasswordError(null);
     setAct("two_factor_steal");
   };
 
   const handleSubmitOtp = () => {
-    if (!otpInput) {
-      setOtpInput("849201");
+    if (!otpInput.trim()) {
+      setOtpError("Please enter an OTP or click 'Use Demo Code'.");
+      return;
     }
+    setOtpError(null);
     setAct("account_takeover");
   };
 
@@ -151,8 +158,11 @@ export function PhishingMailSandbox({ onComplete }: PhishingMailSandboxProps) {
     setInspectedSender(false);
     setInspectedLink(false);
     setShowUrlBreakdown(false);
+    setFakeEmailInput("rahul.sharma@gmail.com");
     setFakePasswordInput("");
     setOtpInput("");
+    setPasswordError(null);
+    setOtpError(null);
     setHasReported(false);
     setScoreReported(false);
   };
@@ -502,14 +512,34 @@ export function PhishingMailSandbox({ onComplete }: PhishingMailSandboxProps) {
                       </div>
 
                       <div>
-                        <label className="text-[11px] text-text-muted block mb-1">Enter your password</label>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="text-[11px] text-text-muted">Enter your password</label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setFakePasswordInput("P@ssw0rd2026!");
+                              setPasswordError(null);
+                            }}
+                            className="text-[10px] text-primary hover:underline cursor-pointer"
+                          >
+                            Use Demo Password
+                          </button>
+                        </div>
                         <input
                           type="password"
                           placeholder="Type password..."
                           value={fakePasswordInput}
-                          onChange={(e) => setFakePasswordInput(e.target.value)}
-                          className="w-full h-9 px-3 rounded-lg bg-surface border border-danger text-xs text-text-high font-mono"
+                          onChange={(e) => {
+                            setFakePasswordInput(e.target.value);
+                            if (passwordError) setPasswordError(null);
+                          }}
+                          className={`w-full h-9 px-3 rounded-lg bg-surface border text-xs text-text-high font-mono ${
+                            passwordError ? "border-danger" : "border-border"
+                          }`}
                         />
+                        {passwordError && (
+                          <span className="text-[10px] text-danger mt-1 block">{passwordError}</span>
+                        )}
                       </div>
 
                       <div className="p-2 rounded-lg bg-danger/10 border border-danger/20 text-[10px] text-danger">
@@ -552,15 +582,35 @@ export function PhishingMailSandbox({ onComplete }: PhishingMailSandboxProps) {
 
                     <div className="p-4 rounded-2xl bg-surface-elevated border border-border text-left space-y-3 shadow-md">
                       <div>
-                        <label className="text-[11px] text-text-muted block mb-1">Enter 6-digit code (G - xxxxxx)</label>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="text-[11px] text-text-muted">Enter 6-digit code (G - xxxxxx)</label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setOtpInput("849201");
+                              setOtpError(null);
+                            }}
+                            className="text-[10px] text-primary hover:underline cursor-pointer"
+                          >
+                            Use Demo Code (849201)
+                          </button>
+                        </div>
                         <input
                           type="text"
                           maxLength={6}
                           placeholder="849201"
                           value={otpInput}
-                          onChange={(e) => setOtpInput(e.target.value)}
-                          className="w-full h-10 px-3 rounded-lg bg-surface border border-danger text-center text-lg font-mono font-bold tracking-widest text-text-high"
+                          onChange={(e) => {
+                            setOtpInput(e.target.value);
+                            if (otpError) setOtpError(null);
+                          }}
+                          className={`w-full h-10 px-3 rounded-lg bg-surface border text-center text-lg font-mono font-bold tracking-widest text-text-high ${
+                            otpError ? "border-danger" : "border-danger/60"
+                          }`}
                         />
+                        {otpError && (
+                          <span className="text-[10px] text-danger mt-1 block text-center">{otpError}</span>
+                        )}
                       </div>
 
                       <div className="p-2.5 rounded-lg bg-danger/10 border border-danger/20 text-[10px] text-danger leading-relaxed">
@@ -801,7 +851,7 @@ export function PhishingMailSandbox({ onComplete }: PhishingMailSandboxProps) {
                   Score: {score}/100
                 </div>
                 <div className="flex justify-center gap-2 pt-1">
-                  <Pill tone="primary" size="md">+{score} XP Earned</Pill>
+                  <Pill tone="primary" size="md">+{simulationXp(score)} XP Earned</Pill>
                   <Pill tone={score >= 70 ? "emerald" : "danger"} size="md">
                     {score >= 70 ? "🛡️ Phishing Reflex: EXCELLENT" : "⚠️ Compromised: Needs Practice"}
                   </Pill>

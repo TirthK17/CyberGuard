@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { PASS_MARK } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
 import { Pill, AnimatedNumber } from "@/components/ui/primitives";
 import { motion, AnimatePresence } from "framer-motion";
@@ -39,16 +40,18 @@ export function ProfilePage() {
     if (!profile) return;
     let active = true;
     (async () => {
-      const [{ count: badgeCount }, { data: progressRows }, { data: cert }] = await Promise.all([
+      const [{ count: badgeCount }, { data: progressRows }, { data: certs }, { data: bestAssessment }] = await Promise.all([
         supabase.from("user_badges").select("id", { count: "exact", head: true }).eq("user_id", profile.id),
         supabase.from("progress").select("is_completed").eq("user_id", profile.id).eq("is_completed", true),
-        supabase.from("certificates").select("id").eq("user_id", profile.id).maybeSingle(),
+        supabase.from("certificates").select("id").eq("user_id", profile.id).limit(1),
+        supabase.from("assessment_results").select("score").eq("user_id", profile.id).order("score", { ascending: false }).limit(1),
       ]);
       if (!active) return;
+      const best = bestAssessment?.[0]?.score ?? 0;
       setStats({
         badgeCount: badgeCount ?? 0,
         modulesCompleted: progressRows?.length ?? 0,
-        hasCertificate: !!cert || (profile.awareness_score ?? 0) >= 61,
+        hasCertificate: Boolean(certs?.length || best >= PASS_MARK),
       });
     })();
     return () => { active = false; };
@@ -75,8 +78,8 @@ export function ProfilePage() {
   const handlePasswordChange = async (e: FormEvent) => {
     e.preventDefault();
     setPasswordMsg(null);
-    if (newPassword.length < 6) {
-      setPasswordMsg({ type: "error", text: "Password must be at least 6 characters." });
+    if (newPassword.length < 8) {
+      setPasswordMsg({ type: "error", text: "Password must be at least 8 characters long." });
       return;
     }
     if (newPassword !== confirmPassword) {

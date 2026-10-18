@@ -5,6 +5,7 @@ import { useModule, useLessons, useUserProgress } from "@/hooks/useContent";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { recordActivity } from "@/lib/gamification";
+import { XP } from "@/lib/constants";
 import { celebrate } from "@/lib/celebrate";
 import { Button } from "@/components/ui/Button";
 import { Card, Pill, ProgressBar, PageSpinner, EmptyState } from "@/components/ui/primitives";
@@ -316,7 +317,7 @@ export function ModuleDetailPage() {
   const { slug } = useParams();
   const activeSlug = (slug && MODULE_ALIASES[slug]) || slug;
   const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { profile, refreshProfile } = useAuth();
   const { data: module, loading: moduleLoading } = useModule(activeSlug);
   const { data: lessons, loading: lessonsLoading } = useLessons(module?.id);
   const { data: progress, error: progressError } = useUserProgress(profile?.id);
@@ -363,48 +364,57 @@ export function ModuleDetailPage() {
     setSaving(true);
     setSaveError(null);
 
-    const newCompleted = Array.from(new Set([...done, activeLesson.id]));
-    const fullyDone = newCompleted.length === lessonList.length;
+    try {
+      const newCompleted = Array.from(new Set([...done, activeLesson.id]));
+      const fullyDone = newCompleted.length === lessonList.length;
 
-    const { error } = await supabase.from("progress").upsert(
-      {
-        user_id: profile.id,
-        module_id: module.id,
-        completed_lessons: newCompleted,
-        is_completed: fullyDone,
-      },
-      { onConflict: "user_id,module_id" }
-    );
+      const { error } = await supabase.from("progress").upsert(
+        {
+          user_id: profile.id,
+          module_id: module.id,
+          completed_lessons: newCompleted,
+          is_completed: fullyDone,
+        },
+        { onConflict: "user_id,module_id" }
+      );
 
-    if (error) {
-      setSaving(false);
-      setSaveError("Couldn't save your progress. Please check your connection.");
-      return;
-    }
+      if (error) {
+        setSaveError("Couldn't save your progress. Please check your connection.");
+        return;
+      }
 
-    setCompletedIds(newCompleted);
+      setCompletedIds(newCompleted);
 
-    await recordActivity({
-      userId: profile.id,
-      action: "lesson_completed",
-      points: 15,
-      meta: { lesson_id: activeLesson.id, module_id: module.id },
-    });
-
-    if (fullyDone) {
-      celebrate();
       await recordActivity({
         userId: profile.id,
         action: "lesson_completed",
-        points: 50,
-        meta: { module_completed: module.id },
+        points: XP.LESSON,
+        meta: { lesson_id: activeLesson.id, module_id: module.id },
+        refId: activeLesson.id,
+        awardOnce: true,
       });
-    }
 
-    setSaving(false);
+      if (fullyDone) {
+        celebrate();
+        await recordActivity({
+          userId: profile.id,
+          action: "module_completed",
+          points: 50,
+          meta: { module_completed: module.id },
+          refId: module.id,
+          awardOnce: true,
+        });
+      }
 
-    if (activeIndex < lessonList.length - 1) {
-      setActiveIndex((i) => i + 1);
+      await refreshProfile();
+
+      if (activeIndex < lessonList.length - 1) {
+        setActiveIndex((i) => i + 1);
+      }
+    } catch {
+      setSaveError("An unexpected error occurred while saving your progress.");
+    } finally {
+      setSaving(false);
     }
   };
 

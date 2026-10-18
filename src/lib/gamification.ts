@@ -7,6 +7,7 @@ import { levelForPoints, XP } from "@/lib/constants";
  */
 export type ActivityAction =
   | "lesson_completed"
+  | "module_completed"
   | "quiz_completed"
   | "quiz_passed"
   | "simulation_completed"

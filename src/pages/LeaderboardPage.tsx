@@ -122,6 +122,12 @@ function getRarityTone(rarity: "Common" | "Rare" | "Epic" | "Legendary"): "defau
   }
 }
 
+function isDemoUser(entry: { id?: string; user_id?: string; email?: string }) {
+  const id = entry.id || entry.user_id || "";
+  const email = entry.email || "";
+  return id.startsWith("user-demo") || email.endsWith("@cyberguard.dev");
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
    COMPONENT: RANKINGS TAB
 ───────────────────────────────────────────────────────────────────────────── */
@@ -199,9 +205,14 @@ function RankingsTab() {
                       {getInitials(entry.full_name)}
                     </div>
 
-                    <h3 className="mt-3.5 font-display text-sm font-bold text-text-pure truncate flex items-center justify-center gap-1">
+                    <h3 className="mt-3.5 font-display text-sm font-bold text-text-pure truncate flex items-center justify-center gap-1.5">
                       <span>{entry.full_name}</span>
                       {isMe && <span className="text-primary font-mono text-[10px]">(You)</span>}
+                      {isDemoUser(entry) && (
+                        <span className="rounded bg-surface-muted border border-border text-text-ash font-mono text-[9px] px-1.5 py-0.2 uppercase">
+                          Demo
+                        </span>
+                      )}
                     </h3>
 
                     <div className="mt-1">
@@ -216,7 +227,7 @@ function RankingsTab() {
                         Level {entry.level}
                       </span>
                       <span className="rounded-full border border-border bg-surface px-2.5 py-0.5 font-mono text-[10px] text-primary font-semibold">
-                        {entry.badges_count || 3} Badges
+                        {entry.badges_count ?? 0} Badges
                       </span>
                     </div>
                   </motion.div>
@@ -233,7 +244,7 @@ function RankingsTab() {
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-primary/40 bg-primary/20 font-mono text-xl font-bold text-primary shadow-sm">
-                #{myRank ?? 1}
+                {myRank ? `#${myRank}` : "—"}
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -246,7 +257,7 @@ function RankingsTab() {
                   {profile.full_name}
                 </h4>
                 <p className="text-xs text-text-fog font-mono">
-                  {profile.points.toLocaleString()} XP · {profile.awareness_score ?? 85}% Safety Score
+                  {profile.points.toLocaleString()} XP · {profile.awareness_score != null ? `${profile.awareness_score}% Safety Score` : "Safety score pending"}
                 </p>
               </div>
             </div>
@@ -337,11 +348,16 @@ function RankingsTab() {
                           You
                         </span>
                       )}
+                      {isDemoUser(entry) && (
+                        <span className="rounded bg-surface-muted border border-border text-text-ash font-mono text-[9px] px-1.5 py-0.2 uppercase">
+                          Demo
+                        </span>
+                      )}
                     </div>
                     <div className="flex items-center gap-2 text-[11px] font-mono text-text-ash mt-0.5">
                       <span>Level {entry.level}</span>
                       <span>·</span>
-                      <span>{entry.badges_count || 2} Badges</span>
+                      <span>{entry.badges_count ?? 0} Badges</span>
                     </div>
                   </div>
 

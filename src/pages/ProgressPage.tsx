@@ -36,8 +36,9 @@ export function ProgressPage() {
   const [weeklyData, setWeeklyData] = useState<{ day: string; activities: number }[]>([]);
   const [timeline, setTimeline] = useState<ActivityLog[] | null>(null);
 
+  const profileId = profile?.id;
   useEffect(() => {
-    if (!profile) return;
+    if (!profileId) return;
     let active = true;
 
     (async () => {
@@ -123,7 +124,7 @@ export function ProgressPage() {
     return () => {
       active = false;
     };
-  }, [profile?.id]);
+  }, [profileId]);
 
   if (loading) {
     return (

@@ -23,6 +23,7 @@ function useSupabaseQuery<T>(
   useEffect(() => {
     let active = true;
     setLoading(true);
+    setError(null);
     Promise.resolve(fn()).then((res) => {
       if (!active) return;
       if (res.error) setError("Something went wrong loading this content.");

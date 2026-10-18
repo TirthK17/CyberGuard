@@ -7,11 +7,12 @@ import { celebrate } from "@/lib/celebrate";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Card, Pill, ProgressBar, PageSpinner, EmptyState } from "@/components/ui/primitives";
+import { QUIZ_PASS, XP } from "@/lib/constants";
 import type { Question } from "@/types";
 
 export function QuizTakingPage() {
   const { id } = useParams();
-  const { profile } = useAuth();
+  const { profile, refreshProfile } = useAuth();
   const navigate = useNavigate();
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [index, setIndex] = useState(0);
@@ -43,28 +44,37 @@ export function QuizTakingPage() {
   };
 
   const saveResult = async () => {
-    if (!profile) return;
+    if (!profile || !id) return;
     setSaving(true);
     setSaveError(null);
-    const { error } = await supabase.from("quiz_results").insert({
-      user_id: profile.id,
-      quiz_id: id,
-      score,
-      total_questions: questions.length,
-      answers,
-    });
-    if (error) {
+    try {
+      const { error } = await supabase.from("quiz_results").insert({
+        user_id: profile.id,
+        quiz_id: id,
+        score,
+        total_questions: questions.length,
+        answers,
+      });
+      if (error) {
+        setSaveError("Your score wasn't saved due to a connection issue. Please try again.");
+        return;
+      }
+      const pct = Math.round((score / questions.length) * 100);
+      const passed = pct >= QUIZ_PASS;
+      await recordActivity({
+        userId: profile.id,
+        action: "quiz_completed",
+        points: passed ? XP.QUIZ_PASS : XP.QUIZ_COMPLETION,
+        meta: { quiz_id: id, score, total: questions.length, passed },
+        refId: id,
+        awardOnce: true,
+      });
+      await refreshProfile();
+    } catch {
+      setSaveError("An unexpected error occurred while saving your results.");
+    } finally {
       setSaving(false);
-      setSaveError("Your score wasn't saved due to a connection issue. Please try again.");
-      return;
     }
-    await recordActivity({
-      userId: profile.id,
-      action: "quiz_completed",
-      points: 20,
-      meta: { quiz_id: id, score, total: questions.length },
-    });
-    setSaving(false);
   };
 
   const next = async () => {
@@ -74,13 +84,13 @@ export function QuizTakingPage() {
       return;
     }
     setFinished(true);
-    if (score / questions.length >= 0.6) celebrate();
+    if ((score / questions.length) * 100 >= QUIZ_PASS) celebrate();
     await saveResult();
   };
 
   if (finished) {
     const pct = Math.round((score / questions.length) * 100);
-    const passed = pct >= 70;
+    const passed = pct >= QUIZ_PASS;
 
     return (
       <motion.div

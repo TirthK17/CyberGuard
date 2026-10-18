@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useModules, useUserProgress } from "@/hooks/useContent";
 import { Pill, EmptyState, SkeletonCard, ProgressBar } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
+import { supabase } from "@/lib/supabase";
+import { XP } from "@/lib/constants";
 
 const DIFFICULTIES = ["all", "beginner", "intermediate", "advanced"] as const;
 type Difficulty = (typeof DIFFICULTIES)[number];
@@ -50,6 +52,28 @@ export function TrainingPage() {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [difficulty, setDifficulty] = useState<Difficulty>("all");
+  const [lessonCounts, setLessonCounts] = useState<Record<string, number>>({});
+  const [totalQuizzes, setTotalQuizzes] = useState(6);
+  const [totalSims, setTotalSims] = useState(4);
+  const [totalLessonCount, setTotalLessonCount] = useState(18);
+
+  useEffect(() => {
+    (async () => {
+      const [{ data: allLessons }, { count: qCount }, { count: sCount }] = await Promise.all([
+        supabase.from("lessons").select("id, module_id"),
+        supabase.from("quizzes").select("id", { count: "exact", head: true }).eq("is_published", true),
+        supabase.from("simulations").select("id", { count: "exact", head: true }).eq("is_published", true),
+      ]);
+      const counts: Record<string, number> = {};
+      for (const l of allLessons ?? []) {
+        counts[l.module_id] = (counts[l.module_id] ?? 0) + 1;
+      }
+      setLessonCounts(counts);
+      if (allLessons?.length) setTotalLessonCount(allLessons.length);
+      if (qCount !== null && qCount !== undefined) setTotalQuizzes(qCount);
+      if (sCount !== null && sCount !== undefined) setTotalSims(sCount);
+    })();
+  }, []);
 
   const moduleList = modules ?? [];
   const categories = ["all", ...new Set(moduleList.map((m) => m.category))];
@@ -57,15 +81,22 @@ export function TrainingPage() {
   // Map user progress per module
   const progressMap = new Map<string, { completed: number; total: number; isDone: boolean }>();
   for (const p of progress ?? []) {
+    const totalForModule = lessonCounts[p.module_id] ?? 3;
     progressMap.set(p.module_id, {
       completed: p.completed_lessons?.length ?? 0,
-      total: 3, // Each module has 3 rich lessons
-      isDone: p.is_completed,
+      total: totalForModule,
+      isDone: p.is_completed || (p.completed_lessons?.length ?? 0) >= totalForModule,
     });
   }
 
   const completedCount = moduleList.filter((m) => progressMap.get(m.id)?.isDone).length;
+  const totalCompletedLessons = (progress ?? []).reduce(
+    (acc, p) => acc + (p.completed_lessons?.length ?? 0),
+    0
+  );
+  const earnedXp = totalCompletedLessons * XP.LESSON + completedCount * 50;
   const overallPercent = moduleList.length > 0 ? Math.round((completedCount / moduleList.length) * 100) : 0;
+  const totalPossibleXp = totalLessonCount * XP.LESSON + moduleList.length * 50 + totalQuizzes * XP.QUIZ_PASS + totalSims * XP.SIMULATION;
 
   // First incomplete module to resume
   const nextToLearn = moduleList.find((m) => !progressMap.get(m.id)?.isDone) ?? moduleList[0];
@@ -118,8 +149,8 @@ export function TrainingPage() {
               </div>
               <ProgressBar value={overallPercent} />
               <div className="flex justify-between text-xs text-text-ash pt-1 font-medium">
-                <span>{completedCount} of {moduleList.length} Lessons Finished</span>
-                <span className="text-emerald-400 font-semibold">+{completedCount * 65} XP</span>
+                <span>{completedCount} of {moduleList.length} Modules Finished</span>
+                <span className="text-emerald-400 font-semibold">+{earnedXp} XP Earned</span>
               </div>
             </div>
 
@@ -138,19 +169,19 @@ export function TrainingPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-border text-xs">
           <div className="flex items-center gap-2 text-text-fog">
             <i className="ti ti-book-2 text-primary text-base" />
-            <span><strong>18</strong> Short Lessons</span>
+            <span><strong>{totalLessonCount}</strong> Short Lessons</span>
           </div>
           <div className="flex items-center gap-2 text-text-fog">
             <i className="ti ti-clipboard-check text-emerald-400 text-base" />
-            <span><strong>6</strong> Practice Quizzes</span>
+            <span><strong>{totalQuizzes}</strong> Practice Quizzes</span>
           </div>
           <div className="flex items-center gap-2 text-text-fog">
             <i className="ti ti-device-gamepad-2 text-warn text-base" />
-            <span><strong>4</strong> Hands-on Simulations</span>
+            <span><strong>{totalSims}</strong> Hands-on Simulations</span>
           </div>
           <div className="flex items-center gap-2 text-text-fog">
             <i className="ti ti-award text-cyan-400 text-base" />
-            <span><strong>390+</strong> Total XP to Earn</span>
+            <span><strong>{totalPossibleXp}+</strong> Total XP to Earn</span>
           </div>
         </div>
       </motion.div>

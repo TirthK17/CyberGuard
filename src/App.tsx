@@ -33,6 +33,8 @@ import { SecurityGuidePage } from "@/pages/SecurityGuidePage";
 import { GlossaryPage } from "@/pages/GlossaryPage";
 import { ProfilePage } from "@/pages/ProfilePage";
 import { SettingsPage } from "@/pages/SettingsPage";
+import { VerifyCertificatePage } from "@/pages/VerifyCertificatePage";
+import { NotFoundPage } from "@/pages/NotFoundPage";
 
 import { AdminDashboardPage } from "@/pages/admin/AdminDashboardPage";
 import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
@@ -124,6 +126,7 @@ function App() {
               <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
               <Route path="/login" element={<PublicLayout><LoginPage /></PublicLayout>} />
               <Route path="/register" element={<PublicLayout><RegisterPage /></PublicLayout>} />
+              <Route path="/verify/:certId" element={<VerifyCertificatePage />} />
 
               {/* User Console */}
               <Route path="/dashboard" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><UserDashboardPage /></DashboardShell></ProtectedRoute>} />
@@ -156,6 +159,9 @@ function App() {
               <Route path="/admin/badges" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminBadgesPage /></DashboardShell></AdminRoute>} />
               <Route path="/admin/reports" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminReportsPage /></DashboardShell></AdminRoute>} />
               <Route path="/admin/settings" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminSettingsPage /></DashboardShell></AdminRoute>} />
+
+              {/* 404 catch-all */}
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </BrowserRouter>
         </ToastProvider>

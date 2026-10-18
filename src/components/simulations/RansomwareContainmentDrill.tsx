@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/primitives";
 import { celebrate } from "@/lib/celebrate";
+import { simulationXp } from "@/lib/gamification";
 
 interface RansomwareContainmentDrillProps {
   onComplete: (score: number, meta: Record<string, unknown>) => void;
@@ -40,6 +41,22 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
   const [scoreReported, setScoreReported] = useState(false);
   const [countdownSeconds, setCountdownSeconds] = useState(72 * 3600); // 72-hour countdown
 
+  // Ref-tracked timers for memory safety
+  const timeoutRefs = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const addTimeout = (cb: () => void, delay: number) => {
+    const t = setTimeout(cb, delay);
+    timeoutRefs.current.push(t);
+    return t;
+  };
+  const clearAllTimeouts = () => {
+    timeoutRefs.current.forEach((t) => clearTimeout(t));
+    timeoutRefs.current = [];
+  };
+
+  useEffect(() => {
+    return () => clearAllTimeouts();
+  }, []);
+
   // Live files on victim desktop
   const [files, setFiles] = useState<DesktopFile[]>([
     { name: "Family_Vacation_Photos.zip", size: "4.2 GB", type: "Archive", encrypted: false },
@@ -57,7 +74,7 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
           const unencryptedIdx = prev.findIndex((f) => !f.encrypted && f.name !== "Urgent_Overdue_Invoice_992.pdf.exe");
           if (unencryptedIdx === -1) {
             clearInterval(interval);
-            setTimeout(() => setAct("ransom_note"), 800);
+            addTimeout(() => setAct("ransom_note"), 800);
             return prev;
           }
           const updated = [...prev];
@@ -65,7 +82,10 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
           return updated;
         });
       }, 700);
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+        clearAllTimeouts();
+      };
     }
   }, [act, processTerminated]);
 
@@ -146,7 +166,7 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
 
   const handleOpenFile = () => {
     setAct("file_opened");
-    setTimeout(() => {
+    addTimeout(() => {
       setAct("encryption_surge");
     }, 1200);
   };
@@ -163,6 +183,11 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
     setAct("ransom_paid_trap");
   };
 
+  const handleContinueFromPay = () => {
+    // Progress to educational debrief without resetting userChoice to "isolate"
+    setAct("incident_response");
+  };
+
   const handleRestoreBackup = () => {
     setBackupVerified(true);
     celebrate();
@@ -170,6 +195,9 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
   };
 
   const calculateScore = () => {
+    if (userChoice === "pay") {
+      return 35; // Severe penalty for paying extortionists
+    }
     if (networkIsolated && backupVerified) {
       return 100;
     }
@@ -195,6 +223,8 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
   };
 
   const handleReset = () => {
+    clearAllTimeouts();
+    setCountdownSeconds(72 * 3600);
     setAct("story_intro");
     setNetworkIsolated(false);
     setProcessTerminated(false);
@@ -219,6 +249,7 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
 
   const score = calculateScore();
   const c2Logs = getC2Logs();
+  const targetFilesCount = files.filter((f) => f.name !== "Urgent_Overdue_Invoice_992.pdf.exe").length;
   const encryptedFileCount = files.filter((f) => f.encrypted).length;
 
   return (
@@ -463,7 +494,7 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
                     <div className="space-y-2">
                       <div className="flex justify-between items-center text-xs font-mono">
                         <span className="text-text-muted">ENCRYPTED FILES:</span>
-                        <span className="text-red-400 font-bold">{encryptedFileCount} / 4 FILES LOCKED</span>
+                        <span className="text-red-400 font-bold">{encryptedFileCount} / {targetFilesCount} FILES LOCKED</span>
                       </div>
 
                       <div className="grid grid-cols-1 gap-2 font-mono text-xs">
@@ -592,16 +623,19 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
                         The Painful Reality of Paying Ransomware:
                       </p>
                       <ul className="list-disc list-inside text-[11px] text-text-low space-y-1">
-                        <li>Over <strong>42% of victims who pay never receive the decryption key</strong>. Criminals have zero customer support!</li>
-                        <li>Even if you get a key, the malware often corrupts 20-30% of files beyond recovery.</li>
-                        <li>Your payment funds human trafficking and international crime cartels.</li>
-                        <li>You are now flagged on dark web forums as a &quot;willing payer,&quot; making you a prime target for a second attack within 6 months!</li>
+                        <li><strong>Victims who pay frequently never receive a working decryption key</strong> (industry surveys indicate up to ~40% fail to recover data despite paying). Criminals have no customer support or guarantees!</li>
+                        <li>Even if a key is provided, the decryption process often corrupts files beyond recovery.</li>
+                        <li>Paying extortion demands directly finances criminal syndicates and future cyber attacks.</li>
+                        <li>Organizations that pay are often re-targeted within months as known &quot;willing payers&quot;.</li>
                       </ul>
+                      <span className="text-[10px] text-text-ash block pt-1 border-t border-red-500/20">
+                        (Illustrative industry reference: CISA &amp; FBI Ransomware Guidance)
+                      </span>
                     </div>
 
                     <Button
                       variant="primary"
-                      onClick={handleEmergencyIsolate}
+                      onClick={handleContinueFromPay}
                       className="w-full text-xs font-bold py-2.5"
                     >
                       Learn How Incident Responders Actually Handle This &rarr;
@@ -862,7 +896,7 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
                   Score: {score}/100
                 </div>
                 <div className="flex justify-center gap-2 pt-1">
-                  <Pill tone="primary" size="md">+{score} XP Earned</Pill>
+                  <Pill tone="primary" size="md">+{simulationXp(score)} XP Earned</Pill>
                   <Pill tone={score >= 70 ? "emerald" : "danger"} size="md">
                     {score >= 70 ? "🛡️ Incident Triage: EXPERT" : "⚠️ Compromised: Needs Practice"}
                   </Pill>

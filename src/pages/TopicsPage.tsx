@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/primitives";
+import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
+import { recordActivity } from "@/lib/gamification";
+import { XP } from "@/lib/constants";
 
 export interface AwarenessTopic {
   id: string;
@@ -593,25 +597,54 @@ export function TopicsPage() {
   const [selectedTopic, setSelectedTopic] = useState<AwarenessTopic | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "compact">("grid");
 
-  // Track learned topic IDs in localStorage
+  const { profile, refreshProfile } = useAuth();
+  const toast = useToast();
+
+  // Track learned topic IDs in localStorage and user profile
   const [learnedTopics, setLearnedTopics] = useState<string[]>(() => {
     try {
-      const saved = localStorage.getItem("cyberguard_learned_topics");
+      const saved = localStorage.getItem(`cyberguard_learned_topics_${profile?.id ?? "guest"}`);
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];
     }
   });
 
-  const toggleLearned = (id: string, e: React.MouseEvent) => {
+  useEffect(() => {
+    if (!profile?.id) return;
+    try {
+      const saved = localStorage.getItem(`cyberguard_learned_topics_${profile.id}`);
+      if (saved) setLearnedTopics(JSON.parse(saved));
+    } catch {}
+  }, [profile?.id]);
+
+  const toggleLearned = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    setLearnedTopics((prev) => {
-      const next = prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id];
+    const isNowLearned = !learnedTopics.includes(id);
+    const next = isNowLearned ? [...learnedTopics, id] : learnedTopics.filter((item) => item !== id);
+    setLearnedTopics(next);
+    try {
+      localStorage.setItem(`cyberguard_learned_topics_${profile?.id ?? "guest"}`, JSON.stringify(next));
+    } catch {}
+
+    if (isNowLearned && profile) {
       try {
-        localStorage.setItem("cyberguard_learned_topics", JSON.stringify(next));
+        await recordActivity({
+          userId: profile.id,
+          action: "topic_learned",
+          points: XP.TOPIC_LEARNED,
+          meta: { topic_id: id },
+          refId: `topic_${id}`,
+          awardOnce: true,
+        });
+        toast({
+          title: "Topic marked as learned!",
+          description: `+${XP.TOPIC_LEARNED} XP earned for completing this safety guide.`,
+          variant: "success",
+        });
+        await refreshProfile();
       } catch {}
-      return next;
-    });
+    }
   };
 
   const categories = [

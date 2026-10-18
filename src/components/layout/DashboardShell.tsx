@@ -63,18 +63,13 @@ function groupAdminNav(items: NavItem[]): NavSection[] {
   return sections.filter((s) => s.items.length > 0);
 }
 
-const LEVEL_THRESHOLDS = [
-  { level: 1, points: 0, next: 100 },
-  { level: 2, points: 100, next: 300 },
-  { level: 3, points: 300, next: 600 },
-  { level: 4, points: 600, next: 1000 },
-];
+import { LEVELS } from "@/lib/constants";
 
 function levelProgress(points: number) {
-  const cur = LEVEL_THRESHOLDS.slice().reverse().find((l) => points >= l.points) ?? LEVEL_THRESHOLDS[0];
-  const next = LEVEL_THRESHOLDS[cur.level] ?? null;
+  const cur = [...LEVELS].reverse().find((l) => points >= l.minPoints) ?? LEVELS[0];
+  const next = LEVELS.find((l) => l.level === cur.level + 1);
   if (!next) return 100;
-  return Math.round(((points - cur.points) / (next.points - cur.points)) * 100);
+  return Math.round(((points - cur.minPoints) / (next.minPoints - cur.minPoints)) * 100);
 }
 
 function SidebarNav({
@@ -219,11 +214,9 @@ export function DashboardShell({
       {/* macOS Spotlight search prompt */}
       {!collapsed && (
         <button
-          onClick={() =>
-            document.dispatchEvent(
-              new KeyboardEvent("keydown", { key: "k", metaKey: true, bubbles: true })
-            )
-          }
+          onClick={() => {
+            window.dispatchEvent(new CustomEvent("cyberguard:open-command-palette"));
+          }}
           className="sidebar-search mb-4 flex items-center gap-2 rounded-xl border border-border bg-surface-elevated px-3 py-2 text-xs text-text-fog transition-all duration-150 hover:border-border-strong hover:text-text-pure"
         >
           <i className="ti ti-search text-xs text-text-ash" />

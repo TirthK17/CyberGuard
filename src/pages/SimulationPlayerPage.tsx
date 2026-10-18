@@ -2,9 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { recordActivity } from "@/lib/gamification";
+import { recordActivity, simulationXp } from "@/lib/gamification";
 import { celebrate } from "@/lib/celebrate";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/context/ToastContext";
 import { Button } from "@/components/ui/Button";
 import { Card, ProgressBar, PageSpinner, EmptyState, Pill } from "@/components/ui/primitives";
 import type { Simulation, SimulationStep } from "@/types";
@@ -25,6 +26,7 @@ export function SimulationPlayerPage() {
   const { slug } = useParams();
   const activeSlug = (slug && SLUG_ALIASES[slug]) || slug || "";
   const { profile } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
   const [simulation, setSimulation] = useState<Simulation | null>(null);
   const [steps, setSteps] = useState<SimulationStep[] | null>(null);
@@ -39,30 +41,29 @@ export function SimulationPlayerPage() {
   useEffect(() => {
     (async () => {
       const { data: sim, error: simError } = await supabase.from("simulations").select("*").eq("slug", activeSlug).single();
-      if (simError) {
-        setLoadError("Failed to load this simulation. Please try again.");
+      if (simError || !sim) {
+        setLoadError("The simulation scenario you are looking for does not exist or may have been moved.");
         return;
       }
       setSimulation(sim as Simulation);
-      if (sim) {
-        const { data: stepData, error: stepsError } = await supabase
-          .from("simulation_steps")
-          .select("*")
-          .eq("simulation_id", sim.id)
-          .order("order_index");
-        if (stepsError) {
-          setLoadError("Failed to load simulation steps. Please try again.");
-          return;
-        }
-        setSteps(stepData as SimulationStep[]);
+      const { data: stepData, error: stepsError } = await supabase
+        .from("simulation_steps")
+        .select("*")
+        .eq("simulation_id", sim.id)
+        .order("order_index");
+      if (stepsError) {
+        setLoadError("Failed to load simulation steps. Please try again.");
+        return;
       }
+      setSteps(stepData as SimulationStep[]);
     })();
-  }, [slug]);
+  }, [activeSlug]);
 
   const saveResult = async (finalScore: number, meta?: Record<string, unknown>) => {
-    if (!profile || !simulation) return;
+    if (!profile || !simulation) return false;
     setSaving(true);
     setSaveError(null);
+    const pointsAwarded = simulationXp(finalScore);
     const { error } = await supabase.from("simulation_results").insert({
       user_id: profile.id,
       simulation_id: simulation.id,
@@ -70,23 +71,49 @@ export function SimulationPlayerPage() {
     });
     if (error) {
       setSaving(false);
-      setSaveError("Your result wasn't saved. Please try again.");
-      return;
+      setSaveError("Your result could not be saved to the database. Please try again.");
+      toast({
+        title: "Sync Error",
+        description: "Could not save simulation score. Please retry.",
+        variant: "error",
+      });
+      return false;
     }
     await recordActivity({
       userId: profile.id,
       action: "simulation_completed",
-      points: 40,
+      points: pointsAwarded,
+      refId: simulation.id,
+      awardOnce: true,
       meta: { simulation_id: simulation.id, score: finalScore, ...(meta || {}) },
     });
     setSaving(false);
+    toast({
+      title: "Simulation Recorded",
+      description: `Completed with ${finalScore}/100 (+${pointsAwarded} XP)`,
+      variant: "success",
+    });
+    return true;
   };
 
   const handleSandboxComplete = async (score: number, meta: Record<string, unknown>) => {
     await saveResult(score, meta);
   };
 
-  if (loadError) return <EmptyState title={loadError} />;
+  if (loadError) {
+    return (
+      <div className="py-12">
+        <EmptyState
+          title="Simulation Not Found"
+          description={loadError}
+          icon="ti-flask"
+          actionLabel="Back to Simulations"
+          onAction={() => navigate("/simulations")}
+        />
+      </div>
+    );
+  }
+
   if (!simulation) return <PageSpinner />;
 
   // Specialized Real-Time Interactive Simulation Modes:

@@ -176,9 +176,9 @@ create table user_badges (
 
 -- ============ CERTIFICATES ============
 create table certificates (
-  id uuid primary key default uuid_generate_v4(),
+  id text primary key, -- Format: CG-YYYY-XXXXX
   user_id uuid not null references profiles(id) on delete cascade,
-  certificate_code text unique not null,
+  full_name text not null,
   score integer not null,
   issued_at timestamptz not null default now()
 );
@@ -232,6 +232,26 @@ create policy "profiles_update_own" on profiles for update using (auth.uid() = i
 create policy "profiles_update_admin" on profiles for update using (is_admin());
 create policy "profiles_insert_self" on profiles for insert with check (auth.uid() = id);
 
+-- Prevent users from escalating role or tampering with gamification stats directly
+create or replace function protect_profile_columns() returns trigger as $$
+begin
+  if not is_admin() then
+    if new.role is distinct from old.role or
+       new.points is distinct from old.points or
+       new.level is distinct from old.level or
+       new.awareness_score is distinct from old.awareness_score or
+       new.status is distinct from old.status then
+      raise exception 'Unauthorized modification of protected profile fields.';
+    end if;
+  end if;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+create trigger protect_profile_updates
+  before update on profiles
+  for each row execute function protect_profile_columns();
+
 -- Published content: public read; admin full write
 create policy "modules_read_published" on modules for select using (is_published = true or is_admin());
 create policy "modules_admin_write" on modules for all using (is_admin()) with check (is_admin());
@@ -282,7 +302,8 @@ create policy "progress_update_own" on progress for update using (auth.uid() = u
 create policy "user_badges_own" on user_badges for select using (auth.uid() = user_id or is_admin());
 create policy "user_badges_insert_own" on user_badges for insert with check (auth.uid() = user_id);
 
-create policy "certificates_own" on certificates for select using (auth.uid() = user_id or is_admin());
+-- Certificates are publicly verifiable
+create policy "certificates_select_public" on certificates for select using (true);
 create policy "certificates_insert_own" on certificates for insert with check (auth.uid() = user_id);
 
 create policy "activity_own" on activity_logs for select using (auth.uid() = user_id or is_admin());

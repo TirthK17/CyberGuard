@@ -5,8 +5,18 @@ import { supabase } from "@/lib/supabase";
 import { recordActivity } from "@/lib/gamification";
 import { celebrateBig } from "@/lib/celebrate";
 import { useAuth } from "@/context/AuthContext";
+import { PASS_MARK, PRO_MARK, XP } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
 import { Card, Pill, ProgressBar, PageSpinner, EmptyState } from "@/components/ui/primitives";
+
+function shuffle<T>(arr: T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
 
 interface AssessmentQuestion {
   id: string;
@@ -32,8 +42,8 @@ const TOPIC_MODULE_MAP: Record<string, { slug: string; name: string }> = {
 };
 
 function bandFor(score: number) {
-  if (score >= 85) return "Security Pro";
-  if (score >= 61) return "Good Understanding";
+  if (score >= PRO_MARK) return "Security Pro";
+  if (score >= PASS_MARK) return "Good Understanding";
   if (score >= 41) return "Getting Started";
   return "Needs Practice";
 }
@@ -62,7 +72,20 @@ export function AssessmentPage() {
         .select("*")
         .eq("assessment_id", assessment.id)
         .order("order_index");
-      setQuestions(qs as AssessmentQuestion[]);
+      
+      const loaded = qs ? shuffle(qs as AssessmentQuestion[]) : [];
+      setQuestions(loaded);
+
+      // Restore session storage progress if present
+      try {
+        const saved = sessionStorage.getItem("cyberguard_assessment_progress");
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.answers) setAnswers(parsed.answers);
+          if (typeof parsed.index === "number") setIndex(parsed.index);
+          if (parsed.phase === "taking") setPhase("taking");
+        }
+      } catch {}
     })();
   }, []);
 
@@ -75,42 +98,96 @@ export function AssessmentPage() {
   const answeredCount = Object.keys(answers).length;
 
   const choose = (choice: "a" | "b" | "c" | "d") => {
-    setAnswers((prev) => ({ ...prev, [current.id]: choice }));
+    setAnswers((prev) => {
+      const next = { ...prev, [current.id]: choice };
+      try {
+        sessionStorage.setItem(
+          "cyberguard_assessment_progress",
+          JSON.stringify({ answers: next, index, phase: "taking" })
+        );
+      } catch {}
+      return next;
+    });
+  };
+
+  const handleSetIndex = (newIdx: number) => {
+    setIndex(newIdx);
+    try {
+      sessionStorage.setItem(
+        "cyberguard_assessment_progress",
+        JSON.stringify({ answers, index: newIdx, phase: "taking" })
+      );
+    } catch {}
   };
 
   const saveResult = async (score: number, band: string) => {
     if (!profile || !assessmentId) return;
     setSaving(true);
     setSaveError(null);
-    const { error: resultError } = await supabase.from("assessment_results").insert({
-      user_id: profile.id,
-      assessment_id: assessmentId,
-      score,
-      band: band.toLowerCase(),
-    });
-    if (resultError) {
-      setSaving(false);
-      setSaveError("Your results weren't saved due to a connection issue. Please try again.");
-      return;
-    }
-    const { error: profileError } = await supabase
-      .from("profiles")
-      .update({ awareness_score: score })
-      .eq("id", profile.id);
 
-    if (profileError) {
+    try {
+      // 1. Fetch user's previous best score
+      const { data: previousResults } = await supabase
+        .from("assessment_results")
+        .select("score")
+        .eq("user_id", profile.id)
+        .order("score", { ascending: false })
+        .limit(1);
+
+      const prevBest = previousResults?.[0]?.score ?? 0;
+
+      // 2. Insert assessment result
+      const { error: resultError } = await supabase.from("assessment_results").insert({
+        user_id: profile.id,
+        assessment_id: assessmentId,
+        score,
+        band: band.toLowerCase(),
+      });
+      if (resultError) {
+        setSaveError("Your results weren't saved due to a connection issue. Please try again.");
+        return;
+      }
+
+      // 3. Update profile awareness_score (best score never degrades)
+      const newBestScore = Math.max(profile.awareness_score ?? 0, score);
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({ awareness_score: newBestScore })
+        .eq("id", profile.id);
+
+      if (profileError) {
+        setSaveError("Your awareness score couldn't be updated. Please try again.");
+        return;
+      }
+
+      // 4. Award XP: only on first pass, plus bonus for improving previous best
+      let pointsToAward = 0;
+      let refId = "assessment_pass";
+      if (score >= PASS_MARK && prevBest < PASS_MARK) {
+        pointsToAward = XP.ASSESSMENT_PASS;
+        refId = "assessment_first_pass";
+      } else if (score >= PASS_MARK && score > prevBest) {
+        pointsToAward = XP.ASSESSMENT_IMPROVEMENT;
+        refId = `assessment_improve_${score}`;
+      }
+
+      if (pointsToAward > 0) {
+        await recordActivity({
+          userId: profile.id,
+          action: "assessment_completed",
+          points: pointsToAward,
+          meta: { score, band, prevBest },
+          refId,
+          awardOnce: true,
+        });
+      }
+
+      await refreshProfile();
+    } catch {
+      setSaveError("An unexpected error occurred while saving your results.");
+    } finally {
       setSaving(false);
-      setSaveError("Your awareness score couldn't be updated. Please try again.");
-      return;
     }
-    await recordActivity({
-      userId: profile.id,
-      action: "assessment_completed",
-      points: 100,
-      meta: { score, band },
-    });
-    await refreshProfile();
-    setSaving(false);
   };
 
   const submitAssessment = async () => {
@@ -121,9 +198,14 @@ export function AssessmentPage() {
     const score = Math.round((correct / questions.length) * 100);
     const band = bandFor(score);
     setFinalScore(score);
+
+    try {
+      sessionStorage.removeItem("cyberguard_assessment_progress");
+    } catch {}
+
     setPhase("results");
 
-    if (score >= 61) {
+    if (score >= PASS_MARK) {
       celebrateBig();
     }
     await saveResult(score, band);
@@ -133,6 +215,9 @@ export function AssessmentPage() {
     setAnswers({});
     setIndex(0);
     setShowReview(false);
+    try {
+      sessionStorage.removeItem("cyberguard_assessment_progress");
+    } catch {}
     setPhase("intro");
   };
 
@@ -141,7 +226,7 @@ export function AssessmentPage() {
      ══════════════════════════════════════════════════════════════ */
   if (phase === "intro") {
     const currentScore = profile?.awareness_score ?? 0;
-    const isAlreadyCertified = currentScore >= 61;
+    const isAlreadyCertified = currentScore >= PASS_MARK;
 
     return (
       <div className="mx-auto max-w-3xl space-y-8">
@@ -168,7 +253,7 @@ export function AssessmentPage() {
                   Cyber Safety Test
                 </h1>
                 <p className="text-xs sm:text-sm text-text-fog leading-relaxed max-w-xl">
-                  Test how well you spot scams, protect your passwords, and keep your data secure. Score <strong>61% or higher</strong> to unlock your verified Safety Certificate.
+                  Test how well you spot scams, protect your passwords, and keep your data secure. Score <strong>{PASS_MARK}% or higher</strong> to unlock your verified Safety Certificate.
                 </p>
               </div>
 
@@ -181,7 +266,7 @@ export function AssessmentPage() {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-border text-xs">
               <div className="p-3 rounded-xl bg-surface-elevated border border-border space-y-1">
                 <span className="text-[10px] text-text-ash font-medium">Questions</span>
-                <div className="font-bold text-text-pure text-base">12 Questions</div>
+                <div className="font-bold text-text-pure text-base">{questions.length} Questions</div>
               </div>
               <div className="p-3 rounded-xl bg-surface-elevated border border-border space-y-1">
                 <span className="text-[10px] text-text-ash font-medium">Estimated Time</span>
@@ -189,11 +274,11 @@ export function AssessmentPage() {
               </div>
               <div className="p-3 rounded-xl bg-surface-elevated border border-border space-y-1">
                 <span className="text-[10px] text-text-ash font-medium">To Pass</span>
-                <div className="font-bold text-emerald-400 text-base">61% Score</div>
+                <div className="font-bold text-emerald-400 text-base">{PASS_MARK}% Score</div>
               </div>
               <div className="p-3 rounded-xl bg-surface-elevated border border-border space-y-1">
                 <span className="text-[10px] text-text-ash font-medium">Pro Badge</span>
-                <div className="font-bold text-primary text-base">85% Score</div>
+                <div className="font-bold text-primary text-base">{PRO_MARK}% Score</div>
               </div>
             </div>
 
@@ -584,7 +669,7 @@ export function AssessmentPage() {
             return (
               <button
                 key={q.id}
-                onClick={() => setIndex(i)}
+                onClick={() => handleSetIndex(i)}
                 aria-label={`Jump to question ${i + 1}`}
                 className={`h-7 w-7 rounded-lg text-xs font-mono font-bold transition-all ${
                   isCurrent

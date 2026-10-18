@@ -1,9 +1,11 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useRef, type FormEvent, type ChangeEvent } from "react";
 import { Card, Pill } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { recordActivity } from "@/lib/gamification";
+import { supabase } from "@/lib/supabase";
+import { XP } from "@/lib/constants";
 import { useToast } from "@/context/ToastContext";
 import { Link } from "react-router-dom";
 
@@ -23,7 +25,7 @@ export interface IncidentReport {
   targetUrlOrHash?: string;
   details: string;
   submittedAt: string;
-  status: "Triage Complete" | "Under SOC Investigation" | "Quarantined & Contained";
+  status: "Triage Complete" | "Draft Logged" | "Quarantined & Contained";
   riskScore: string;
   socActions: string[];
   containmentPlaybook: string[];
@@ -180,19 +182,28 @@ export function ReportIncidentPage() {
   const [submitting, setSubmitting] = useState(false);
   const [selectedIncident, setSelectedIncident] = useState<IncidentReport | null>(null);
 
-  // Simulated attached files
+  // Attached files with size metadata
   const [attachedFiles, setAttachedFiles] = useState<string[]>([]);
-  const [newFileName, setNewFileName] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // History loaded from localStorage
-  const [history, setHistory] = useState<IncidentReport[]>(() => {
+  // History loaded safely from localStorage only after profile.id is known
+  const [history, setHistory] = useState<IncidentReport[]>([]);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!profile?.id) return;
     try {
-      const saved = localStorage.getItem(`incident_reports_${profile?.id}`);
-      if (saved) return JSON.parse(saved);
-      return [
-        {
+      const saved = localStorage.getItem(`incident_reports_${profile.id}`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        setHistory(parsed);
+        if (parsed.length > 0) {
+          setSelectedIncident((prev) => prev ?? parsed[0]);
+        }
+      } else {
+        const sampleReport: IncidentReport = {
           id: "INC-2025-08412",
-          category: "Phishing / Malicious Email",
+          category: "Fake Email (Phishing)",
           categoryId: "phish",
           urgency: "high",
           subject: "Microsoft 365 Password Expiration Alert with Cloned Portal",
@@ -201,31 +212,36 @@ export function ReportIncidentPage() {
           details: "Email claimed organizational mailbox would expire in 2 hours. Clicked link and arrived at lookalike Microsoft portal. Stopped before typing password.",
           submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
           status: "Quarantined & Contained",
-          riskScore: "HIGH RISK — THREAT CONTAINED",
+          riskScore: "HIGH RISK — THREAT RECORDED",
           socActions: [
-            "URL 'account-reauth.shop' added to corporate firewall blocklist.",
-            "Sender domain blacklisted at Secure Email Gateway.",
-            "User session cookies invalidated as defensive precaution.",
+            "Draft Incident Record: Recorded external phishing domain 'account-reauth.shop'.",
+            "Recommended containment: Forwarded sample to IT administration and abuse desk.",
+            "Defensive recommendation: Force password change and revoke open web sessions.",
           ],
           containmentPlaybook: [
             "Do NOT click links in emails warning of immediate password expiration.",
             "Verify all Microsoft login URLs end with 'microsoft.com' or 'live.com'.",
             "Report any future emails from the same external domain.",
           ],
-          attachedFiles: ["screenshot_phish_login.png"],
-        },
-      ];
+          attachedFiles: ["screenshot_phish_login.png (142 KB)"],
+        };
+        setHistory([sampleReport]);
+        localStorage.setItem(`incident_reports_${profile.id}`, JSON.stringify([sampleReport]));
+        setSelectedIncident((prev) => prev ?? sampleReport);
+      }
     } catch {
-      return [];
+      setHistory([]);
+    } finally {
+      setHistoryLoaded(true);
     }
-  });
+  }, [profile?.id]);
 
   useEffect(() => {
-    if (!profile?.id) return;
+    if (!profile?.id || !historyLoaded) return;
     try {
       localStorage.setItem(`incident_reports_${profile.id}`, JSON.stringify(history));
     } catch {}
-  }, [history, profile?.id]);
+  }, [history, profile?.id, historyLoaded]);
 
   const activeCat = INCIDENT_CATEGORIES.find((c) => c.id === category) ?? INCIDENT_CATEGORIES[0];
 
@@ -244,18 +260,41 @@ export function ReportIncidentPage() {
     setSource(sample.source);
     setTargetUrl(sample.targetUrl);
     setDetails(sample.details);
-    setAttachedFiles(["suspicious_lure_evidence.png"]);
+    setAttachedFiles(["suspicious_lure_evidence.png (88 KB)"]);
     toast({
       title: `Loaded ${sample.name}`,
-      description: "Incident intake form populated with realistic adversary telemetry.",
+      description: "Incident intake form populated with realistic sample data.",
       variant: "info",
     });
   };
 
-  const handleAddAttachment = () => {
-    if (!newFileName.trim()) return;
-    setAttachedFiles((prev) => [...prev, newFileName.trim()]);
-    setNewFileName("");
+  const handleFileUpload = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Evidence files must be under 5 MB in size.",
+        variant: "error",
+      });
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    const formattedSize =
+      file.size < 1024 * 1024
+        ? `${(file.size / 1024).toFixed(0)} KB`
+        : `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
+
+    setAttachedFiles((prev) => [...prev, `${file.name} (${formattedSize})`]);
+    toast({
+      title: "File attached",
+      description: `Attached ${file.name} to the incident draft.`,
+      variant: "info",
+    });
+
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   const handleRemoveAttachment = (idx: number) => {
@@ -267,118 +306,180 @@ export function ReportIncidentPage() {
     if (!profile) return;
     setSubmitting(true);
 
-    const reportId = `INC-2026-${Math.floor(10000 + Math.random() * 90000)}`;
+    try {
+      const reportId = `INC-2026-${Math.floor(10000 + Math.random() * 90000)}`;
 
-    // Build automated SOC Actions & Containment Playbook based on category & urgency
-    let riskScore = "HIGH RISK — SOC TRIAGE ACTIVE";
-    let socActions: string[] = [
-      `Automated IOC ingestion: Extracted source identifier '${source}'.`,
-      "Domain and IP intelligence queried against VirusTotal and AbuseIPDB.",
-      "Perimeter egress firewall updated with preliminary containment rules.",
-      "Incident ticket dispatched to Security Operations Center tier-2 queue.",
-    ];
-    let containmentPlaybook: string[] = [];
+      // Build honest Draft Incident Record actions & Containment Playbook based on category & urgency
+      let riskScore = "HIGH RISK — THREAT RECORDED";
+      let socActions: string[] = [
+        `Draft Incident Record: Recorded source identifier '${source || "Unknown"}'.`,
+        `Local containment playbook generated for category: ${activeCat.label}.`,
+        "Recommended next step: Forward IOCs and evidence to IT helpdesk or national helpline 1930.",
+      ];
+      let containmentPlaybook: string[] = [];
 
-    if (category === "digital-arrest") {
-      riskScore = "CRITICAL RISK — CRIMINAL EXTORTION ACTIVE";
-      socActions = [
-        "Flagged as high-priority Digital Arrest extortion syndicate.",
-        "Emergency citizen advisory generated with 1930 National Cyber Helpline guidance.",
-        "Source phone number logged for state cyber cell interception.",
-      ];
-      containmentPlaybook = [
-        "TERMINATE CALL IMMEDIATELY: Law enforcement agencies (Police, CBI, ED, Customs) NEVER arrest citizens via video calls or demand money transfers.",
-        "CALL 1930 IMMEDIATELY: If you transferred any funds within the last 2-3 hours (The Golden Hour), dial 1930 or lodge complaint at cybercrime.gov.in.",
-        "DO NOT PAY: Scammers increase extortion demands exponentially after the first payment.",
-        "BLOCK CALLER: Block caller on WhatsApp/Skype and inform your family and trusted advisors.",
-      ];
-    } else if (category === "ransomware") {
-      riskScore = "CRITICAL RISK — SYSTEM CONTAINMENT REQUIRED";
-      socActions = [
-        "Host isolation directive issued to endpoint detection & response (EDR) agent.",
-        "Outbound SMB (Port 445) and RDP (Port 3389) traffic halted across subnet.",
-        "Snapshot replication triggered for unaffected cloud backup volumes.",
-      ];
-      containmentPlaybook = [
-        "UNPLUG NETWORK IMMEDIATELY: Disconnect Ethernet cable and turn off Wi-Fi to stop lateral spread.",
-        "DO NOT REBOOT: Powering off or rebooting can delete vital encryption keys in volatile RAM.",
-        "NEVER PAY THE RANSOM: Paying does not guarantee decryptors and finances criminal enterprises.",
-        "PRESERVE RANSOM NOTE: Keep ransom note text file for ransomware family identification.",
-      ];
-    } else if (category === "smishing") {
-      riskScore = "HIGH RISK — MOBILE COMPROMISE LURE";
-      socActions = [
-        "Malicious APK download URL added to mobile threat defense (MTD) blocklist.",
-        "Telecom carrier anti-spoofing alert triggered for source phone number.",
-      ];
-      containmentPlaybook = [
-        "NEVER INSTALL APKS: Do not install application packages (.apk) sent via SMS or WhatsApp.",
-        "UNINSTALL IF DOWNLOADED: Check Settings -> Apps -> Recently Installed and remove suspicious apps.",
-        "CHECK SMS FORWARDING: Dial *#21# on your phone dialer to ensure calls/SMS aren't diverted.",
-        "VERIFY INDEPENDENTLY: Contact your electricity board or bank directly via official websites.",
-      ];
-    } else if (category === "credential") {
-      riskScore = "HIGH RISK — CREDENTIAL EXPOSURE";
-      socActions = [
-        "Force-terminated active OAuth sessions across all connected applications.",
-        "Triggered mandatory password reset workflow at next authentication.",
-      ];
-      containmentPlaybook = [
-        "CHANGE PASSWORD NOW: Reset master password immediately from an uninfected device.",
-        "REVOKE ACTIVE SESSIONS: Go to security settings and choose 'Sign out of all sessions'.",
-        "ENFORCE APP-BASED MFA: Switch from SMS OTPs to an authenticator app (Google Authenticator / 1Password).",
-      ];
-    } else {
-      containmentPlaybook = [
-        "Do NOT forward, click, or reply to the suspicious sender.",
-        "If credentials were submitted, immediately reset your master password.",
-        "Verify all communication out-of-band via phone or in-person confirmation.",
-        "Maintain vigilant monitoring on your account activity for the next 72 hours.",
-      ];
+      if (category === "phish") {
+        riskScore = "HIGH RISK — SUSPECTED CREDENTIAL / MALWARE LURE";
+        socActions = [
+          `Draft Incident Record: Flagged phishing source '${source}'.`,
+          "Educational containment playbook generated for fake email lures.",
+          "Recommended next step: Forward raw email headers (.eml) to email provider abuse desk.",
+        ];
+        containmentPlaybook = [
+          "DO NOT CLICK LINKS OR OPEN ATTACHMENTS: If downloaded, do not execute the file; delete it immediately.",
+          "RESET COMPROMISED CREDENTIALS: If you entered a password on the linked site, change it immediately from a known clean device.",
+          "REVOKE ACTIVE SESSIONS: Sign out of all active web and mobile sessions for that account.",
+          "ENABLE MULTI-FACTOR AUTHENTICATION: Ensure an authenticator app (TOTP) is active on the account.",
+        ];
+      } else if (category === "digital-arrest") {
+        riskScore = "CRITICAL RISK — CRIMINAL EXTORTION ACTIVE";
+        socActions = [
+          "Draft Incident Record: Flagged impersonation extortion / video call scam.",
+          "Emergency citizen advisory generated with 1930 National Cyber Helpline protocol.",
+          "Recommended next step: File complaint on National Cyber Crime Reporting Portal (cybercrime.gov.in).",
+        ];
+        containmentPlaybook = [
+          "TERMINATE CALL IMMEDIATELY: Law enforcement agencies (Police, CBI, ED, Customs) NEVER arrest citizens via video calls or demand money transfers.",
+          "CALL 1930 IMMEDIATELY: If you transferred any funds within the last 2-3 hours (The Golden Hour), dial 1930 or lodge complaint at cybercrime.gov.in.",
+          "DO NOT PAY: Scammers increase extortion demands exponentially after the first payment.",
+          "BLOCK CALLER: Block caller on WhatsApp/Skype and inform your family and trusted advisors.",
+        ];
+      } else if (category === "ransomware") {
+        riskScore = "CRITICAL RISK — SYSTEM CONTAINMENT REQUIRED";
+        socActions = [
+          "Draft Incident Record: Recorded ransomware symptom indicators.",
+          "Immediate host isolation protocol generated for emergency response.",
+          "Recommended next step: Engage IT/incident response professionals; preserve encrypted samples and ransom note.",
+        ];
+        containmentPlaybook = [
+          "UNPLUG NETWORK IMMEDIATELY: Disconnect Ethernet cable and turn off Wi-Fi to stop lateral spread.",
+          "DO NOT REBOOT: Powering off or rebooting can delete vital encryption keys in volatile RAM.",
+          "NEVER PAY THE RANSOM: Paying does not guarantee decryptors and finances criminal enterprises.",
+          "PRESERVE RANSOM NOTE: Keep ransom note text file for ransomware family identification.",
+        ];
+      } else if (category === "smishing") {
+        riskScore = "HIGH RISK — MOBILE COMPROMISE LURE";
+        socActions = [
+          `Draft Incident Record: Flagged suspicious SMS / messaging lure from '${source}'.`,
+          "Mobile containment advisory generated for fake APK / phishing links.",
+          "Recommended next step: Block sender on phone; report spam to carrier via 1909 (Do Not Disturb).",
+        ];
+        containmentPlaybook = [
+          "NEVER INSTALL APKS: Do not install application packages (.apk) sent via SMS or WhatsApp.",
+          "UNINSTALL IF DOWNLOADED: Check Settings -> Apps -> Recently Installed and remove suspicious apps.",
+          "CHECK SMS FORWARDING: Dial *#21# on your phone dialer to ensure calls/SMS aren't diverted.",
+          "VERIFY INDEPENDENTLY: Contact your utility provider or bank directly via official websites.",
+        ];
+      } else if (category === "credential") {
+        riskScore = "HIGH RISK — CREDENTIAL EXPOSURE";
+        socActions = [
+          "Draft Incident Record: Recorded unauthorized access / compromised credential alert.",
+          "Session revocation and credential hygiene advisory generated.",
+          "Recommended next step: Inspect account audit logs for unauthorized OAuth apps or forwarding rules.",
+        ];
+        containmentPlaybook = [
+          "CHANGE PASSWORD NOW: Reset master password immediately from an uninfected device.",
+          "REVOKE ACTIVE SESSIONS: Go to security settings and choose 'Sign out of all sessions'.",
+          "ENFORCE APP-BASED MFA: Switch from SMS OTPs to an authenticator app (Google Authenticator / 1Password).",
+        ];
+      } else if (category === "hardware") {
+        riskScore = "MEDIUM RISK — POTENTIAL DEVICE / NETWORK EXPOSURE";
+        socActions = [
+          "Draft Incident Record: Recorded lost device or untrusted Wi-Fi incident.",
+          "Guidance generated for remote device locking and network hygiene.",
+          "Recommended next step: Mark device lost in Apple Find My or Google Find My Device.",
+        ];
+        containmentPlaybook = [
+          "REMOTE LOCK OR WIPE: Use Google Find My Device or Apple iCloud Find My to remotely lock or erase the device.",
+          "CHANGE MASTER PASSWORDS: Change passwords for Google, Apple ID, email, and banking apps that were logged into the lost device.",
+          "REVOKE DEVICE ACCESS: Log into your accounts from another device and remove the lost device from 'Trusted Devices'.",
+          "REPORT TO CARRIER: Contact your mobile telecom provider to suspend the SIM card and block IMEI to prevent SIM swap abuse.",
+        ];
+      } else {
+        containmentPlaybook = [
+          "Do NOT forward, click, or reply to the suspicious sender.",
+          "If credentials were submitted, immediately reset your master password.",
+          "Verify all communication out-of-band via phone or in-person confirmation.",
+          "Maintain vigilant monitoring on your account activity for the next 72 hours.",
+        ];
+      }
+
+      const newReport: IncidentReport = {
+        id: reportId,
+        category: activeCat.label,
+        categoryId: category,
+        urgency,
+        subject,
+        senderOrSource: source,
+        targetUrlOrHash: targetUrl,
+        details,
+        submittedAt: new Date().toISOString(),
+        status: "Triage Complete",
+        riskScore,
+        socActions,
+        containmentPlaybook,
+        attachedFiles: [...attachedFiles],
+      };
+
+      // Check daily cap: max 3 incident reports earn XP per calendar day
+      const todayStr = new Date().toISOString().slice(0, 10);
+      let todayXpCount = 0;
+      try {
+        const { data: todayLogs } = await supabase
+          .from("activity_logs")
+          .select("id, created_at, points_earned")
+          .eq("user_id", profile.id)
+          .eq("action", "incident_reported");
+        todayXpCount = (todayLogs ?? []).filter((l) => {
+          const logDate = (l.created_at || "").slice(0, 10);
+          return logDate === todayStr && (l.points_earned ?? 0) > 0;
+        }).length;
+      } catch {}
+
+      const canAwardXp = todayXpCount < 3;
+      const pointsToAward = canAwardXp ? XP.INCIDENT_REPORT : 0;
+
+      await recordActivity({
+        userId: profile.id,
+        action: "incident_reported",
+        points: pointsToAward,
+        refId: reportId,
+        meta: {
+          incident_report: reportId,
+          category,
+          daily_index: todayXpCount + 1,
+          daily_cap_reached: !canAwardXp,
+        },
+      });
+
+      setHistory((prev) => [newReport, ...prev]);
+      setSelectedIncident(newReport);
+
+      if (canAwardXp) {
+        toast({
+          title: "Incident Logged & XP Earned",
+          description: `Report ${reportId} created. +${pointsToAward} XP awarded (${todayXpCount + 1}/3 today).`,
+          variant: "success",
+        });
+      } else {
+        toast({
+          title: "Incident Logged",
+          description: `Report ${reportId} created. (Daily XP cap of 3 incident reports reached).`,
+          variant: "info",
+        });
+      }
+
+      await refreshProfile();
+
+      // Reset form fields
+      setSubject("");
+      setSource("");
+      setTargetUrl("");
+      setDetails("");
+      setAttachedFiles([]);
+    } finally {
+      setSubmitting(false);
     }
-
-    const newReport: IncidentReport = {
-      id: reportId,
-      category: activeCat.label,
-      categoryId: category,
-      urgency,
-      subject,
-      senderOrSource: source,
-      targetUrlOrHash: targetUrl,
-      details,
-      submittedAt: new Date().toISOString(),
-      status: "Triage Complete",
-      riskScore,
-      socActions,
-      containmentPlaybook,
-      attachedFiles: [...attachedFiles],
-    };
-
-    // Award +30 XP for participating in security incident reporting!
-    await recordActivity({
-      userId: profile.id,
-      action: "simulation_completed",
-      points: 30,
-      meta: { incident_report: reportId, category },
-    });
-
-    setHistory((prev) => [newReport, ...prev]);
-    setSelectedIncident(newReport);
-    setSubmitting(false);
-
-    toast({
-      title: "Report Submitted!",
-      description: `Report ${reportId} created. +30 XP awarded for reporting.`,
-      variant: "success",
-    });
-    await refreshProfile();
-
-    // Reset form fields
-    setSubject("");
-    setSource("");
-    setTargetUrl("");
-    setDetails("");
-    setAttachedFiles([]);
   };
 
   return (
@@ -637,29 +738,25 @@ export function ReportIncidentPage() {
             {/* 6. Evidence Attachments */}
             <div>
               <label className="mb-1.5 block text-xs sm:text-sm font-semibold text-text-moon">
-                5. Attach Screenshots or File Names (Optional)
+                5. Attach Screenshots or Evidence (Optional)
               </label>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newFileName}
-                  onChange={(e) => setNewFileName(e.target.value)}
-                  placeholder="e.g., scam_sms_screenshot.png..."
-                  className="input text-xs sm:text-sm flex-1 py-2"
-                />
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  onClick={handleAddAttachment}
-                  className="text-xs shrink-0"
-                >
-                  Add File
-                </Button>
+              <div className="flex flex-wrap items-center gap-3">
+                <label className="cursor-pointer inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border border-dashed border-border hover:border-primary/60 bg-surface-elevated text-xs font-semibold text-text-pure transition-colors">
+                  <i className="ti ti-upload text-primary text-sm" />
+                  <span>Choose file from device</span>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".png,.jpg,.jpeg,.webp,.pdf,.txt,.eml,.msg"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                  />
+                </label>
+                <span className="text-[11px] text-text-ash">PNG, JPG, PDF, EML (max 5 MB)</span>
               </div>
 
               {attachedFiles.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1.5">
+                <div className="mt-2.5 flex flex-wrap gap-1.5">
                   {attachedFiles.map((file, i) => (
                     <div
                       key={i}
@@ -671,6 +768,7 @@ export function ReportIncidentPage() {
                         type="button"
                         onClick={() => handleRemoveAttachment(i)}
                         className="text-text-ash hover:text-danger ml-1"
+                        title="Remove file"
                       >
                         <i className="ti ti-x text-xs" />
                       </button>
@@ -687,7 +785,7 @@ export function ReportIncidentPage() {
               className="w-full py-3 font-bold text-xs"
               icon={<i className="ti ti-send" />}
             >
-              Get Immediate Safety Advice (+30 XP)
+              Log Incident &amp; Get Emergency Advice (+30 XP)
             </Button>
           </form>
         </Card>
@@ -742,10 +840,10 @@ export function ReportIncidentPage() {
                   </div>
                 </div>
 
-                {/* Automated Actions Taken */}
+                {/* Draft Actions & Recommendations */}
                 <div className="p-4 rounded-2xl bg-surface border border-border space-y-2 text-xs">
                   <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash font-bold block">
-                    Automated Actions &amp; Security Checks:
+                    Draft Incident Actions &amp; Containment Notes:
                   </span>
                   <div className="space-y-1.5 font-mono text-[11px] text-text-fog">
                     {selectedIncident.socActions.map((action, idx) => (

@@ -53,6 +53,7 @@ export function CommandPalette() {
   const { user, isAdmin } = useAuth();
 
   useEffect(() => {
+    if (!user) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
@@ -60,9 +61,15 @@ export function CommandPalette() {
       }
       if (e.key === "Escape") setOpen(false);
     };
+    const onCustomOpen = () => setOpen(true);
+
     document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, []);
+    window.addEventListener("cyberguard:open-command-palette", onCustomOpen);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      window.removeEventListener("cyberguard:open-command-palette", onCustomOpen);
+    };
+  }, [user]);
 
   useEffect(() => {
     if (!open || !user) return;
