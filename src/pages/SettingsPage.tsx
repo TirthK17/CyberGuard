@@ -347,6 +347,24 @@ export function SettingsPage() {
       {/* Local Data & Storage */}
       <SettingSection title="Data &amp; Storage" description="Export your progress or reset your local data.">
         <SettingRow
+          label="Onboarding Tour"
+          description="Re-launch the interactive walkthrough guide of CyberGuard."
+        >
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<i className="ti ti-compass" />}
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent("cyberguard:start-onboarding"));
+              toast({ title: "Launching Onboarding Tour", variant: "info" });
+            }}
+            className="text-xs"
+          >
+            Replay Tour
+          </Button>
+        </SettingRow>
+
+        <SettingRow
           label="Export My Data"
           description="Download a copy of your completed lessons, badges, and quiz scores."
         >

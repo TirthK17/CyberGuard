@@ -24,20 +24,26 @@ function groupUserNav(items: NavItem[]): NavSection[] {
       items: items.filter((i) => ["/dashboard"].includes(i.to)),
     },
     {
-      label: "Learn & Practice",
+      label: "Academy & Drills",
       items: items.filter((i) =>
-        ["/training", "/simulations", "/topics", "/assessment"].includes(i.to)
+        ["/training", "/simulations", "/quizzes", "/assessment", "/topics"].includes(i.to)
       ),
     },
     {
-      label: "Safety Tools",
+      label: "Defense & Intel",
       items: items.filter((i) =>
-        ["/tools", "/threats", "/report", "/leaderboard"].includes(i.to)
+        ["/tools", "/threats", "/report", "/guide", "/glossary"].includes(i.to)
+      ),
+    },
+    {
+      label: "Standings & Growth",
+      items: items.filter((i) =>
+        ["/progress", "/badges", "/leaderboard", "/certificate"].includes(i.to)
       ),
     },
     {
       label: "Account",
-      items: items.filter((i) => ["/settings"].includes(i.to)),
+      items: items.filter((i) => ["/profile", "/settings"].includes(i.to)),
     },
   ];
   return sections.filter((s) => s.items.length > 0);
@@ -50,9 +56,15 @@ function groupAdminNav(items: NavItem[]): NavSection[] {
       items: items.filter((i) => ["/admin"].includes(i.to)),
     },
     {
-      label: "Administration",
+      label: "Curriculum Management",
       items: items.filter((i) =>
-        ["/admin/users", "/admin/courses", "/admin/reports"].includes(i.to)
+        ["/admin/courses", "/admin/lessons", "/admin/quizzes", "/admin/simulations", "/admin/badges"].includes(i.to)
+      ),
+    },
+    {
+      label: "Operations & Users",
+      items: items.filter((i) =>
+        ["/admin/users", "/admin/reports"].includes(i.to)
       ),
     },
     {

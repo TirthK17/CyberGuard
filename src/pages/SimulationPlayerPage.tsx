@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
@@ -9,10 +9,19 @@ import { useToast } from "@/context/ToastContext";
 import { Button } from "@/components/ui/Button";
 import { Card, ProgressBar, PageSpinner, EmptyState, Pill } from "@/components/ui/primitives";
 import type { Simulation, SimulationStep } from "@/types";
-import { PhishingMailSandbox } from "@/components/simulations/PhishingMailSandbox";
-import { RansomwareContainmentDrill } from "@/components/simulations/RansomwareContainmentDrill";
-import { SmishingSimulator } from "@/components/simulations/SmishingSimulator";
-import { MitmPaymentSandbox } from "@/components/simulations/MitmPaymentSandbox";
+
+const PhishingMailSandbox = lazy(() =>
+  import("@/components/simulations/PhishingMailSandbox").then((m) => ({ default: m.PhishingMailSandbox }))
+);
+const RansomwareContainmentDrill = lazy(() =>
+  import("@/components/simulations/RansomwareContainmentDrill").then((m) => ({ default: m.RansomwareContainmentDrill }))
+);
+const SmishingSimulator = lazy(() =>
+  import("@/components/simulations/SmishingSimulator").then((m) => ({ default: m.SmishingSimulator }))
+);
+const MitmPaymentSandbox = lazy(() =>
+  import("@/components/simulations/MitmPaymentSandbox").then((m) => ({ default: m.MitmPaymentSandbox }))
+);
 
 const SLUG_ALIASES: Record<string, string> = {
   phishing: "phishing-email",
@@ -129,7 +138,9 @@ export function SimulationPlayerPage() {
             <Pill tone="emerald" size="sm">Interactive Mailbox</Pill>
           </div>
         </div>
-        <PhishingMailSandbox onComplete={handleSandboxComplete} />
+        <Suspense fallback={<PageSpinner />}>
+          <PhishingMailSandbox onComplete={handleSandboxComplete} />
+        </Suspense>
       </div>
     );
   }
@@ -146,7 +157,9 @@ export function SimulationPlayerPage() {
             <Pill tone="primary" size="sm">Action Checklist</Pill>
           </div>
         </div>
-        <RansomwareContainmentDrill onComplete={handleSandboxComplete} />
+        <Suspense fallback={<PageSpinner />}>
+          <RansomwareContainmentDrill onComplete={handleSandboxComplete} />
+        </Suspense>
       </div>
     );
   }
@@ -163,7 +176,9 @@ export function SimulationPlayerPage() {
             <Pill tone="primary" size="sm">Phone &amp; Scammer View</Pill>
           </div>
         </div>
-        <SmishingSimulator onComplete={handleSandboxComplete} />
+        <Suspense fallback={<PageSpinner />}>
+          <SmishingSimulator onComplete={handleSandboxComplete} />
+        </Suspense>
       </div>
     );
   }
@@ -180,7 +195,9 @@ export function SimulationPlayerPage() {
             <Pill tone="primary" size="sm">Interactive Demo</Pill>
           </div>
         </div>
-        <MitmPaymentSandbox onComplete={handleSandboxComplete} />
+        <Suspense fallback={<PageSpinner />}>
+          <MitmPaymentSandbox onComplete={handleSandboxComplete} />
+        </Suspense>
       </div>
     );
   }

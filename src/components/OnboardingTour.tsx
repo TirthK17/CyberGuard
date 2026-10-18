@@ -56,6 +56,15 @@ export function OnboardingTour() {
     }
   }, []);
 
+  useEffect(() => {
+    const handleStartTour = () => {
+      setStep(0);
+      setVisible(true);
+    };
+    window.addEventListener("cyberguard:start-onboarding", handleStartTour);
+    return () => window.removeEventListener("cyberguard:start-onboarding", handleStartTour);
+  }, []);
+
   const finish = () => {
     localStorage.setItem(STORAGE_KEY, "1");
     setVisible(false);

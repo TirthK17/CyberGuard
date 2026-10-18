@@ -1,72 +1,61 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { ThemeProvider } from "@/context/ThemeContext";
-import { ProtectedRoute, AdminRoute } from "@/components/layout/RouteGuards";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { ProtectedRoute } from "@/components/layout/RouteGuards";
 import { PublicNavbar } from "@/components/layout/PublicNavbar";
 import { PublicFooter } from "@/components/layout/PublicFooter";
-import { DashboardShell, type NavItem } from "@/components/layout/DashboardShell";
+import { DashboardShell } from "@/components/layout/DashboardShell";
+import { UserLayout } from "@/components/layout/UserLayout";
+import { AdminLayout } from "@/components/layout/AdminLayout";
 import { CommandPalette } from "@/components/CommandPalette";
+import { PageSpinner } from "@/components/ui/primitives";
+import { userNav } from "@/lib/navigation";
 
-import { LandingPage } from "@/pages/LandingPage";
-import { LoginPage } from "@/pages/LoginPage";
-import { RegisterPage } from "@/pages/RegisterPage";
-import { AboutPage, FeaturesPage, TopicsPage, HowItWorksPage, ContactPage } from "@/pages/StaticPages";
+// ── CODE-SPLIT PAGE IMPORTS ──────────────────────────────────────────────────
+const LandingPage = lazy(() => import("@/pages/LandingPage").then((m) => ({ default: m.LandingPage })));
+const LoginPage = lazy(() => import("@/pages/LoginPage").then((m) => ({ default: m.LoginPage })));
+const RegisterPage = lazy(() => import("@/pages/RegisterPage").then((m) => ({ default: m.RegisterPage })));
+const AboutPage = lazy(() => import("@/pages/StaticPages").then((m) => ({ default: m.AboutPage })));
+const FeaturesPage = lazy(() => import("@/pages/StaticPages").then((m) => ({ default: m.FeaturesPage })));
+const TopicsPage = lazy(() => import("@/pages/TopicsPage").then((m) => ({ default: m.TopicsPage })));
+const HowItWorksPage = lazy(() => import("@/pages/StaticPages").then((m) => ({ default: m.HowItWorksPage })));
+const ContactPage = lazy(() => import("@/pages/StaticPages").then((m) => ({ default: m.ContactPage })));
 
-import { UserDashboardPage } from "@/pages/UserDashboardPage";
-import { TrainingPage } from "@/pages/TrainingPage";
-import { ModuleDetailPage } from "@/pages/ModuleDetailPage";
-import { QuizzesPage } from "@/pages/QuizzesPage";
-import { QuizTakingPage } from "@/pages/QuizTakingPage";
-import { SimulationsPage } from "@/pages/SimulationsPage";
-import { SimulationPlayerPage } from "@/pages/SimulationPlayerPage";
-import { AssessmentPage } from "@/pages/AssessmentPage";
-import { SecurityToolsPage } from "@/pages/SecurityToolsPage";
-import { ReportIncidentPage } from "@/pages/ReportIncidentPage";
-import { ThreatIntelligencePage } from "@/pages/ThreatIntelligencePage";
-import { ProgressPage } from "@/pages/ProgressPage";
-import { BadgesPage } from "@/pages/BadgesPage";
-import { LeaderboardPage } from "@/pages/LeaderboardPage";
-import { CertificatePage } from "@/pages/CertificatePage";
-import { SecurityGuidePage } from "@/pages/SecurityGuidePage";
-import { GlossaryPage } from "@/pages/GlossaryPage";
-import { ProfilePage } from "@/pages/ProfilePage";
-import { SettingsPage } from "@/pages/SettingsPage";
-import { VerifyCertificatePage } from "@/pages/VerifyCertificatePage";
-import { NotFoundPage } from "@/pages/NotFoundPage";
+const UserDashboardPage = lazy(() => import("@/pages/UserDashboardPage").then((m) => ({ default: m.UserDashboardPage })));
+const TrainingPage = lazy(() => import("@/pages/TrainingPage").then((m) => ({ default: m.TrainingPage })));
+const ModuleDetailPage = lazy(() => import("@/pages/ModuleDetailPage").then((m) => ({ default: m.ModuleDetailPage })));
+const QuizzesPage = lazy(() => import("@/pages/QuizzesPage").then((m) => ({ default: m.QuizzesPage })));
+const QuizTakingPage = lazy(() => import("@/pages/QuizTakingPage").then((m) => ({ default: m.QuizTakingPage })));
+const SimulationsPage = lazy(() => import("@/pages/SimulationsPage").then((m) => ({ default: m.SimulationsPage })));
+const SimulationPlayerPage = lazy(() => import("@/pages/SimulationPlayerPage").then((m) => ({ default: m.SimulationPlayerPage })));
+const AssessmentPage = lazy(() => import("@/pages/AssessmentPage").then((m) => ({ default: m.AssessmentPage })));
+const SecurityToolsPage = lazy(() => import("@/pages/SecurityToolsPage").then((m) => ({ default: m.SecurityToolsPage })));
+const ReportIncidentPage = lazy(() => import("@/pages/ReportIncidentPage").then((m) => ({ default: m.ReportIncidentPage })));
+const ThreatIntelligencePage = lazy(() => import("@/pages/ThreatIntelligencePage").then((m) => ({ default: m.ThreatIntelligencePage })));
+const ProgressPage = lazy(() => import("@/pages/ProgressPage").then((m) => ({ default: m.ProgressPage })));
+const BadgesPage = lazy(() => import("@/pages/BadgesPage").then((m) => ({ default: m.BadgesPage })));
+const LeaderboardPage = lazy(() => import("@/pages/LeaderboardPage").then((m) => ({ default: m.LeaderboardPage })));
+const CertificatePage = lazy(() => import("@/pages/CertificatePage").then((m) => ({ default: m.CertificatePage })));
+const SecurityGuidePage = lazy(() => import("@/pages/SecurityGuidePage").then((m) => ({ default: m.SecurityGuidePage })));
+const GlossaryPage = lazy(() => import("@/pages/GlossaryPage").then((m) => ({ default: m.GlossaryPage })));
+const ProfilePage = lazy(() => import("@/pages/ProfilePage").then((m) => ({ default: m.ProfilePage })));
+const SettingsPage = lazy(() => import("@/pages/SettingsPage").then((m) => ({ default: m.SettingsPage })));
+const VerifyCertificatePage = lazy(() => import("@/pages/VerifyCertificatePage").then((m) => ({ default: m.VerifyCertificatePage })));
+const NotFoundPage = lazy(() => import("@/pages/NotFoundPage").then((m) => ({ default: m.NotFoundPage })));
 
-import { AdminDashboardPage } from "@/pages/admin/AdminDashboardPage";
-import { AdminUsersPage } from "@/pages/admin/AdminUsersPage";
-import { AdminCoursesPage } from "@/pages/admin/AdminCoursesPage";
-import { AdminLessonsPage } from "@/pages/admin/AdminLessonsPage";
-import { AdminQuizzesPage } from "@/pages/admin/AdminQuizzesPage";
-import { AdminSimulationsPage } from "@/pages/admin/AdminSimulationsPage";
-import { AdminBadgesPage } from "@/pages/admin/AdminBadgesPage";
-import { AdminReportsPage } from "@/pages/admin/AdminReportsPage";
-import { AdminSettingsPage } from "@/pages/admin/AdminSettingsPage";
-
-/* Simple, Friendly Navigation */
-const userNav: NavItem[] = [
-  { to: "/dashboard",   label: "Dashboard",           icon: "ti-layout-dashboard" },
-  { to: "/training",    label: "Lessons",             icon: "ti-book-2" },
-  { to: "/simulations", label: "Simulations",         icon: "ti-target" },
-  { to: "/topics",      label: "Security Topics",     icon: "ti-bookmarks" },
-  { to: "/tools",       label: "Safety Tools",        icon: "ti-tools" },
-  { to: "/threats",     label: "Recent Scams",        icon: "ti-bell-ringing" },
-  { to: "/assessment",  label: "Safety Test",         icon: "ti-certificate" },
-  { to: "/report",      label: "Report a Scam",       icon: "ti-flag" },
-  { to: "/leaderboard", label: "Badges & Ranks",      icon: "ti-trophy" },
-  { to: "/settings",    label: "Settings",            icon: "ti-settings" },
-];
-
-const adminNav: NavItem[] = [
-  { to: "/admin",             label: "Dashboard",   icon: "ti-layout-dashboard" },
-  { to: "/admin/users",       label: "Users",       icon: "ti-users" },
-  { to: "/admin/courses",     label: "Courses",     icon: "ti-book-2" },
-  { to: "/admin/reports",     label: "Reports",     icon: "ti-chart-bar" },
-  { to: "/admin/settings",    label: "Settings",    icon: "ti-settings" },
-];
+const AdminDashboardPage = lazy(() => import("@/pages/admin/AdminDashboardPage").then((m) => ({ default: m.AdminDashboardPage })));
+const AdminUsersPage = lazy(() => import("@/pages/admin/AdminUsersPage").then((m) => ({ default: m.AdminUsersPage })));
+const AdminCoursesPage = lazy(() => import("@/pages/admin/AdminCoursesPage").then((m) => ({ default: m.AdminCoursesPage })));
+const AdminLessonsPage = lazy(() => import("@/pages/admin/AdminLessonsPage").then((m) => ({ default: m.AdminLessonsPage })));
+const AdminQuizzesPage = lazy(() => import("@/pages/admin/AdminQuizzesPage").then((m) => ({ default: m.AdminQuizzesPage })));
+const AdminSimulationsPage = lazy(() => import("@/pages/admin/AdminSimulationsPage").then((m) => ({ default: m.AdminSimulationsPage })));
+const AdminBadgesPage = lazy(() => import("@/pages/admin/AdminBadgesPage").then((m) => ({ default: m.AdminBadgesPage })));
+const AdminReportsPage = lazy(() => import("@/pages/admin/AdminReportsPage").then((m) => ({ default: m.AdminReportsPage })));
+const AdminSettingsPage = lazy(() => import("@/pages/admin/AdminSettingsPage").then((m) => ({ default: m.AdminSettingsPage })));
 
 function PublicLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
@@ -111,62 +100,70 @@ function TopicsWrapper() {
 
 function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <ToastProvider>
-          <BrowserRouter>
-            <CommandPalette />
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
-              <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
-              <Route path="/features" element={<PublicLayout><FeaturesPage /></PublicLayout>} />
-              <Route path="/topics" element={<TopicsWrapper />} />
-              <Route path="/how-it-works" element={<PublicLayout><HowItWorksPage /></PublicLayout>} />
-              <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
-              <Route path="/login" element={<PublicLayout><LoginPage /></PublicLayout>} />
-              <Route path="/register" element={<PublicLayout><RegisterPage /></PublicLayout>} />
-              <Route path="/verify/:certId" element={<VerifyCertificatePage />} />
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <BrowserRouter>
+              <CommandPalette />
+              <Suspense fallback={<PageSpinner />}>
+                <Routes>
+                  {/* Public Routes */}
+                  <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
+                  <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
+                  <Route path="/features" element={<PublicLayout><FeaturesPage /></PublicLayout>} />
+                  <Route path="/topics" element={<TopicsWrapper />} />
+                  <Route path="/how-it-works" element={<PublicLayout><HowItWorksPage /></PublicLayout>} />
+                  <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
+                  <Route path="/login" element={<PublicLayout><LoginPage /></PublicLayout>} />
+                  <Route path="/register" element={<PublicLayout><RegisterPage /></PublicLayout>} />
+                  <Route path="/verify/:certId" element={<VerifyCertificatePage />} />
 
-              {/* User Console */}
-              <Route path="/dashboard" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><UserDashboardPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/training" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><TrainingPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/training/:slug" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><ModuleDetailPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/simulations" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><SimulationsPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/simulations/:slug" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><SimulationPlayerPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/tools" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><SecurityToolsPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/report" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><ReportIncidentPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/assessment" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><AssessmentPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/quizzes" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><QuizzesPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/quizzes/:id" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><QuizTakingPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/leaderboard" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><LeaderboardPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/badges" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><BadgesPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/certificate" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><CertificatePage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/progress" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><ProgressPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/threats" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><ThreatIntelligencePage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/guide" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><SecurityGuidePage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/glossary" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><GlossaryPage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><ProfilePage /></DashboardShell></ProtectedRoute>} />
-              <Route path="/settings" element={<ProtectedRoute><DashboardShell navItems={userNav} brandLabel="CyberGuard"><SettingsPage /></DashboardShell></ProtectedRoute>} />
+                  {/* User Console Layout Routes (no remounting) */}
+                  <Route element={<UserLayout />}>
+                    <Route path="/dashboard" element={<UserDashboardPage />} />
+                    <Route path="/training" element={<TrainingPage />} />
+                    <Route path="/training/:slug" element={<ModuleDetailPage />} />
+                    <Route path="/simulations" element={<SimulationsPage />} />
+                    <Route path="/simulations/:slug" element={<SimulationPlayerPage />} />
+                    <Route path="/tools" element={<SecurityToolsPage />} />
+                    <Route path="/report" element={<ReportIncidentPage />} />
+                    <Route path="/assessment" element={<AssessmentPage />} />
+                    <Route path="/quizzes" element={<QuizzesPage />} />
+                    <Route path="/quizzes/:id" element={<QuizTakingPage />} />
+                    <Route path="/leaderboard" element={<LeaderboardPage />} />
+                    <Route path="/badges" element={<BadgesPage />} />
+                    <Route path="/certificate" element={<CertificatePage />} />
+                    <Route path="/progress" element={<ProgressPage />} />
+                    <Route path="/threats" element={<ThreatIntelligencePage />} />
+                    <Route path="/guide" element={<SecurityGuidePage />} />
+                    <Route path="/glossary" element={<GlossaryPage />} />
+                    <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/settings" element={<SettingsPage />} />
+                  </Route>
 
-              {/* Admin Console */}
-              <Route path="/admin" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminDashboardPage /></DashboardShell></AdminRoute>} />
-              <Route path="/admin/users" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminUsersPage /></DashboardShell></AdminRoute>} />
-              <Route path="/admin/courses" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminCoursesPage /></DashboardShell></AdminRoute>} />
-              <Route path="/admin/lessons" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminLessonsPage /></DashboardShell></AdminRoute>} />
-              <Route path="/admin/quizzes" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminQuizzesPage /></DashboardShell></AdminRoute>} />
-              <Route path="/admin/simulations" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminSimulationsPage /></DashboardShell></AdminRoute>} />
-              <Route path="/admin/badges" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminBadgesPage /></DashboardShell></AdminRoute>} />
-              <Route path="/admin/reports" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminReportsPage /></DashboardShell></AdminRoute>} />
-              <Route path="/admin/settings" element={<AdminRoute><DashboardShell navItems={adminNav} brandLabel="Admin Console"><AdminSettingsPage /></DashboardShell></AdminRoute>} />
+                  {/* Admin Console Layout Routes (no remounting) */}
+                  <Route element={<AdminLayout />}>
+                    <Route path="/admin" element={<AdminDashboardPage />} />
+                    <Route path="/admin/users" element={<AdminUsersPage />} />
+                    <Route path="/admin/courses" element={<AdminCoursesPage />} />
+                    <Route path="/admin/lessons" element={<AdminLessonsPage />} />
+                    <Route path="/admin/quizzes" element={<AdminQuizzesPage />} />
+                    <Route path="/admin/simulations" element={<AdminSimulationsPage />} />
+                    <Route path="/admin/badges" element={<AdminBadgesPage />} />
+                    <Route path="/admin/reports" element={<AdminReportsPage />} />
+                    <Route path="/admin/settings" element={<AdminSettingsPage />} />
+                  </Route>
 
-              {/* 404 catch-all */}
-              <Route path="*" element={<NotFoundPage />} />
-            </Routes>
-          </BrowserRouter>
-        </ToastProvider>
-      </AuthProvider>
-    </ThemeProvider>
+                  {/* 404 Catch-All */}
+                  <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </ToastProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

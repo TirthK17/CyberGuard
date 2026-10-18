@@ -673,3 +673,20 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--color-text-ash);
 }
 
+/* ── Mobile Performance & Reduced Motion ── */
+@media (max-width: 640px) {
+  .glass-modal {
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
