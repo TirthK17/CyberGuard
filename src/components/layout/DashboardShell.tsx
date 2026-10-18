@@ -225,16 +225,27 @@ export function DashboardShell({
       </div>
 
       {/* macOS Spotlight search prompt */}
-      {!collapsed && (
+      {!collapsed ? (
         <button
           onClick={() => {
             window.dispatchEvent(new CustomEvent("cyberguard:open-command-palette"));
           }}
-          className="sidebar-search mb-4 flex items-center gap-2 rounded-xl border border-border bg-surface-elevated px-3 py-2 text-xs text-text-fog transition-all duration-150 hover:border-border-strong hover:text-text-pure"
+          className="sidebar-search mb-4 flex items-center gap-2 rounded-xl border border-border bg-surface-elevated px-3 py-2 text-xs text-text-fog transition-all duration-150 hover:border-border-strong hover:text-text-pure cursor-pointer"
         >
           <i className="ti ti-search text-xs text-text-ash" />
           <span className="flex-1 text-left font-medium">Quick search…</span>
-          <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 font-sans text-xs font-semibold text-text-ash leading-none">⌘K</kbd>
+          <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 font-sans text-[11px] font-semibold text-text-ash leading-none">⌘K</kbd>
+        </button>
+      ) : (
+        <button
+          onClick={() => {
+            window.dispatchEvent(new CustomEvent("cyberguard:open-command-palette"));
+          }}
+          title="Quick search (⌘K)"
+          aria-label="Quick search (⌘K)"
+          className="mb-4 mx-auto flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-elevated text-text-fog hover:text-text-pure hover:border-border-strong transition-colors cursor-pointer"
+        >
+          <i className="ti ti-search text-sm text-text-ash" />
         </button>
       )}
 
@@ -338,21 +349,32 @@ export function DashboardShell({
 
       {/* Main Page Area */}
       <div className="flex min-h-screen flex-1 flex-col min-w-0">
-        {/* Mobile top bar */}
-        <div className="flex items-center justify-between border-b border-border bg-surface/80 backdrop-blur-xl px-4 py-3 lg:hidden">
-          <div className="flex items-center gap-2.5">
-            <div className="macos-traffic-lights mr-1">
-              <span className="macos-dot macos-dot-close" />
-              <span className="macos-dot macos-dot-minimize" />
-              <span className="macos-dot macos-dot-expand" />
-            </div>
+        {/* Mobile top bar (compact, clean without macOS dots) */}
+        <div className="flex items-center justify-between border-b border-border bg-surface/85 backdrop-blur-xl px-4 py-2.5 lg:hidden sticky top-0 z-30">
+          <div className="flex items-center gap-2">
             <CyberGuardLogo size="xs" showText={true} />
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("cyberguard:open-command-palette"))}
+              aria-label="Search and quick actions (Ctrl K)"
+              title="Search (⌘K)"
+              className="rounded-lg p-2 text-text-fog hover:bg-surface-elevated hover:text-text-pure transition-colors cursor-pointer"
+            >
+              <i className="ti ti-search text-base" aria-hidden="true" />
+            </button>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("cyberguard:open-shortcuts"))}
+              aria-label="Keyboard shortcuts"
+              title="Keyboard shortcuts (?)"
+              className="rounded-lg p-2 text-text-fog hover:bg-surface-elevated hover:text-text-pure transition-colors cursor-pointer"
+            >
+              <i className="ti ti-help text-base" aria-hidden="true" />
+            </button>
             <button
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="rounded-lg p-1.5 text-text-fog hover:bg-surface-elevated transition-colors cursor-pointer"
+              className="rounded-lg p-2 text-text-fog hover:bg-surface-elevated hover:text-text-pure transition-colors cursor-pointer"
             >
               <i className={`ti ${resolvedTheme === "dark" ? "ti-sun" : "ti-moon"} text-base`} aria-hidden="true" />
             </button>
@@ -361,7 +383,7 @@ export function DashboardShell({
               aria-label="Open navigation menu"
               aria-expanded={mobileOpen}
               aria-controls="mobile-navigation-drawer"
-              className="rounded-lg p-1.5 text-text-fog hover:bg-surface-elevated transition-colors cursor-pointer"
+              className="rounded-lg p-2 text-text-fog hover:bg-surface-elevated hover:text-text-pure transition-colors cursor-pointer"
             >
               <i className="ti ti-menu-2 text-xl" aria-hidden="true" />
             </button>
@@ -378,11 +400,40 @@ export function DashboardShell({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="flex-1 px-5 py-6 sm:px-8 lg:px-10 lg:py-8 max-w-[1500px] w-full focus:outline-none"
+            className="flex-1 px-5 py-6 sm:px-8 lg:px-10 lg:py-8 max-w-[1500px] w-full focus:outline-none pb-24 lg:pb-8"
           >
             {children}
           </motion.main>
         </AnimatePresence>
+
+        {/* Mobile Bottom Tab Bar */}
+        <nav
+          aria-label="Mobile Bottom Navigation"
+          className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-border bg-surface/90 backdrop-blur-xl py-2 px-2 lg:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.06)]"
+        >
+          {[
+            { to: "/dashboard", label: "Dashboard", icon: "ti-layout-dashboard" },
+            { to: "/training", label: "Training", icon: "ti-book-2" },
+            { to: "/simulations", label: "Sims", icon: "ti-flask" },
+            { to: "/tools", label: "Tools", icon: "ti-tools" },
+            { to: "/threats", label: "Threats", icon: "ti-radar" },
+          ].map((tab) => {
+            const isActive = location.pathname === tab.to || location.pathname.startsWith(`${tab.to}/`);
+            return (
+              <Link
+                key={tab.to}
+                to={tab.to}
+                className={cn(
+                  "flex flex-col items-center gap-1 py-1 px-3 rounded-xl transition-colors cursor-pointer",
+                  isActive ? "text-primary font-semibold" : "text-text-ash hover:text-text-fog"
+                )}
+              >
+                <i className={`ti ${tab.icon} text-lg leading-none`} />
+                <span className="text-[10px] tracking-tight">{tab.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
       </div>
     </div>
   );

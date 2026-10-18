@@ -13,6 +13,8 @@ import { DashboardShell } from "@/components/layout/DashboardShell";
 import { UserLayout } from "@/components/layout/UserLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { CommandPalette } from "@/components/CommandPalette";
+import { ShortcutsModal } from "@/components/ui/ShortcutsModal";
+import { CelebrationModal } from "@/components/ui/CelebrationModal";
 import { PageSpinner } from "@/components/ui/primitives";
 import { userNav } from "@/lib/navigation";
 
@@ -108,6 +110,8 @@ function App() {
             <ToastProvider>
             <BrowserRouter>
               <CommandPalette />
+              <ShortcutsModal />
+              <CelebrationModal />
               <Suspense fallback={<PageSpinner />}>
                 <Routes>
                   {/* Public Routes */}

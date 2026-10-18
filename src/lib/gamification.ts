@@ -88,7 +88,7 @@ export async function recordActivity({
   // ── Update profile points + level ────────────────────────────────────────────
   const { data: profile, error: profileFetchError } = await supabase
     .from("profiles")
-    .select("points")
+    .select("points, level")
     .eq("id", userId)
     .single();
 
@@ -97,6 +97,7 @@ export async function recordActivity({
     return;
   }
 
+  const oldLevel = profile?.level ?? levelForPoints(profile?.points ?? 0);
   const newPoints = (profile?.points ?? 0) + points;
   const newLevel = levelForPoints(newPoints);
 
@@ -106,7 +107,24 @@ export async function recordActivity({
     .eq("id", userId);
   if (updateError) console.error("Failed to update points/level:", updateError.message);
 
-  return evaluateBadges(userId);
+  if (typeof window !== "undefined" && newLevel > oldLevel) {
+    window.dispatchEvent(
+      new CustomEvent("cyberguard:level-up", {
+        detail: { oldLevel, newLevel, newPoints },
+      })
+    );
+  }
+
+  const newlyAwarded = await evaluateBadges(userId);
+  if (typeof window !== "undefined" && newlyAwarded.length > 0) {
+    window.dispatchEvent(
+      new CustomEvent("cyberguard:badges-unlocked", {
+        detail: { badges: newlyAwarded },
+      })
+    );
+  }
+
+  return newlyAwarded;
 }
 
 /**

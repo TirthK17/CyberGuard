@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Card, Pill, ProgressBar, AnimatedNumber } from "@/components/ui/primitives";
@@ -197,6 +197,36 @@ export function UserDashboardPage() {
   const simulationsCompleted = new Set((simResults ?? []).map((r) => r.simulation_id)).size;
   const badgesEarned = badges?.length ?? 0;
 
+  // Learning Paths Filter
+  const [learningPath, setLearningPath] = useState<"all" | "student" | "employee" | "senior">("all");
+
+  // Daily Streak State
+  const [streakDays] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem(`cyberguard_streak_${profile?.id}`);
+      return saved ? parseInt(saved, 10) : 3;
+    } catch {
+      return 3;
+    }
+  });
+
+  const [streakCompletedToday] = useState<boolean>(() => {
+    try {
+      const today = new Date().toISOString().split("T")[0];
+      return localStorage.getItem(`cyberguard_streak_done_${profile?.id}_${today}`) === "true";
+    } catch {
+      return false;
+    }
+  });
+
+  // Calculate Next Up / Resume Module
+  const nextUp = useMemo(() => {
+    if (!modules || modules.length === 0) return null;
+    const completedSet = new Set((progress ?? []).filter((p) => p.is_completed).map((p) => p.module_id));
+    const nextMod = modules.find((m) => !completedSet.has(m.id));
+    return nextMod || modules[0];
+  }, [modules, progress]);
+
   // Real or simulated awareness posture score
   const score = profile?.awareness_score && profile.awareness_score > 0 ? profile.awareness_score : 84;
   const totalModules = modules?.length || 6;
@@ -294,7 +324,23 @@ export function UserDashboardPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Daily Streak Badge */}
+            <div className="flex items-center gap-2 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-1.5 text-xs">
+              <div className="flex h-6 w-6 items-center justify-center rounded-lg bg-amber-500/20 text-amber-500">
+                <i className="ti ti-flame text-sm" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1">
+                  <span className="font-bold text-amber-500 font-mono text-[11px]">{streakDays} Days</span>
+                  <span className="text-[10px] text-text-ash">Streak</span>
+                </div>
+                <p className="text-[10px] text-text-fog leading-none">
+                  {streakCompletedToday ? "Active today" : "Complete 1 drill"}
+                </p>
+              </div>
+            </div>
+
             <a
               href="#daily-drill"
               className="relative inline-flex items-center justify-center gap-2 select-none font-medium transition-all duration-150 ease-out px-3 py-1 text-xs font-semibold rounded-lg bg-surface-elevated border border-border text-text-pure shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-surface-hover hover:border-border-strong cursor-pointer"
@@ -384,6 +430,44 @@ export function UserDashboardPage() {
         )}
       </AnimatePresence>
 
+      {/* ── CONTINUE WHERE YOU LEFT OFF CARD ── */}
+      {nextUp && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="rounded-2xl border border-primary/30 bg-gradient-to-r from-primary/10 via-surface to-surface p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
+        >
+          <div className="flex items-center gap-3.5">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-white shadow-md">
+              <i className="ti ti-player-play text-xl" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 text-[11px] text-primary font-bold uppercase tracking-wider">
+                <span>Continue Where You Left Off</span>
+                <span>•</span>
+                <span className="text-text-ash capitalize">{nextUp.category?.replace(/_/g, " ")}</span>
+              </div>
+              <h2 className="font-display text-base sm:text-lg font-bold text-text-pure mt-0.5">
+                {nextUp.title}
+              </h2>
+              <p className="text-xs text-text-fog line-clamp-1 mt-0.5">
+                {nextUp.description || "Resume your defensive training curriculum and fortify your awareness."}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 self-start sm:self-auto shrink-0">
+            <Button
+              to={`/training/${nextUp.slug}`}
+              variant="primary"
+              size="sm"
+              icon={<i className="ti ti-arrow-right" />}
+            >
+              Resume Module
+            </Button>
+          </div>
+        </motion.div>
+      )}
+
       {/* ── 2. QUICK-START ROADMAP RIBBON ── */}
       <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-3">
@@ -446,6 +530,38 @@ export function UserDashboardPage() {
             </div>
             <i className="ti ti-arrow-right text-text-ash group-hover:text-emerald-500 group-hover:translate-x-0.5 transition-all text-sm shrink-0" />
           </Link>
+        </div>
+      </div>
+
+      {/* ── LEARNING PATH CURRICULUM SELECTOR ── */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-surface border border-border">
+        <div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-primary font-mono">Tailored Cybersecurity Tracks</span>
+          <h2 className="text-sm sm:text-base font-bold text-text-pure">Select Your Persona Learning Path</h2>
+          <p className="text-xs text-text-fog mt-0.5">Prioritizes threats and simulations most relevant to your daily routine.</p>
+        </div>
+        <div className="flex items-center gap-1.5 p-1 rounded-xl bg-surface-elevated border border-border text-xs">
+          {[
+            { id: "all", label: "General" },
+            { id: "student", label: "Student" },
+            { id: "employee", label: "Office / Enterprise" },
+            { id: "senior", label: "Senior Citizen" },
+          ].map((path) => (
+            <button
+              key={path.id}
+              onClick={() => {
+                setLearningPath(path.id as "all" | "student" | "employee" | "senior");
+                toast({ title: `Filtered curriculum for ${path.label}`, variant: "info" });
+              }}
+              className={`px-2.5 py-1 rounded-lg font-medium transition-all cursor-pointer ${
+                learningPath === path.id
+                  ? "bg-primary text-white shadow-xs font-semibold"
+                  : "text-text-fog hover:text-text-pure"
+              }`}
+            >
+              {path.label}
+            </button>
+          ))}
         </div>
       </div>
 

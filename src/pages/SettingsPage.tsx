@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useToast } from "@/context/ToastContext";
 import { useAccessibility } from "@/context/AccessibilityContext";
+import { useSfx } from "@/lib/sfx";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { motion } from "framer-motion";
@@ -53,7 +54,15 @@ function SettingRow({ label, description, children }: {
 
 export function SettingsPage() {
   const { user, profile } = useAuth();
-  const { theme, setTheme } = useTheme();
+  const {
+    theme,
+    setTheme,
+    accent,
+    setAccent,
+    hackerMode,
+    toggleHackerMode,
+  } = useTheme();
+  const { isMuted, toggleMute, playSfx } = useSfx();
   const { reducedMotion, setReducedMotion, isMotionReduced } = useAccessibility();
   const toast = useToast();
 
@@ -285,6 +294,131 @@ export function SettingsPage() {
             </div>
           </button>
         </div>
+
+        {/* Accent Color Palette */}
+        <div className="mt-5 pt-4 border-t border-border flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-semibold text-text-pure">Signature Accent</p>
+            <p className="text-[11px] text-text-fog">
+              Personalize primary buttons, badge highlights, and security metrics.
+            </p>
+          </div>
+          <div className="flex items-center gap-2 pt-1 sm:pt-0">
+            {[
+              { id: "blue", label: "Precision Blue", color: "#0071e3" },
+              { id: "emerald", label: "Emerald Terminal", color: "#10b981" },
+              { id: "violet", label: "Void Violet", color: "#8b5cf6" },
+              { id: "amber", label: "Cyberpunk Amber", color: "#f59e0b" },
+            ].map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => {
+                  setAccent(item.id as "blue" | "emerald" | "violet" | "amber");
+                  playSfx("click");
+                  toast({ title: `Accent set to ${item.label}`, variant: "info" });
+                }}
+                title={item.label}
+                aria-label={item.label}
+                className={`h-7 w-7 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                  accent === item.id
+                    ? "ring-2 ring-primary ring-offset-2 scale-110 border-white/60"
+                    : "border-border hover:scale-105"
+                }`}
+                style={{ backgroundColor: item.color }}
+              >
+                {accent === item.id && <i className="ti ti-check text-white text-xs font-bold" />}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Hacker Terminal Mode */}
+        <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold text-text-pure">Hacker Terminal Mode</p>
+            <p className="text-[11px] text-text-fog">
+              Monospace typography, green phosphor CRT aesthetic, and scanline overlay.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              toggleHackerMode();
+              playSfx("alert");
+              toast({
+                title: !hackerMode ? "Hacker Terminal Mode Activated" : "Hacker Terminal Mode Deactivated",
+                variant: "info",
+              });
+            }}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition-all cursor-pointer ${
+              hackerMode
+                ? "bg-emerald-500/20 text-emerald-400 border-emerald-500/40 ring-1 ring-emerald-500/50"
+                : "bg-surface-elevated text-text-fog border-border hover:text-text-pure"
+            }`}
+          >
+            {hackerMode ? "Terminal Mode: ACTIVE" : "Terminal Mode: OFF"}
+          </button>
+        </div>
+      </SettingSection>
+
+      {/* Sound & Audio Effects */}
+      <SettingSection
+        title="Sound &amp; Audio Effects"
+        description="Synthesized client-side audio via Web Audio API. Zero external audio assets."
+      >
+        <SettingRow
+          label="Interface Sound Effects"
+          description="Tactile audio feedback for clicks, simulation terminal events, and success chimes."
+        >
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-1 mr-1">
+              <Button
+                size="xs"
+                variant="ghost"
+                onClick={() => playSfx("click")}
+                title="Preview Click Sound"
+              >
+                Click
+              </Button>
+              <Button
+                size="xs"
+                variant="ghost"
+                onClick={() => playSfx("success")}
+                title="Preview Success Chime"
+              >
+                Chime
+              </Button>
+              <Button
+                size="xs"
+                variant="ghost"
+                onClick={() => playSfx("alert")}
+                title="Preview Alert"
+              >
+                Alert
+              </Button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                toggleMute();
+                toast({
+                  title: isMuted ? "Sound Effects Enabled" : "Sound Effects Muted",
+                  variant: "info",
+                });
+              }}
+              className={`px-3 py-1.5 text-xs font-semibold rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer ${
+                !isMuted
+                  ? "border-primary bg-primary text-white shadow-xs"
+                  : "border-border bg-surface-elevated text-text-fog hover:text-text-pure"
+              }`}
+            >
+              <i className={`ti ${isMuted ? "ti-volume-off" : "ti-volume"} text-sm`} />
+              <span>{isMuted ? "Muted" : "Enabled"}</span>
+            </button>
+          </div>
+        </SettingRow>
       </SettingSection>
 
       {/* Accessibility & Motion */}
@@ -468,16 +602,18 @@ export function SettingsPage() {
 
         <SettingRow
           label="Reset Local Data"
-          description="Reset your locally saved progress and restore defaults."
+          description="Press and hold to reset your locally saved progress and restore defaults."
         >
           <Button
             variant="danger"
             size="sm"
+            holdToConfirm
+            holdDurationMs={1200}
             icon={<i className="ti ti-refresh" />}
-            onClick={handleResetTelemetry}
+            onHoldComplete={handleResetTelemetry}
             className="text-xs"
           >
-            Reset Data
+            Hold to Reset
           </Button>
         </SettingRow>
       </SettingSection>

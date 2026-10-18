@@ -89,6 +89,26 @@ const terms = [
   },
 ];
 
+function highlightMatch(text: string, query: string) {
+  if (!query.trim()) return text;
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${escaped})`, "gi");
+  const parts = text.split(regex);
+  return (
+    <>
+      {parts.map((part, i) =>
+        regex.test(part) ? (
+          <mark key={i} className="bg-primary/20 text-primary px-0.5 rounded font-bold">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
+
 export function GlossaryPage() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -96,43 +116,45 @@ export function GlossaryPage() {
   const categories = ["all", ...new Set(terms.map((t) => t.category))];
 
   const filtered = terms.filter((t) => {
+    const q = search.toLowerCase();
     const matchesSearch =
-      t.term.toLowerCase().includes(search.toLowerCase()) ||
-      t.def.toLowerCase().includes(search.toLowerCase()) ||
-      t.category.toLowerCase().includes(search.toLowerCase());
+      t.term.toLowerCase().includes(q) ||
+      t.def.toLowerCase().includes(q) ||
+      t.example.toLowerCase().includes(q) ||
+      t.category.toLowerCase().includes(q);
     const matchesCategory = selectedCategory === "all" || t.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-5xl">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
       >
-        <p className="text-xs text-text-faint">Quick Reference</p>
-        <h1 className="mt-0.5 font-display text-2xl font-semibold text-text">Cyber Safety Glossary</h1>
-        <p className="mt-1 text-sm text-text-dim">
-          Simple explanations for everyday security terms and how to protect yourself.
+        <p className="text-xs font-semibold text-primary uppercase tracking-wider">Quick Reference</p>
+        <h1 className="mt-0.5 font-display text-2xl font-bold text-text-pure">Cyber Safety Glossary</h1>
+        <p className="mt-1 text-sm text-text-fog">
+          Plain-English explanations for everyday cybersecurity terms and tactical protection tips.
         </p>
       </motion.div>
 
       {/* Search & Categories */}
       <div className="space-y-3">
         <div className="relative max-w-md">
-          <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-sm text-text-faint" />
+          <i className="ti ti-search absolute left-3 top-1/2 -translate-y-1/2 text-sm text-text-ash" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search security terms..."
-            className="input pl-9"
+            placeholder="Search security terms, examples, tips..."
+            className="input pl-9 text-xs sm:text-sm bg-surface-elevated/60"
           />
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-faint hover:text-text"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-ash hover:text-text-pure cursor-pointer"
             >
               <i className="ti ti-x text-sm" />
             </button>
@@ -145,10 +167,10 @@ export function GlossaryPage() {
               key={c}
               onClick={() => setSelectedCategory(c)}
               className={
-                `rounded-full border px-3 py-1 text-[11px] font-medium transition-colors duration-150 capitalize ` +
+                `rounded-full border px-3 py-1 text-xs font-medium transition-colors duration-150 capitalize cursor-pointer ` +
                 (selectedCategory === c
-                  ? "border-cyan/30 bg-cyan/10 text-cyan"
-                  : "border-border bg-surface text-text-dim hover:border-border-strong hover:text-text")
+                  ? "border-primary/40 bg-primary/10 text-primary font-semibold shadow-xs"
+                  : "border-border bg-surface text-text-fog hover:border-border-strong hover:text-text-pure")
               }
             >
               {c === "all" ? "All Terms" : c}
@@ -157,40 +179,66 @@ export function GlossaryPage() {
         </div>
       </div>
 
-      {/* Terms Grid */}
-      <div className="grid gap-5 sm:grid-cols-2">
-        {filtered.map((t, i) => (
-          <motion.div
-            key={t.term}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+      {/* Terms Grid or Empty State */}
+      {filtered.length === 0 ? (
+        <div className="text-center py-12 px-4 rounded-2xl border border-border bg-surface">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-elevated text-text-ash mb-3">
+            <i className="ti ti-search-off text-2xl" />
+          </div>
+          <h3 className="text-sm font-bold text-text-pure">No security terms found</h3>
+          <p className="text-xs text-text-fog mt-1 max-w-sm mx-auto">
+            We couldn&apos;t find any terms matching &quot;{search}&quot;. Try a different keyword or view all terms.
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setSearch("");
+              setSelectedCategory("all");
+            }}
+            className="mt-4 px-3.5 py-1.5 text-xs font-semibold rounded-xl bg-primary text-white hover:bg-primary-hover transition-colors cursor-pointer"
           >
-            <Card className="h-full flex flex-col justify-between">
-              <div>
-                <div className="flex items-start justify-between gap-2">
-                  <h3 className="font-display text-base font-semibold text-cyan tracking-tight">{t.term}</h3>
-                  <Pill>{t.category}</Pill>
+            Clear Filters
+          </button>
+        </div>
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-2">
+          {filtered.map((t, i) => (
+            <motion.div
+              key={t.term}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: Math.min(i, 8) * 0.04, duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <Card className="h-full flex flex-col justify-between">
+                <div>
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-display text-base font-semibold text-primary tracking-tight">
+                      {highlightMatch(t.term, search)}
+                    </h3>
+                    <Pill>{t.category}</Pill>
+                  </div>
+                  <p className="mt-3 text-sm leading-relaxed text-text-fog">
+                    {highlightMatch(t.def, search)}
+                  </p>
                 </div>
-                <p className="mt-3 text-sm leading-relaxed text-text-dim">{t.def}</p>
-              </div>
 
-              <div className="mt-5 space-y-2.5 border-t border-border pt-3.5 text-xs">
-                <div className="rounded-xl border border-border bg-surface-2/60 p-2.5">
-                  <span className="font-semibold text-text">Example: </span>
-                  <span className="text-text-dim">{t.example}</span>
+                <div className="mt-5 space-y-2.5 border-t border-border pt-3.5 text-xs">
+                  <div className="rounded-xl border border-border bg-surface-elevated/60 p-2.5">
+                    <span className="font-semibold text-text-pure">Example: </span>
+                    <span className="text-text-fog">{highlightMatch(t.example, search)}</span>
+                  </div>
+                  <div className="flex items-start gap-2 text-text-ash">
+                    <i className="ti ti-bulb text-primary text-sm shrink-0 mt-0.5" />
+                    <span>
+                      <strong className="text-text-pure font-medium">Pro-tip:</strong> {highlightMatch(t.tip, search)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-start gap-2 text-text-faint">
-                  <i className="ti ti-bulb text-cyan text-sm shrink-0 mt-0.5" />
-                  <span>
-                    <strong className="text-text font-medium">Pro-tip:</strong> {t.tip}
-                  </span>
-                </div>
-              </div>
-            </Card>
-          </motion.div>
-        ))}
-      </div>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card } from "@/components/ui/primitives";
+import { Button } from "@/components/ui/Button";
 
 const situations = [
   {
@@ -100,41 +101,91 @@ export function SecurityGuidePage() {
   const [active, setActive] = useState(situations[0].id);
   const current = situations.find((s) => s.id === active) ?? situations[0];
 
+  const [checkedSteps, setCheckedSteps] = useState<number[]>(() => {
+    try {
+      const saved = localStorage.getItem(`cyberguard_guide_steps_${situations[0].id}`);
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(`cyberguard_guide_steps_${active}`);
+      setCheckedSteps(saved ? JSON.parse(saved) : []);
+    } catch {
+      setCheckedSteps([]);
+    }
+  }, [active]);
+
+  const toggleStep = (idx: number) => {
+    const next = checkedSteps.includes(idx)
+      ? checkedSteps.filter((i) => i !== idx)
+      : [...checkedSteps, idx];
+    setCheckedSteps(next);
+    try {
+      localStorage.setItem(`cyberguard_guide_steps_${active}`, JSON.stringify(next));
+    } catch {}
+  };
+
+  const resetSteps = () => {
+    setCheckedSteps([]);
+    try {
+      localStorage.removeItem(`cyberguard_guide_steps_${active}`);
+    } catch {}
+  };
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-5xl">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+        className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
       >
-        <p className="text-xs text-text-faint">Quick Help Guide</p>
-        <h1 className="mt-0.5 font-display text-2xl font-semibold text-text">What Should I Do Right Now?</h1>
-        <p className="mt-1 text-sm text-text-dim">
-          Choose a situation below for clear, step-by-step instructions on what to do immediately.
-        </p>
+        <div>
+          <p className="text-xs font-semibold text-primary uppercase tracking-wider">Quick Response Playbook</p>
+          <h1 className="mt-0.5 font-display text-2xl sm:text-3xl font-bold text-text-pure">
+            What Should I Do Right Now?
+          </h1>
+          <p className="mt-1 text-sm text-text-fog">
+            Emergency step-by-step containment protocols for suspected security incidents.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 self-start sm:self-auto no-print">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<i className="ti ti-printer" />}
+            onClick={() => window.print()}
+          >
+            Print Playbook
+          </Button>
+        </div>
       </motion.div>
 
       <div className="grid gap-6 lg:grid-cols-[300px_1fr]">
         {/* Navigation / Scenario buttons */}
-        <div className="space-y-2">
+        <div className="space-y-2 no-print">
           {situations.map((s) => {
             const isSelected = active === s.id;
             return (
               <button
                 key={s.id}
                 onClick={() => setActive(s.id)}
-                className={`w-full flex items-center gap-3 rounded-2xl border p-3.5 text-left text-xs font-medium transition-all duration-150 ${
+                className={`w-full flex items-center gap-3 rounded-2xl border p-3.5 text-left text-xs font-medium transition-all duration-150 cursor-pointer ${
                   isSelected
-                    ? "border-cyan/35 bg-cyan/10 text-cyan shadow-[0_4px_16px_rgba(78,225,194,0.12)]"
-                    : "border-border bg-surface text-text-dim hover:border-border-strong hover:text-text hover:bg-surface-2"
+                    ? "border-primary/40 bg-primary/10 text-primary font-semibold shadow-xs"
+                    : "border-border bg-surface text-text-fog hover:border-border-strong hover:text-text-pure hover:bg-surface-elevated"
                 }`}
               >
                 <div
                   className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${
                     isSelected
-                      ? "border-cyan/30 bg-cyan/20 text-cyan"
-                      : "border-border bg-bg-elevated text-text-faint"
+                      ? "border-primary/30 bg-primary/20 text-primary"
+                      : "border-border bg-surface-elevated text-text-ash"
                   }`}
                 >
                   <i className={`ti ${s.icon} text-base`} />
@@ -155,50 +206,81 @@ export function SecurityGuidePage() {
               exit={{ opacity: 0, y: -6 }}
               transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
             >
-              <Card className="p-8">
+              <Card className="p-6 sm:p-8">
                 <div className="flex flex-wrap items-start justify-between gap-4 border-b border-border pb-5">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-cyan/30 bg-cyan/10 text-cyan">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary">
                       <i className={`ti ${current.icon} text-xl`} />
                     </div>
                     <div>
-                      <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-primary">
                         {current.urgency}
                       </span>
-                      <h2 className="mt-0.5 font-display text-lg font-bold text-text">
+                      <h2 className="mt-0.5 font-display text-lg sm:text-xl font-bold text-text-pure">
                         {current.label}
                       </h2>
                     </div>
                   </div>
+
+                  <div className="flex items-center gap-2 text-xs text-text-ash no-print">
+                    <span>
+                      {checkedSteps.length} of {current.steps.length} completed
+                    </span>
+                    {checkedSteps.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={resetSteps}
+                        className="text-primary hover:underline font-semibold ml-2 cursor-pointer"
+                      >
+                        Reset
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 <div className="mt-6">
-                  <p className="text-xs font-semibold uppercase tracking-wider text-text-faint mb-4">
-                    What to Do Right Now (Step-by-Step)
+                  <p className="text-xs font-semibold uppercase tracking-wider text-text-ash mb-4">
+                    Tactical Steps Checklist (Click steps as you complete them)
                   </p>
-                  <ol className="space-y-4">
-                    {current.steps.map((step, i) => (
-                      <motion.li
-                        key={i}
-                        initial={{ opacity: 0, x: -6 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.05, duration: 0.3 }}
-                        className="flex items-start gap-4 rounded-xl border border-border bg-bg-elevated/40 p-3.5 text-sm leading-relaxed text-text-dim"
-                      >
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-cyan/30 bg-cyan/10 text-xs font-bold text-cyan mt-0.5">
-                          {i + 1}
-                        </span>
-                        <span className="flex-1">{step}</span>
-                      </motion.li>
-                    ))}
+                  <ol className="space-y-3">
+                    {current.steps.map((step, i) => {
+                      const isDone = checkedSteps.includes(i);
+                      return (
+                        <motion.li
+                          key={i}
+                          initial={{ opacity: 0, x: -6 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.05, duration: 0.3 }}
+                          onClick={() => toggleStep(i)}
+                          className={`flex items-start gap-4 rounded-xl border p-3.5 text-sm leading-relaxed cursor-pointer transition-all ${
+                            isDone
+                              ? "border-emerald-500/30 bg-emerald-500/5 text-text-ash"
+                              : "border-border bg-surface-elevated/40 text-text-pure hover:border-border-strong hover:bg-surface-elevated/70"
+                          }`}
+                        >
+                          <span
+                            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-bold mt-0.5 transition-colors ${
+                              isDone
+                                ? "border-emerald-500 bg-emerald-500 text-white"
+                                : "border-primary/30 bg-primary/10 text-primary"
+                            }`}
+                          >
+                            {isDone ? <i className="ti ti-check text-xs font-bold" /> : i + 1}
+                          </span>
+                          <span className={`flex-1 ${isDone ? "line-through opacity-75" : ""}`}>
+                            {step}
+                          </span>
+                        </motion.li>
+                      );
+                    })}
                   </ol>
                 </div>
 
-                <div className="mt-8 rounded-xl border border-border bg-surface-2/60 p-4 text-xs text-text-dim flex items-center gap-3">
-                  <i className="ti ti-info-circle text-base text-cyan shrink-0" />
+                <div className="mt-8 rounded-xl border border-border bg-surface-elevated p-4 text-xs text-text-fog flex items-center gap-3">
+                  <i className="ti ti-info-circle text-base text-primary shrink-0" />
                   <span>
-                    When in doubt, always notify your company IT administrator or security response team.
-                    Rapid reporting minimizes breach severity.
+                    When in doubt, notify your IT administrator or report to CERT-In (<strong>1930</strong>).
+                    Prompt reporting limits breach impact and prevents lateral infection across your network.
                   </span>
                 </div>
               </Card>

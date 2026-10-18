@@ -377,6 +377,7 @@ export function Divider({ className }: { className?: string }) {
 /* ─────────────────────────────── Modal ─────────────────────────────── */
 
 export interface ModalProps {
+  id?: string;
   isOpen: boolean;
   onClose: () => void;
   title?: string;
@@ -387,6 +388,7 @@ export interface ModalProps {
 }
 
 export function Modal({
+  id,
   isOpen,
   onClose,
   title,
@@ -460,6 +462,7 @@ export function Modal({
     <AnimatePresence>
       {isOpen && (
         <div
+          id={id}
           role="dialog"
           aria-modal="true"
           aria-labelledby={title ? titleId : undefined}
