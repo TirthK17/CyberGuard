@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button, GoogleIcon } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
+import { CyberGuardLogo } from "@/components/ui/CyberGuardLogo";
 
 export function RegisterPage() {
   const { signUp, signInWithGoogle } = useAuth();
@@ -99,15 +100,9 @@ export function RegisterPage() {
         </div>
 
         <div className="p-8">
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
-              <i className="ti ti-shield-check text-xl" />
-            </div>
-            <div>
-              <span className="font-display text-base font-bold tracking-tight text-text-pure">CyberGuard</span>
-              <p className="text-[10px] text-text-ash">Cyber Safety Learning</p>
-            </div>
-          </div>
+          <Link to="/" className="inline-block hover:opacity-90 transition-opacity">
+            <CyberGuardLogo size="md" subtitle="ONLINE SAFETY PORTAL" />
+          </Link>
 
           <h1 className="mt-6 font-display text-2xl font-bold tracking-tight text-text-pure">
             Create Free Account

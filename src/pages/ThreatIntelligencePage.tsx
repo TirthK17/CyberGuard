@@ -381,6 +381,8 @@ export function ThreatIntelligencePage() {
   const [selectedAdvisory, setSelectedAdvisory] = useState<ThreatAdvisory | null>(null);
   const [copiedIoc, setCopiedIoc] = useState<string | null>(null);
   const [liveStreamPaused, setLiveStreamPaused] = useState(false);
+  const [feedDensity, setFeedDensity] = useState<"standard" | "compact">("standard");
+  const [expandedAdvisoryId, setExpandedAdvisoryId] = useState<string | null>(null);
 
   // Live attack events for the interactive canvas and stream
   const [attacks, setAttacks] = useState<LiveAttackEvent[]>(() => [
@@ -747,8 +749,8 @@ export function ThreatIntelligencePage() {
             )}
           </div>
 
-          {/* Severity & Sort Dropdowns */}
-          <div className="flex items-center gap-2">
+          {/* Severity, Sort & Density Controls */}
+          <div className="flex flex-wrap items-center gap-2">
             <select
               value={selectedSeverity}
               onChange={(e) => setSelectedSeverity(e.target.value)}
@@ -769,6 +771,36 @@ export function ThreatIntelligencePage() {
               <option value="recent">Sort: Most Recent</option>
               <option value="severity">Sort: Highest Severity</option>
             </select>
+
+            {/* Density toggle: Cards vs List */}
+            <div className="flex items-center rounded-xl bg-surface border border-border p-0.5">
+              <button
+                type="button"
+                onClick={() => setFeedDensity("standard")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-mono flex items-center gap-1 transition-all ${
+                  feedDensity === "standard"
+                    ? "bg-primary text-white font-bold shadow-sm"
+                    : "text-text-ash hover:text-text-pure"
+                }`}
+                title="Cards View"
+              >
+                <i className="ti ti-layout-grid text-xs" />
+                <span className="hidden sm:inline">Cards</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setFeedDensity("compact")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-mono flex items-center gap-1 transition-all ${
+                  feedDensity === "compact"
+                    ? "bg-primary text-white font-bold shadow-sm"
+                    : "text-text-ash hover:text-text-pure"
+                }`}
+                title="List View"
+              >
+                <i className="ti ti-list text-xs" />
+                <span className="hidden sm:inline">List</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -791,15 +823,15 @@ export function ThreatIntelligencePage() {
       </div>
 
       {/* ── 4. THREAT DOSSIERS FEED ── */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between text-xs text-text-ash font-mono">
+      <div className="space-y-3">
+        <div className="flex items-center justify-between text-xs text-text-ash font-mono px-1">
           <span>Showing {filteredAdvisories.length} verified security warnings</span>
-          <span>Continuously tracked from trusted cyber advisories</span>
+          <span className="hidden sm:inline">Continuously tracked from trusted cyber advisories</span>
         </div>
 
         {filteredAdvisories.length === 0 ? (
-          <Card className="p-12 text-center space-y-3">
-            <i className="ti ti-radar-off text-4xl text-text-ash" />
+          <Card className="p-10 text-center space-y-3">
+            <i className="ti ti-radar-off text-3xl text-text-ash" />
             <h3 className="font-display text-base font-bold text-text-pure">
               No Warnings Match Your Filter
             </h3>
@@ -815,125 +847,224 @@ export function ThreatIntelligencePage() {
               Reset Filters
             </Button>
           </Card>
-        ) : (
-          filteredAdvisories.map((adv, i) => (
-            <motion.div
-              key={adv.id}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.03, duration: 0.25 }}
-            >
-              <Card className="p-6 sm:p-7 hover:border-primary/40 transition-all">
-                {/* Top Badge Bar */}
-                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+        ) : feedDensity === "compact" ? (
+          /* Sleek Compact List View */
+          <div className="space-y-2">
+            {filteredAdvisories.map((adv, i) => (
+              <motion.div
+                key={adv.id}
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.02, duration: 0.2 }}
+                className="group p-3 sm:p-4 rounded-2xl border border-border bg-surface hover:bg-surface-elevated hover:border-primary/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+              >
+                <div className="flex-1 min-w-0 space-y-1.5">
                   <div className="flex flex-wrap items-center gap-2">
                     <Pill tone={severityTone(adv.severity)} size="sm">
                       {adv.severity.toUpperCase()}
                     </Pill>
-                    <span className="text-xs font-semibold text-text-ash px-2.5 py-0.5 rounded-full bg-surface border border-border">
+                    <span className="text-[11px] font-semibold text-text-ash px-2 py-0.5 rounded-full bg-surface-elevated border border-border">
                       {adv.category}
                     </span>
                     {adv.cve && (
-                      <span className="text-xs font-semibold text-primary px-2 py-0.5 rounded bg-primary/10 border border-primary/30">
+                      <span className="text-[11px] font-mono text-primary font-bold px-1.5 py-0.5 rounded bg-primary/10 border border-primary/20">
                         {adv.cve}
                       </span>
                     )}
-                    <span className="text-xs text-text-ash font-medium">
-                      Origin: <strong className="text-text-pure">{adv.originRegion}</strong>
+                    <span className="text-[11px] text-text-ash font-mono ml-auto sm:ml-0">
+                      {adv.date}
                     </span>
                   </div>
-
-                  <div className="flex items-center gap-3 text-xs text-text-ash font-medium">
-                    <span>ALERT #{adv.id.replace("ADV-2025-", "").replace("ADV-2024-", "")}</span>
-                    <span>·</span>
-                    <span>{adv.date}</span>
-                  </div>
-                </div>
-
-                {/* Title & Summary */}
-                <div className="mt-4">
-                  <h3 className="font-display text-base sm:text-lg font-bold text-text-pure leading-snug">
+                  <h4 
+                    onClick={() => setSelectedAdvisory(adv)}
+                    className="font-display text-sm font-bold text-text-pure hover:text-primary transition-colors cursor-pointer truncate"
+                  >
                     {adv.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-text-fog">
+                  </h4>
+                  <p className="text-xs text-text-fog line-clamp-1">
                     {adv.summary}
                   </p>
                 </div>
 
-                {/* Target Sectors */}
-                <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                  <span className="text-xs font-medium text-text-ash mr-1">Most Targeted:</span>
-                  {adv.targetSectors.map((sec, idx) => (
-                    <span
-                      key={idx}
-                      className="px-2.5 py-0.5 rounded-md bg-surface text-xs font-medium text-text-pure border border-border"
-                    >
-                      {sec}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Attack Vector & Mitigation Preview */}
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <div className="rounded-2xl border border-danger/30 bg-danger/5 p-4 space-y-1">
-                    <span className="text-xs uppercase tracking-wider text-danger font-bold flex items-center gap-1.5">
-                      <i className="ti ti-target" /> How The Scam Works
-                    </span>
-                    <p className="text-xs sm:text-sm text-text-pure leading-relaxed">
-                      {adv.attackVector}
-                    </p>
-                  </div>
-
-                  <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-4 space-y-1">
-                    <span className="text-xs uppercase tracking-wider text-emerald-400 font-bold flex items-center gap-1.5">
-                      <i className="ti ti-shield-check" /> How To Protect Yourself
-                    </span>
-                    <p className="text-xs sm:text-sm text-text-pure leading-relaxed">
-                      {adv.mitigation}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Footer Actions: Deep-Dive Dossier, Copy IOCs, Sandbox Link */}
-                <div className="mt-5 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-3">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      icon={<i className="ti ti-eye" />}
-                      onClick={() => setSelectedAdvisory(adv)}
-                      className="text-xs font-semibold"
-                    >
-                      View Details &amp; Safety Steps
-                    </Button>
-
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      icon={<i className={`ti ${copiedIoc === adv.id ? "ti-check text-emerald-400" : "ti-copy"}`} />}
-                      onClick={() => handleCopyIocs(adv)}
-                      className="text-xs"
-                    >
-                      {copiedIoc === adv.id ? "Copied!" : "Copy Details"}
-                    </Button>
-                  </div>
-
+                <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-border">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    icon={<i className="ti ti-eye" />}
+                    onClick={() => setSelectedAdvisory(adv)}
+                    className="text-xs px-2.5 py-1.5 h-8"
+                  >
+                    Details
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => handleCopyIocs(adv)}
+                    className="h-8 w-8 rounded-xl border border-border bg-surface flex items-center justify-center text-text-ash hover:text-text-pure hover:bg-surface-elevated transition-colors text-xs"
+                    title="Copy details"
+                  >
+                    <i className={`ti ${copiedIoc === adv.id ? "ti-check text-emerald-400" : "ti-copy"}`} />
+                  </button>
                   {adv.simulationUrl && (
                     <Link to={adv.simulationUrl}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        icon={<i className="ti ti-player-play text-primary" />}
-                        className="text-xs text-primary font-bold hover:bg-primary/10"
+                      <button
+                        type="button"
+                        className="h-8 px-2.5 rounded-xl border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-semibold flex items-center gap-1"
+                        title={adv.simulationLabel || "Simulate"}
                       >
-                        {adv.simulationLabel || "Try Simulation"} &rarr;
-                      </Button>
+                        <i className="ti ti-player-play text-xs" />
+                        <span className="hidden md:inline">Simulate</span>
+                      </button>
                     </Link>
                   )}
                 </div>
-              </Card>
-            </motion.div>
-          ))
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          /* Standard Card View with Collapsible Breakdown */
+          <div className="space-y-4">
+            {filteredAdvisories.map((adv, i) => {
+              const isExpanded = expandedAdvisoryId === adv.id;
+              return (
+                <motion.div
+                  key={adv.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.03, duration: 0.25 }}
+                >
+                  <Card className="p-5 sm:p-6 hover:border-primary/40 transition-all">
+                    {/* Top Badge Bar */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Pill tone={severityTone(adv.severity)} size="sm">
+                          {adv.severity.toUpperCase()}
+                        </Pill>
+                        <span className="text-xs font-semibold text-text-ash px-2.5 py-0.5 rounded-full bg-surface border border-border">
+                          {adv.category}
+                        </span>
+                        {adv.cve && (
+                          <span className="text-xs font-semibold text-primary px-2 py-0.5 rounded bg-primary/10 border border-primary/30">
+                            {adv.cve}
+                          </span>
+                        )}
+                        <span className="text-xs text-text-ash font-medium">
+                          Origin: <strong className="text-text-pure">{adv.originRegion}</strong>
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2 text-xs text-text-ash font-medium font-mono">
+                        <span>ALERT #{adv.id.replace("ADV-2025-", "").replace("ADV-2024-", "")}</span>
+                        <span>·</span>
+                        <span>{adv.date}</span>
+                      </div>
+                    </div>
+
+                    {/* Title & Summary */}
+                    <div className="mt-3.5">
+                      <h3 className="font-display text-base sm:text-lg font-bold text-text-pure leading-snug">
+                        {adv.title}
+                      </h3>
+                      <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-text-fog">
+                        {adv.summary}
+                      </p>
+                    </div>
+
+                    {/* Target Sectors */}
+                    <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                      <span className="text-[11px] font-medium text-text-ash mr-1">Most Targeted:</span>
+                      {adv.targetSectors.map((sec, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-0.5 rounded-md bg-surface text-[11px] font-medium text-text-pure border border-border"
+                        >
+                          {sec}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* Collapsible Attack Vector & Mitigation Drawer */}
+                    <div className="mt-4">
+                      <button
+                        type="button"
+                        onClick={() => setExpandedAdvisoryId(isExpanded ? null : adv.id)}
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-hover hover:underline transition-colors py-1"
+                      >
+                        <i className={`ti ${isExpanded ? "ti-chevron-up" : "ti-chevron-down"}`} />
+                        <span>{isExpanded ? "Hide Attack Vector & Protection" : "Inspect Attack Vector & Protection"}</span>
+                      </button>
+
+                      <AnimatePresence>
+                        {isExpanded && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="mt-3 grid gap-3 sm:grid-cols-2 overflow-hidden"
+                          >
+                            <div className="rounded-2xl border border-danger/30 bg-danger/5 p-3.5 space-y-1">
+                              <span className="text-xs uppercase tracking-wider text-danger font-bold flex items-center gap-1.5">
+                                <i className="ti ti-target" /> How The Scam Works
+                              </span>
+                              <p className="text-xs sm:text-sm text-text-pure leading-relaxed">
+                                {adv.attackVector}
+                              </p>
+                            </div>
+
+                            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-3.5 space-y-1">
+                              <span className="text-xs uppercase tracking-wider text-emerald-400 font-bold flex items-center gap-1.5">
+                                <i className="ti ti-shield-check" /> How To Protect Yourself
+                              </span>
+                              <p className="text-xs sm:text-sm text-text-pure leading-relaxed">
+                                {adv.mitigation}
+                              </p>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+
+                    {/* Footer Actions: Deep-Dive Dossier, Copy IOCs, Sandbox Link */}
+                    <div className="mt-4 pt-3.5 border-t border-border flex flex-wrap items-center justify-between gap-2.5">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          icon={<i className="ti ti-eye" />}
+                          onClick={() => setSelectedAdvisory(adv)}
+                          className="text-xs font-semibold"
+                        >
+                          Full Dossier &amp; Safety Steps
+                        </Button>
+
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          icon={<i className={`ti ${copiedIoc === adv.id ? "ti-check text-emerald-400" : "ti-copy"}`} />}
+                          onClick={() => handleCopyIocs(adv)}
+                          className="text-xs"
+                        >
+                          {copiedIoc === adv.id ? "Copied!" : "Copy Details"}
+                        </Button>
+                      </div>
+
+                      {adv.simulationUrl && (
+                        <Link to={adv.simulationUrl}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            icon={<i className="ti ti-player-play text-primary" />}
+                            className="text-xs text-primary font-bold hover:bg-primary/10"
+                          >
+                            {adv.simulationLabel || "Try Simulation"} &rarr;
+                          </Button>
+                        </Link>
+                      )}
+                    </div>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </div>
         )}
       </div>
 

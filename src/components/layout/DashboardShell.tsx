@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { cn } from "@/lib/utils";
+import { CyberGuardLogo, CyberGuardLogoMark } from "@/components/ui/CyberGuardLogo";
 
 export interface NavItem {
   to: string;
@@ -205,15 +206,13 @@ export function DashboardShell({
       </div>
 
       {/* Brand Header */}
-      <div className={cn("mb-4 flex items-center gap-2.5 px-2", collapsed && "justify-center")}>
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-sm">
-          <i className="ti ti-shield-check text-base" />
-        </div>
-        {!collapsed && (
-          <div className="sidebar-brand-text min-w-0">
-            <div className="font-display text-base font-bold leading-none text-text-pure">CyberGuard</div>
-            <div className="mt-1 text-xs font-medium text-text-ash">{brandLabel}</div>
-          </div>
+      <div className={cn("mb-4 flex items-center px-2", collapsed ? "justify-center" : "gap-2.5")}>
+        {collapsed ? (
+          <CyberGuardLogoMark size={32} pulse={false} />
+        ) : (
+          <Link to="/dashboard" className="transition-opacity hover:opacity-90">
+            <CyberGuardLogo size="sm" subtitle={brandLabel || "DEFENSE PLATFORM"} pulse={false} />
+          </Link>
         )}
       </div>
 
@@ -345,13 +344,13 @@ export function DashboardShell({
       <div className="flex min-h-screen flex-1 flex-col min-w-0">
         {/* Mobile top bar */}
         <div className="flex items-center justify-between border-b border-border bg-surface/80 backdrop-blur-xl px-4 py-3 lg:hidden">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <div className="macos-traffic-lights mr-1">
               <span className="macos-dot macos-dot-close" />
               <span className="macos-dot macos-dot-minimize" />
               <span className="macos-dot macos-dot-expand" />
             </div>
-            <span className="font-display text-sm font-semibold text-text-pure">CyberGuard</span>
+            <CyberGuardLogo size="xs" showText={true} />
           </div>
           <div className="flex items-center gap-2">
             <button

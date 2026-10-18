@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { Button } from "@/components/ui/Button";
+import { CyberGuardLogo } from "@/components/ui/CyberGuardLogo";
 
 const links = [
   { to: "/about", label: "About" },
@@ -23,21 +24,9 @@ export function PublicNavbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-surface/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3.5">
-        {/* Brand with macOS traffic lights motif */}
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary text-white shadow-sm transition-transform group-hover:scale-105">
-            <i className="ti ti-shield-check text-lg" />
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="font-display text-base font-bold tracking-tight text-text-pure">
-                CyberGuard
-              </span>
-              <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-                Online Safety Portal
-              </span>
-            </div>
-          </div>
+        {/* Brand */}
+        <Link to="/" className="flex items-center group">
+          <CyberGuardLogo size="sm" subtitle="ONLINE SAFETY PORTAL" />
         </Link>
 
         {/* Center Nav Links */}

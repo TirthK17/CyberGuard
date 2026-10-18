@@ -5,6 +5,7 @@ import { ToastProvider } from "@/context/ToastContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ProtectedRoute, AdminRoute } from "@/components/layout/RouteGuards";
 import { PublicNavbar } from "@/components/layout/PublicNavbar";
+import { PublicFooter } from "@/components/layout/PublicFooter";
 import { DashboardShell, type NavItem } from "@/components/layout/DashboardShell";
 import { CommandPalette } from "@/components/CommandPalette";
 
@@ -68,20 +69,23 @@ const adminNav: NavItem[] = [
 function PublicLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
   return (
-    <>
+    <div className="min-h-screen flex flex-col bg-canvas text-text-pure">
       <PublicNavbar />
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={location.pathname}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        >
-          {children}
-        </motion.div>
-      </AnimatePresence>
-    </>
+      <div className="flex-1">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+      <PublicFooter />
+    </div>
   );
 }
 

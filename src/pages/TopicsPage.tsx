@@ -591,6 +591,7 @@ export function TopicsPage() {
   const [activeAudience, setActiveAudience] = useState<string>("all");
   const [search, setSearch] = useState<string>("");
   const [selectedTopic, setSelectedTopic] = useState<AwarenessTopic | null>(null);
+  const [viewMode, setViewMode] = useState<"grid" | "compact">("grid");
 
   // Track learned topic IDs in localStorage
   const [learnedTopics, setLearnedTopics] = useState<string[]>(() => {
@@ -617,7 +618,7 @@ export function TopicsPage() {
     { id: "all", label: "All Threats", count: AWARENESS_TOPICS.length },
     { id: "high_alert", label: "🚨 High-Alert", count: AWARENESS_TOPICS.filter((t) => t.category === "high_alert").length },
     { id: "payments", label: "💳 Banking & UPI", count: AWARENESS_TOPICS.filter((t) => t.category === "payments").length },
-    { id: "ai_social", label: "🤖 AI & Social Engineering", count: AWARENESS_TOPICS.filter((t) => t.category === "ai_social").length },
+    { id: "ai_social", label: "🤖 AI & Impersonation", count: AWARENESS_TOPICS.filter((t) => t.category === "ai_social").length },
     { id: "safety_privacy", label: "🛡️ Safety & Privacy", count: AWARENESS_TOPICS.filter((t) => t.category === "safety_privacy").length },
     { id: "mobile_device", label: "📱 Mobile & Devices", count: AWARENESS_TOPICS.filter((t) => t.category === "mobile_device").length },
     { id: "laws", label: "⚖️ Legal & Helpline", count: AWARENESS_TOPICS.filter((t) => t.category === "laws").length },
@@ -653,26 +654,26 @@ export function TopicsPage() {
   );
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-12 space-y-8 sm:space-y-12">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 py-6 sm:py-8 space-y-8">
       {/* ── 1. CLEAN HERO HEADER & EMERGENCY RIBBON ── */}
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Top Emergency Action Ribbon */}
-        <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3.5 sm:p-4 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+        <div className="rounded-2xl border border-rose-500/30 bg-rose-500/10 p-3.5 backdrop-blur-md flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white font-bold text-lg shadow-md shadow-rose-600/30">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-rose-600 text-white font-bold text-base shadow-sm">
               <i className="ti ti-phone-call animate-pulse" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-600 text-white">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-600 text-white uppercase tracking-wider">
                   Citizen Helpline 1930
                 </span>
                 <span className="text-xs font-semibold text-rose-300">
-                  ⏱️ Golden Hour (2-3 hrs) Protocol
+                  ⏱️ Golden Hour (2-3 hrs)
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-text-pure font-medium mt-0.5">
-                Targeted right now or money debited? Call <strong>1930</strong> immediately to freeze stolen funds in bank accounts.
+              <p className="text-xs text-text-pure font-medium mt-0.5">
+                Targeted or money debited? Call <strong>1930</strong> immediately to freeze funds in destination bank accounts.
               </p>
             </div>
           </div>
@@ -680,7 +681,7 @@ export function TopicsPage() {
           <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
             <a
               href="tel:1930"
-              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-500 transition-transform active:scale-95 shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 text-white text-xs font-bold hover:bg-rose-500 transition-colors shadow-xs"
             >
               <i className="ti ti-phone text-xs" />
               Call 1930 Free
@@ -697,56 +698,58 @@ export function TopicsPage() {
         </div>
 
         {/* Hero Title & Subtitle */}
-        <div className="text-center max-w-3xl mx-auto space-y-2.5 pt-2">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-subtle px-3.5 py-1 text-xs font-semibold text-primary">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            Stay Safe Online • Safety Guides
+        <div className="text-center max-w-2xl mx-auto space-y-1.5 pt-1">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary-subtle px-3 py-0.5 text-xs font-semibold text-primary">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Online Scam Directory • Simple Guides
           </div>
-          <h1 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-text-pure">
+          <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-text-pure">
             Cyber Safety &amp; Scam Directory
           </h1>
-          <p className="text-sm sm:text-base text-text-fog leading-relaxed max-w-2xl mx-auto">
-            Practical, easy-to-understand guides to help you recognize online scams, protect your family, and know exactly what to do if targeted.
+          <p className="text-xs sm:text-sm text-text-fog leading-relaxed">
+            Concise, practical guides to help you spot scams early and know the exact steps to protect your finances.
           </p>
         </div>
       </div>
 
       {/* ── 2. INSTANT PANIC TRIAGE: "ARE YOU EXPERIENCING THIS RIGHT NOW?" ── */}
-      <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6 space-y-3.5 shadow-sm">
+      <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5 space-y-3 shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
           <div className="flex items-center gap-2">
-            <div className="h-6 w-6 rounded-lg bg-danger/10 text-danger flex items-center justify-center text-sm">
+            <div className="h-6 w-6 rounded-lg bg-danger/10 text-danger flex items-center justify-center text-xs">
               <i className="ti ti-bolt" />
             </div>
-            <h2 className="font-display text-sm sm:text-base font-bold text-text-pure">
+            <h2 className="font-display text-xs sm:text-sm font-bold text-text-pure uppercase tracking-wider">
               Experiencing a Suspicious Situation Right Now?
             </h2>
           </div>
-          <span className="text-xs text-text-ash font-medium">
-            Click any scenario for immediate 1-click advice
+          <span className="text-[11px] text-text-ash font-medium">
+            1-click immediate defense advice
           </span>
         </div>
 
-        <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
           {PANIC_SHORTCUTS.map((sc) => {
             const matched = AWARENESS_TOPICS.find((t) => t.id === sc.id);
             return (
               <button
                 key={sc.id}
                 onClick={() => matched && setSelectedTopic(matched)}
-                className="flex flex-col justify-between text-left p-3.5 rounded-xl border border-border bg-surface-elevated hover:border-primary/50 hover:bg-surface hover:-translate-y-0.5 transition-all cursor-pointer group"
+                className="flex flex-col justify-between text-left p-3 rounded-xl border border-border bg-surface-elevated hover:border-primary/50 hover:bg-surface transition-all cursor-pointer group"
               >
-                <div className="flex items-center gap-2 mb-1.5">
-                  <i className={`ti ${sc.icon} text-base text-primary group-hover:scale-110 transition-transform`} />
-                  <span className="font-display text-xs sm:text-sm font-semibold text-text-pure group-hover:text-primary transition-colors line-clamp-1">
-                    {sc.label}
-                  </span>
+                <div>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <i className={`ti ${sc.icon} text-sm text-primary`} />
+                    <span className="font-semibold text-xs text-text-pure group-hover:text-primary transition-colors line-clamp-1">
+                      {sc.label}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-text-fog leading-relaxed line-clamp-2">
+                    {sc.trigger}
+                  </p>
                 </div>
-                <p className="text-xs text-text-fog leading-relaxed line-clamp-2">
-                  {sc.trigger}
-                </p>
-                <span className="mt-2 text-xs text-primary font-semibold flex items-center gap-1">
-                  Open Quick Guide <i className="ti ti-arrow-right text-xs" />
+                <span className="mt-2 text-[11px] text-primary font-semibold flex items-center gap-1">
+                  View Guide <i className="ti ti-arrow-right text-[10px]" />
                 </span>
               </button>
             );
@@ -756,56 +759,56 @@ export function TopicsPage() {
 
       {/* ── 3. FEATURED SPOTLIGHT: TOP 3 MOST CRITICAL THREATS ── */}
       {search === "" && activeCategory === "all" && activeAudience === "all" && (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="flex h-2.5 w-2.5 rounded-full bg-rose-500 animate-ping" />
-              <h2 className="font-display text-base sm:text-lg font-bold text-text-pure">
+              <span className="flex h-2 w-2 rounded-full bg-rose-500 animate-ping" />
+              <h2 className="font-display text-sm sm:text-base font-bold text-text-pure">
                 Most Critical Threats in 2025–2026
               </h2>
             </div>
-            <span className="text-xs text-text-ash font-mono">
+            <span className="text-[11px] text-text-ash font-medium">
               Highest Financial Impact
             </span>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className="grid gap-3.5 sm:grid-cols-3">
             {spotlightTopics.map((topic) => (
               <div
                 key={topic.id}
                 onClick={() => setSelectedTopic(topic)}
-                className="relative rounded-2xl border border-rose-500/30 bg-surface p-5 flex flex-col justify-between hover:border-rose-500/70 hover:shadow-lg transition-all cursor-pointer group"
+                className="rounded-2xl border border-rose-500/30 bg-surface p-4 flex flex-col justify-between hover:border-rose-500/60 hover:shadow-sm transition-all cursor-pointer group"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30 group-hover:scale-105 transition-transform">
-                      <i className={`ti ${topic.icon} text-xl`} />
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-rose-500/15 text-rose-400 border border-rose-500/30">
+                      <i className={`ti ${topic.icon} text-lg`} />
                     </div>
-                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300">
-                      High Priority
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 uppercase tracking-wider">
+                      High Alert
                     </span>
                   </div>
 
-                  <h3 className="font-display text-base font-bold text-text-pure group-hover:text-primary transition-colors min-h-[2.5rem]">
+                  <h3 className="font-display text-sm font-bold text-text-pure group-hover:text-primary transition-colors line-clamp-1">
                     {topic.title}
                   </h3>
 
-                  <p className="mt-1 text-sm text-text-fog leading-relaxed line-clamp-2">
+                  <p className="mt-1 text-xs text-text-fog leading-relaxed line-clamp-2">
                     {topic.summary}
                   </p>
 
-                  <div className="mt-3 p-2.5 rounded-xl bg-danger/10 border border-danger/20 text-xs sm:text-sm text-text-pure leading-relaxed">
-                    <span className="font-bold text-danger">⚠️ Warning Sign: </span>
-                    {topic.keyRedFlag}
+                  <div className="mt-2.5 p-2 rounded-lg bg-danger/10 border border-danger/20 text-xs text-text-pure leading-snug">
+                    <span className="font-bold text-danger text-[11px]">⚠️ Key Clue: </span>
+                    <span className="text-[11px] line-clamp-1">{topic.keyRedFlag}</span>
                   </div>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs">
-                  <span className="font-semibold text-primary group-hover:underline flex items-center gap-1">
-                    Read Safety Guide <i className="ti ti-chevron-right text-xs" />
+                <div className="mt-3 pt-2.5 border-t border-border flex items-center justify-between text-xs">
+                  <span className="font-semibold text-primary group-hover:underline flex items-center gap-1 text-[11px]">
+                    Read Guide <i className="ti ti-chevron-right text-[10px]" />
                   </span>
-                  <span className="text-xs font-medium text-text-ash">
-                    ⏱️ {topic.readTimeMinutes} min
+                  <span className="text-[11px] font-medium text-text-ash">
+                    ⏱️ {topic.readTimeMinutes}m read
                   </span>
                 </div>
               </div>
@@ -814,18 +817,18 @@ export function TopicsPage() {
         </div>
       )}
 
-      {/* ── 4. SEARCH, CATEGORIES & AUDIENCE FILTERS ── */}
-      <div className="space-y-4 pt-2">
-        {/* Search Bar & Result Count */}
+      {/* ── 4. SEARCH, CATEGORIES & AUDIENCE FILTERS + VIEW TOGGLE ── */}
+      <div className="space-y-3 pt-1">
+        {/* Search Bar & Result Count & View Toggle */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="relative w-full sm:max-w-md">
             <i className="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-text-ash" />
             <input
               type="text"
-              placeholder="Search by scam name, keyword, or tactic (e.g. UPI, QR, CBI, OTP)..."
+              placeholder="Search scams, keywords, or tactics (UPI, Police, OTP)..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-8 py-2.5 rounded-xl border border-border bg-surface text-xs sm:text-sm text-text-pure placeholder:text-text-ash focus:outline-none focus:border-primary shadow-sm transition"
+              className="w-full pl-9 pr-8 py-2 rounded-xl border border-border bg-surface text-xs text-text-pure placeholder:text-text-ash focus:outline-none focus:border-primary shadow-xs transition"
             />
             {search && (
               <button
@@ -837,8 +840,32 @@ export function TopicsPage() {
             )}
           </div>
 
-          <div className="text-xs font-medium text-text-ash self-end sm:self-center">
-            Showing <strong className="text-text-pure">{filteredTopics.length}</strong> of {AWARENESS_TOPICS.length} guides
+          <div className="flex items-center gap-3 self-end sm:self-center">
+            <span className="text-xs font-medium text-text-ash">
+              <strong className="text-text-pure">{filteredTopics.length}</strong> of {AWARENESS_TOPICS.length} guides
+            </span>
+
+            {/* View Mode Switcher */}
+            <div className="flex items-center rounded-xl bg-surface-elevated p-0.5 border border-border">
+              <button
+                onClick={() => setViewMode("grid")}
+                title="Card Grid View"
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 ${
+                  viewMode === "grid" ? "bg-surface text-text-pure shadow-xs border border-border" : "text-text-ash hover:text-text-pure"
+                }`}
+              >
+                <i className="ti ti-layout-grid text-xs" /> Grid
+              </button>
+              <button
+                onClick={() => setViewMode("compact")}
+                title="Compact List View"
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer flex items-center gap-1 ${
+                  viewMode === "compact" ? "bg-surface text-text-pure shadow-xs border border-border" : "text-text-ash hover:text-text-pure"
+                }`}
+              >
+                <i className="ti ti-list text-xs" /> List
+              </button>
+            </div>
           </div>
         </div>
 
@@ -848,15 +875,15 @@ export function TopicsPage() {
             <button
               key={cat.id}
               onClick={() => setActiveCategory(cat.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`px-3 py-1 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeCategory === cat.id
-                  ? "bg-primary text-white shadow-sm"
+                  ? "bg-primary text-white shadow-xs"
                   : "bg-surface border border-border text-text-fog hover:text-text-pure hover:bg-surface-elevated"
               }`}
             >
               <span>{cat.label}</span>
               <span
-                className={`text-xs px-2 py-0.5 rounded-full font-semibold ${
+                className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
                   activeCategory === cat.id ? "bg-white/20 text-white" : "bg-surface-elevated text-text-ash"
                 }`}
               >
@@ -867,13 +894,13 @@ export function TopicsPage() {
         </div>
 
         {/* Audience Sub-Filters */}
-        <div className="flex items-center gap-2 overflow-x-auto text-xs text-text-ash">
-          <span className="text-xs font-semibold uppercase tracking-wider shrink-0">Target Audience:</span>
+        <div className="flex items-center gap-1.5 overflow-x-auto text-xs text-text-ash">
+          <span className="text-[11px] font-semibold uppercase tracking-wider shrink-0 mr-1">Audience:</span>
           {audienceFilters.map((aud) => (
             <button
               key={aud.id}
               onClick={() => setActiveAudience(aud.id)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
+              className={`px-2 py-0.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors cursor-pointer ${
                 activeAudience === aud.id
                   ? "bg-surface-elevated text-text-pure border border-border font-semibold shadow-xs"
                   : "text-text-fog hover:text-text-pure"
@@ -885,87 +912,129 @@ export function TopicsPage() {
         </div>
       </div>
 
-      {/* ── 5. COMPLETE THREAT TOPICS GRID ── */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredTopics.map((topic) => {
-          const isLearned = learnedTopics.includes(topic.id);
-          return (
-            <motion.div
-              key={topic.id}
-              layout
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`rounded-2xl border bg-surface p-5 flex flex-col justify-between transition-all cursor-pointer group hover:border-primary/50 hover:shadow-md ${
-                isLearned ? "border-emerald-500/30" : "border-border"
-              }`}
-              onClick={() => setSelectedTopic(topic)}
-            >
-              <div>
-                {/* Header row with Icon, Category Pill & Learned Checkmark */}
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20 group-hover:scale-105 transition-transform">
-                      <i className={`ti ${topic.icon} text-lg`} />
+      {/* ── 5. COMPLETE THREAT TOPICS DIRECTORY ── */}
+      {viewMode === "grid" ? (
+        <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredTopics.map((topic) => {
+            const isLearned = learnedTopics.includes(topic.id);
+            return (
+              <motion.div
+                key={topic.id}
+                layout
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`rounded-2xl border bg-surface p-4 flex flex-col justify-between transition-all cursor-pointer group hover:border-primary/50 hover:shadow-xs ${
+                  isLearned ? "border-emerald-500/30" : "border-border"
+                }`}
+                onClick={() => setSelectedTopic(topic)}
+              >
+                <div>
+                  {/* Header row */}
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20">
+                        <i className={`ti ${topic.icon} text-base`} />
+                      </div>
+                      <Pill tone={topic.badgeTone} size="sm">{topic.categoryLabel}</Pill>
                     </div>
-                    <Pill tone={topic.badgeTone}>{topic.categoryLabel}</Pill>
+
+                    <button
+                      type="button"
+                      title={isLearned ? "Marked as Learned" : "Mark as Learned"}
+                      onClick={(e) => toggleLearned(topic.id, e)}
+                      className={`flex h-6 w-6 items-center justify-center rounded-lg border transition-colors cursor-pointer ${
+                        isLearned
+                          ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-400"
+                          : "border-border text-text-ash hover:text-text-pure"
+                      }`}
+                    >
+                      <i className={`ti ${isLearned ? "ti-check" : "ti-circle"} text-xs`} />
+                    </button>
                   </div>
 
+                  {/* Card Title */}
+                  <h3 className="font-display text-sm font-bold text-text-pure group-hover:text-primary transition-colors line-clamp-2 min-h-[2.5rem]">
+                    {topic.title}
+                  </h3>
+
+                  {/* Card Summary */}
+                  <p className="mt-1 text-xs text-text-fog leading-relaxed line-clamp-2">
+                    {topic.summary}
+                  </p>
+
+                  {/* Micro Clue Callout */}
+                  <div className="mt-2.5 p-2 rounded-lg bg-surface-elevated border border-border text-xs text-text-pure leading-snug">
+                    <span className="font-bold text-warn text-[11px]">⚠️ Clue: </span>
+                    <span className="text-[11px] text-text-fog line-clamp-1">{topic.keyRedFlag}</span>
+                  </div>
+                </div>
+
+                {/* Bottom Footer */}
+                <div className="mt-3 pt-2.5 border-t border-border flex items-center justify-between text-xs">
+                  <span className="font-semibold text-primary flex items-center gap-1 group-hover:underline text-[11px]">
+                    Open Safety Guide <i className="ti ti-arrow-right text-[10px]" />
+                  </span>
+                  <span className="text-[11px] font-medium text-text-ash">
+                    ⏱️ {topic.readTimeMinutes}m read
+                  </span>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+      ) : (
+        /* Compact List View for Instant Scanning */
+        <div className="rounded-2xl border border-border bg-surface divide-y divide-border overflow-hidden">
+          {filteredTopics.map((topic) => {
+            const isLearned = learnedTopics.includes(topic.id);
+            return (
+              <div
+                key={topic.id}
+                onClick={() => setSelectedTopic(topic)}
+                className="p-3 sm:px-4 flex items-center justify-between gap-3 hover:bg-surface-elevated transition-colors cursor-pointer group"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary border border-primary/20">
+                    <i className={`ti ${topic.icon} text-base`} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-semibold text-xs sm:text-sm text-text-pure group-hover:text-primary transition-colors truncate">
+                        {topic.title}
+                      </h4>
+                      <Pill tone={topic.badgeTone} size="sm">{topic.categoryLabel}</Pill>
+                    </div>
+                    <p className="text-[11px] text-text-fog truncate mt-0.5">
+                      {topic.summary}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-[11px] text-text-ash hidden sm:inline">
+                    ⏱️ {topic.readTimeMinutes}m
+                  </span>
                   <button
                     type="button"
                     title={isLearned ? "Marked as Learned" : "Mark as Learned"}
                     onClick={(e) => toggleLearned(topic.id, e)}
-                    className={`flex h-7 w-7 items-center justify-center rounded-lg border transition-colors cursor-pointer ${
+                    className={`flex h-6 w-6 items-center justify-center rounded-lg border transition-colors cursor-pointer ${
                       isLearned
                         ? "border-emerald-500/50 bg-emerald-500/15 text-emerald-400"
-                        : "border-border text-text-ash hover:text-text-pure hover:border-text-ash"
+                        : "border-border text-text-ash hover:text-text-pure"
                     }`}
                   >
-                    <i className={`ti ${isLearned ? "ti-check" : "ti-circle"} text-sm`} />
+                    <i className={`ti ${isLearned ? "ti-check" : "ti-circle"} text-xs`} />
                   </button>
-                </div>
-
-                {/* Card Title */}
-                <h3 className="font-display text-sm sm:text-base font-bold text-text-pure group-hover:text-primary transition-colors min-h-[2.75rem]">
-                  {topic.title}
-                </h3>
-
-                {/* Card Summary */}
-                <p className="mt-1.5 text-sm text-text-fog leading-relaxed line-clamp-2">
-                  {topic.summary}
-                </p>
-
-                {/* Prominent Red Flag Callout */}
-                <div className="mt-3 p-2.5 rounded-xl bg-surface-elevated border border-border text-xs sm:text-sm text-text-pure leading-relaxed">
-                  <span className="font-bold text-warn">⚠️ Key Clue: </span>
-                  {topic.keyRedFlag}
-                </div>
-
-                {/* Target Audience Pills */}
-                <div className="mt-3 flex flex-wrap gap-1">
-                  {topic.targetAudience.slice(0, 2).map((aud) => (
-                    <span
-                      key={aud}
-                      className="text-xs font-medium px-2.5 py-0.5 rounded-md bg-surface-elevated text-text-ash border border-border"
-                    >
-                      {aud}
-                    </span>
-                  ))}
+                  <Button variant="secondary" size="xs" className="hidden sm:inline-flex">
+                    View Guide
+                  </Button>
                 </div>
               </div>
-
-              {/* Bottom Card Footer */}
-              <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs">
-                <span className="font-semibold text-primary flex items-center gap-1 group-hover:underline">
-                  Read Safety Guide <i className="ti ti-arrow-right text-xs" />
-                </span>
-                <span className="text-xs font-medium text-text-ash">
-                  ⏱️ {topic.readTimeMinutes} min read
-                </span>
-              </div>
-            </motion.div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Empty Search State */}
       {filteredTopics.length === 0 && (

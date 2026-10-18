@@ -3,6 +3,7 @@ import { useAuth } from "@/context/AuthContext";
 import { EmptyState } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
+import { CyberGuardLogoMark } from "@/components/ui/CyberGuardLogo";
 
 export function CertificatePage() {
   const { profile } = useAuth();
@@ -74,8 +75,8 @@ export function CertificatePage() {
           {/* Top Seal */}
           <div className="relative flex items-center justify-center gap-3 mb-8">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent to-glass-edge" />
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-void-violet/40 bg-void-violet/20 shadow-[0_0_20px_var(--color-void-violet-glow)]">
-              <i className="ti ti-shield-check text-2xl text-frost-glow" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/40 bg-surface-elevated shadow-md p-1">
+              <CyberGuardLogoMark size={40} pulse={false} />
             </div>
             <div className="h-px flex-1 bg-gradient-to-l from-transparent to-glass-edge" />
           </div>
