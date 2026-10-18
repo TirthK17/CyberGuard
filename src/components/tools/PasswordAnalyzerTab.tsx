@@ -2,92 +2,13 @@ import { useState, useEffect, useId } from "react";
 import zxcvbn from "zxcvbn";
 import { Card, Pill, ProgressBar } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
-import { EFF_WORDLIST } from "@/data/effWordlist";
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from "recharts";
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   K-ANONYMITY HAVEIBEENPWNED SHA-1 CHECKER
-───────────────────────────────────────────────────────────────────────────── */
-
-async function sha1(str: string): Promise<string> {
-  const buffer = new TextEncoder().encode(str);
-  const hashBuffer = await crypto.subtle.digest("SHA-1", buffer);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
-}
-
-async function checkPwnedPassword(password: string): Promise<{
-  isPwned: boolean;
-  count: number;
-  error?: string;
-}> {
-  if (!password) return { isPwned: false, count: 0 };
-  try {
-    const hash = await sha1(password);
-    const prefix = hash.slice(0, 5);
-    const suffix = hash.slice(5);
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 6000);
-
-    const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
-      signal: controller.signal,
-      headers: { "Add-Padding": "true" },
-    });
-    clearTimeout(timeout);
-
-    if (!res.ok) {
-      return { isPwned: false, count: 0, error: "Breach API returned error" };
-    }
-
-    const text = await res.text();
-    const lines = text.split("\n");
-    for (const line of lines) {
-      const [hashSuffix, countStr] = line.trim().split(":");
-      if (hashSuffix && hashSuffix.toUpperCase() === suffix) {
-        return { isPwned: true, count: parseInt(countStr, 10) || 1 };
-      }
-    }
-
-    return { isPwned: false, count: 0 };
-  } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Network error";
-    return { isPwned: false, count: 0, error: `Offline or blocked (${msg})` };
-  }
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   CRYPTOGRAPHIC PASSPHRASE GENERATOR (EFF WORDLIST + CRYPTO.GETRANDOMVALUES)
-───────────────────────────────────────────────────────────────────────────── */
-
-function generatePassphrase(
-  wordCount: number,
-  separator: string,
-  capitalize: boolean,
-  addNumber: boolean
-) {
-  const words: string[] = [];
-  const randomIndices = new Uint32Array(wordCount);
-  crypto.getRandomValues(randomIndices);
-
-  for (let i = 0; i < wordCount; i++) {
-    const index = randomIndices[i] % EFF_WORDLIST.length;
-    let word = EFF_WORDLIST[index];
-    if (capitalize) {
-      word = word.charAt(0).toUpperCase() + word.slice(1);
-    }
-    words.push(word);
-  }
-
-  if (addNumber) {
-    const randNum = new Uint32Array(1);
-    crypto.getRandomValues(randNum);
-    const digit = (randNum[0] % 90 + 10).toString();
-    words.push(digit);
-  }
-
-  return words.join(separator);
-}
+import {
+  checkPwnedPassword,
+  generatePassphrase,
+  formatCrackSeconds,
+  calculatePassphraseEntropy,
+} from "@/lib/passwordAnalyzer";
 
 export function PasswordAnalyzerTab() {
   const passwordInputId = useId();
@@ -167,21 +88,8 @@ export function PasswordAnalyzerTab() {
   const avgSecondsSingleGpu = combinations / (2 * singleGpuRate);
   const avgSecondsCluster = combinations / (2 * clusterRate);
 
-  const formatSeconds = (secs: number) => {
-    if (secs < 1) return "Under 1 second (Instant)";
-    if (secs < 60) return `${Math.round(secs)} seconds`;
-    if (secs < 3600) return `${Math.round(secs / 60)} minutes`;
-    if (secs < 86400) return `${Math.round(secs / 3600)} hours`;
-    if (secs < 31536000) return `${Math.round(secs / 86400)} days`;
-    if (secs < 31536000 * 100) return `${Math.round(secs / 31536000)} years`;
-    if (secs < 31536000 * 1e6) return `${(secs / (31536000 * 1e3)).toFixed(1)}k centuries`;
-    return "Centuries (Immune to brute-force)";
-  };
-
   // Passphrase entropy: count * log2(7776) ~ count * 12.925 bits + 3.32 bits if number
-  const passphraseEntropyBits = Math.round(
-    passphraseWordCount * Math.log2(EFF_WORDLIST.length) + (passphraseAddNumber ? 3.32 : 0)
-  );
+  const passphraseEntropyBits = calculatePassphraseEntropy(passphraseWordCount, passphraseAddNumber);
 
   // Entropy Chart Data
   const entropyData = [
@@ -352,7 +260,7 @@ export function PasswordAnalyzerTab() {
                 <span className="font-mono text-[10px]">100 MH/s</span>
               </div>
               <p className="text-base font-bold font-mono text-text-pure">
-                {formatSeconds(avgSecondsSingleGpu)}
+                {formatCrackSeconds(avgSecondsSingleGpu)}
               </p>
               <span className="text-[10px] text-text-ash block">
                 Average-case (half the keyspace: combinations / 2 / rate)
@@ -365,7 +273,7 @@ export function PasswordAnalyzerTab() {
                 <span className="font-mono text-[10px]">100 GH/s</span>
               </div>
               <p className="text-base font-bold font-mono text-text-pure">
-                {formatSeconds(avgSecondsCluster)}
+                {formatCrackSeconds(avgSecondsCluster)}
               </p>
               <span className="text-[10px] text-text-ash block">
                 Distributed botnet or state-sponsored hash rig

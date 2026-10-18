@@ -56,13 +56,10 @@ export async function recordActivity({
   if (awardOnce && refId) {
     const { data: existing } = await supabase
       .from("activity_logs")
-      .select("id")
+      .select("*")
       .eq("user_id", userId)
-      .eq("action", action)
-      // The localDb eq filter does string comparison so store refId in meta.ref_id
-      .eq("meta->ref_id" as never, refId as never);
+      .eq("action", action);
 
-    // Fallback: filter manually in case the localDb doesn't support nested key access
     // eslint-disable-next-line @typescript-eslint/no-explicit-any -- meta shape is dynamic
     const alreadyDone = (existing as any[] | null)?.some(
       (row: { meta?: Record<string, unknown> }) =>

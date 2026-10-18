@@ -59,7 +59,7 @@ export function analyzeCustomUrl(rawUrl: string): UrlAnalysisResult | null {
 
   // 2. IP address as host
   if (/^(\d{1,3}\.){3}\d{1,3}$/.test(hostname)) {
-    flags.push("Host is a bare IP address rather than a registered domain name (common in automated malware C2).");
+    flags.push("Bare IP address host rather than a registered domain name (common in automated malware C2).");
     threatPoints += 35;
   }
 
@@ -93,13 +93,10 @@ export function analyzeCustomUrl(rawUrl: string): UrlAnalysisResult | null {
     : domainParts.slice(-2).join(".");
 
   const brandKeywords = ["microsoft", "google", "apple", "paypal", "netflix", "hdfc", "amazon", "chase", "sbi", "wellsfargo"];
+  const officialSuffixes = [".com", ".in", ".org", ".net", ".co.uk", ".co.in", ".gov.in", ".com.au"];
   for (const b of brandKeywords) {
     if (hostname.includes(b)) {
-      const isOfficial =
-        registrableDomain === `${b}.com` ||
-        registrableDomain === `${b}.in` ||
-        registrableDomain === `${b}.org` ||
-        registrableDomain === `${b}.net`;
+      const isOfficial = officialSuffixes.some((suf) => registrableDomain === `${b}${suf}`);
       if (!isOfficial) {
         flags.push(`Brand spoofing detected: hostname references '${b}', but registered domain is '${registrableDomain}' (NOT official ${b}!).`);
         threatPoints += 45;

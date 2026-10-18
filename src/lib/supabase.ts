@@ -1,8 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { localDb } from "./localDb";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const isTestMode = typeof import.meta !== "undefined" && import.meta.env?.MODE === "test";
+const supabaseUrl = isTestMode ? undefined : import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = isTestMode ? undefined : import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 

@@ -41,6 +41,18 @@ export interface AssessmentQuestionData {
 
 const DEFAULT_PROFILES: Profile[] = [
   {
+    id: "user-demo-admin",
+    full_name: "Sarah Chen (Security Lead)",
+    email: "admin@cyberguard.dev",
+    role: "admin",
+    avatar_url: null,
+    points: 1480,
+    level: 5,
+    awareness_score: 99,
+    status: "active",
+    created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
+  },
+  {
     id: "user-demo-lead-1",
     full_name: "Sarah Chen (Security Lead)",
     email: "sarah.chen@cyberguard.dev",
@@ -1712,9 +1724,9 @@ const AUTH_USER_KEY = "cyberguard_active_user";
 
 /** Demo accounts: seeded with known password on first load */
 const DEMO_ACCOUNTS = [
-  { email: "admin@cyberguard.dev",    userId: "user-demo-lead-1" },
-  { email: "operator@cyberguard.dev", userId: "user-demo-operator" },
+  { email: "admin@cyberguard.dev",      userId: "user-demo-admin" },
   { email: "sarah.chen@cyberguard.dev", userId: "user-demo-lead-1" },
+  { email: "operator@cyberguard.dev",   userId: "user-demo-operator" },
   { email: "marcus.v@cyberguard.dev",  userId: "user-demo-lead-2" },
   { email: "elena.r@cyberguard.dev",   userId: "user-demo-lead-3" },
   { email: "aisha.p@cyberguard.dev",   userId: "user-demo-lead-4" },
@@ -1744,6 +1756,11 @@ class LocalAuthClient {
   private listeners: Array<(event: string, session: { user: Profile } | null) => void> = [];
   /** True after async seed is done — prevents race on first sign-in */
   private _seedPromise: Promise<void> | null = null;
+
+  reset() {
+    this._seedPromise = null;
+    this.listeners = [];
+  }
 
   private ensureSeeded(): Promise<void> {
     if (!this._seedPromise) {
@@ -1911,5 +1928,6 @@ export const localDb: LocalDbClient = {
   resetDatabase() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(AUTH_USER_KEY);
+    this.auth.reset();
   },
 };
