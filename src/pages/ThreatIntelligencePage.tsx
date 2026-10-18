@@ -4,13 +4,27 @@ import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useToast } from "@/context/ToastContext";
+import {
+  CISA_KEV_SNAPSHOT,
+  CISA_KEV_SNAPSHOT_METADATA,
+  type CisaKevEntry,
+} from "@/data/cisaKevSnapshot";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from "recharts";
 
 import {
   ADVISORIES,
   type ThreatAdvisory,
   type ThreatSeverity,
-  type ThreatCategory,
-  type MitreMapping,
   type LiveAttackEvent,
 } from "@/data/threats";
 
@@ -18,13 +32,35 @@ export {
   ADVISORIES,
   type ThreatAdvisory,
   type ThreatSeverity,
-  type ThreatCategory,
-  type MitreMapping,
   type LiveAttackEvent,
 };
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   RADAR NODE HUBS FOR LIVE SVG ATTACK CANVAS
+   HELPERS & RELATIVE TIME FORMATTER
+───────────────────────────────────────────────────────────────────────────── */
+
+function formatRelativeTime(dateString: string): string {
+  try {
+    const target = new Date(dateString);
+    if (isNaN(target.getTime())) return dateString;
+    const now = new Date();
+    const diffSec = Math.round((target.getTime() - now.getTime()) / 1000);
+    const diffDays = Math.round(diffSec / 86400);
+
+    const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+    if (Math.abs(diffDays) === 0) return "Today";
+    if (Math.abs(diffDays) < 30) {
+      return rtf.format(diffDays, "day");
+    }
+    const diffMonths = Math.round(diffDays / 30);
+    return rtf.format(diffMonths, "month");
+  } catch {
+    return dateString;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   RADAR NODE HUBS FOR LIVE SVG ATTACK CANVAS (SIMULATED)
 ───────────────────────────────────────────────────────────────────────────── */
 
 interface RadarHub {
@@ -36,16 +72,16 @@ interface RadarHub {
 
 const RADAR_HUBS: RadarHub[] = [
   { name: "Silicon Valley", x: 130, y: 150, country: "USA" },
-  { name: "New York",       x: 230, y: 160, country: "USA" },
-  { name: "Frankfurt",      x: 440, y: 140, country: "Germany" },
-  { name: "London",         x: 410, y: 130, country: "UK" },
-  { name: "Moscow",         x: 520, y: 120, country: "Russia" },
-  { name: "Dubai",          x: 530, y: 190, country: "UAE" },
-  { name: "Bengaluru",      x: 580, y: 220, country: "India" },
-  { name: "Singapore",      x: 640, y: 240, country: "Singapore" },
-  { name: "Tokyo",          x: 720, y: 170, country: "Japan" },
-  { name: "Sydney",         x: 730, y: 310, country: "Australia" },
-  { name: "São Paulo",      x: 290, y: 290, country: "Brazil" },
+  { name: "New York", x: 230, y: 160, country: "USA" },
+  { name: "Frankfurt", x: 440, y: 140, country: "Germany" },
+  { name: "London", x: 410, y: 130, country: "UK" },
+  { name: "Moscow", x: 520, y: 120, country: "Russia" },
+  { name: "Dubai", x: 530, y: 190, country: "UAE" },
+  { name: "Bengaluru", x: 580, y: 220, country: "India" },
+  { name: "Singapore", x: 640, y: 240, country: "Singapore" },
+  { name: "Tokyo", x: 720, y: 170, country: "Japan" },
+  { name: "Sydney", x: 730, y: 310, country: "Australia" },
+  { name: "São Paulo", x: 290, y: 290, country: "Brazil" },
 ];
 
 const SECTORS = ["Healthcare", "Finance", "Energy", "Education", "Government", "Defense", "Cloud Tech"];
@@ -69,7 +105,7 @@ function generateLiveAttack(id: number): LiveAttackEvent {
 
   const date = new Date();
   const time = date.toTimeString().split(" ")[0];
-  const severity: "critical" | "high" | "medium" = 
+  const severity: "critical" | "high" | "medium" =
     Math.random() > 0.65 ? "critical" : Math.random() > 0.35 ? "high" : "medium";
 
   return {
@@ -88,23 +124,62 @@ function generateLiveAttack(id: number): LiveAttackEvent {
   };
 }
 
+const INDIA_SECURITY_CENTERS = [
+  {
+    name: "CERT-In Vulnerability Notes & Bulletins",
+    url: "https://www.cert-in.org.in",
+    desc: "National agency for security incident management, issuing high-severity bulletins for operating systems, browsers, and mobile devices.",
+    tag: "National CERT",
+  },
+  {
+    name: "National Cybercrime Portal (cybercrime.gov.in)",
+    url: "https://cybercrime.gov.in",
+    desc: "MHA-authorized central platform to report UPI financial extortion, digital arrest scams, and cyber fraud.",
+    tag: "Official Reporting",
+  },
+  {
+    name: "National Cyber Helpline 1930",
+    url: "tel:1930",
+    desc: "24/7 dedicated financial cyber fraud reporting helpline to trigger immediate banking transaction freezes.",
+    tag: "Emergency 1930",
+  },
+  {
+    name: "DoT Sanchar Saathi (Chakshu Portal)",
+    url: "https://sancharsaathi.gov.in",
+    desc: "Citizen-centric facility to report suspected malicious SMS, spam calls, and block cloned or stolen mobile handsets.",
+    tag: "Telecom Fraud",
+  },
+];
+
 /* ─────────────────────────────────────────────────────────────────────────────
    MAIN COMPONENT
 ───────────────────────────────────────────────────────────────────────────── */
 
 export function ThreatIntelligencePage() {
   const toast = useToast();
-  const [search, setSearch] = useState("");
+
+  // Mode: Real CISA KEV Catalog vs Curated Educational Bulletins
+  const [activeIntelView, setActiveIntelView] = useState<"cisa" | "bulletins">("cisa");
+
+  // CISA KEV Feed State
+  const [kevEntries, setKevEntries] = useState<CisaKevEntry[]>(CISA_KEV_SNAPSHOT);
+  const [isLiveFeed, setIsLiveFeed] = useState(false);
+  const [feedStatus, setFeedStatus] = useState<string>("Loading CISA KEV feed...");
+  const [kevSearch, setKevSearch] = useState("");
+  const [selectedVendor, setSelectedVendor] = useState("all");
+  const [ransomwareFilter, setRansomwareFilter] = useState<"all" | "ransomware">("all");
+  const [selectedKev, setSelectedKev] = useState<CisaKevEntry | null>(null);
+
+  // Curated Advisories State
+  const [advSearch, setAdvSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [selectedSeverity, setSelectedSeverity] = useState<string>("all");
   const [sortBy, setSortBy] = useState<"recent" | "severity">("recent");
   const [selectedAdvisory, setSelectedAdvisory] = useState<ThreatAdvisory | null>(null);
   const [copiedIoc, setCopiedIoc] = useState<string | null>(null);
-  const [liveStreamPaused, setLiveStreamPaused] = useState(false);
-  const [feedDensity, setFeedDensity] = useState<"standard" | "compact">("standard");
-  const [expandedAdvisoryId, setExpandedAdvisoryId] = useState<string | null>(null);
 
-  // Live attack events for the interactive canvas and stream
+  // Live attack simulator state
+  const [liveStreamPaused, setLiveStreamPaused] = useState(false);
   const [attacks, setAttacks] = useState<LiveAttackEvent[]>(() => [
     generateLiveAttack(1),
     generateLiveAttack(2),
@@ -112,37 +187,116 @@ export function ThreatIntelligencePage() {
     generateLiveAttack(4),
   ]);
 
-  // Periodic attack generator
+  // Fetch CISA KEV JSON with fallback
+  useEffect(() => {
+    let isMounted = true;
+    const fetchCisaKev = async () => {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 4500);
+
+        const res = await fetch(
+          "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+          { signal: controller.signal }
+        );
+        clearTimeout(timeout);
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+
+        if (isMounted && data.vulnerabilities && Array.isArray(data.vulnerabilities)) {
+          setKevEntries(data.vulnerabilities);
+          setIsLiveFeed(true);
+          setFeedStatus(`Live CISA KEV Feed Synced (${data.vulnerabilities.length} catalog items)`);
+        }
+      } catch (err: unknown) {
+        if (isMounted) {
+          setIsLiveFeed(false);
+          const reason = err instanceof Error ? err.message : "CORS / Network constraint";
+          setFeedStatus(
+            `CISA KEV Snapshot: v${CISA_KEV_SNAPSHOT_METADATA.catalogVersion} (Offline Snapshot, ${reason})`
+          );
+        }
+      }
+    };
+
+    fetchCisaKev();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Periodic attack generator for simulated radar
   useEffect(() => {
     if (liveStreamPaused) return;
     const interval = setInterval(() => {
-      setAttacks((prev) => {
-        const next = [generateLiveAttack(Date.now()), ...prev.slice(0, 11)];
-        return next;
-      });
+      setAttacks((prev) => [generateLiveAttack(Date.now()), ...prev.slice(0, 11)]);
     }, 2800);
     return () => clearInterval(interval);
   }, [liveStreamPaused]);
 
-  // Categories list
-  const categories: string[] = [
-    "all",
-    "Ransomware",
-    "Zero-Day",
-    "Social Engineering",
-    "Mobile Smishing",
-    "AI & Emerging",
-    "Cloud & Network",
-  ];
+  // CISA KEV Vendors
+  const vendorList = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const item of kevEntries) {
+      counts.set(item.vendorProject, (counts.get(item.vendorProject) || 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([vendor]) => vendor);
+  }, [kevEntries]);
 
-  // Filtering & Sorting
+  // Filtered CISA KEV
+  const filteredKev = useMemo(() => {
+    const query = kevSearch.toLowerCase().trim();
+    return kevEntries.filter((item) => {
+      const matchSearch =
+        !query ||
+        item.cveID.toLowerCase().includes(query) ||
+        item.vendorProject.toLowerCase().includes(query) ||
+        item.product.toLowerCase().includes(query) ||
+        item.shortDescription.toLowerCase().includes(query);
+
+      const matchVendor = selectedVendor === "all" || item.vendorProject === selectedVendor;
+      const matchRansomware =
+        ransomwareFilter === "all" ||
+        item.knownRansomwareCampaignUse.toLowerCase() === "known";
+
+      return matchSearch && matchVendor && matchRansomware;
+    });
+  }, [kevEntries, kevSearch, selectedVendor, ransomwareFilter]);
+
+  // Chart Data: Top Vendors in KEV
+  const vendorChartData = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const item of kevEntries) {
+      counts.set(item.vendorProject, (counts.get(item.vendorProject) || 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 7)
+      .map(([name, count]) => ({ name, count }));
+  }, [kevEntries]);
+
+  // Chart Data: 7-Day / Temporal Threat Wave Trend
+  const trendData = useMemo(() => [
+    { day: "Mon", exploits: 14, ransomware: 4 },
+    { day: "Tue", exploits: 19, ransomware: 6 },
+    { day: "Wed", exploits: 23, ransomware: 8 },
+    { day: "Thu", exploits: 18, ransomware: 5 },
+    { day: "Fri", exploits: 27, ransomware: 9 },
+    { day: "Sat", exploits: 12, ransomware: 3 },
+    { day: "Sun", exploits: 16, ransomware: 4 },
+  ], []);
+
+  // Filtered Curated Advisories
   const filteredAdvisories = useMemo(() => {
     return ADVISORIES.filter((adv) => {
       const matchSearch =
-        adv.title.toLowerCase().includes(search.toLowerCase()) ||
-        adv.summary.toLowerCase().includes(search.toLowerCase()) ||
-        adv.attackVector.toLowerCase().includes(search.toLowerCase()) ||
-        (adv.cve && adv.cve.toLowerCase().includes(search.toLowerCase()));
+        adv.title.toLowerCase().includes(advSearch.toLowerCase()) ||
+        adv.summary.toLowerCase().includes(advSearch.toLowerCase()) ||
+        adv.attackVector.toLowerCase().includes(advSearch.toLowerCase()) ||
+        (adv.cve && adv.cve.toLowerCase().includes(advSearch.toLowerCase()));
 
       const matchCat = selectedCategory === "all" || adv.category === selectedCategory;
       const matchSev = selectedSeverity === "all" || adv.severity === selectedSeverity;
@@ -155,7 +309,7 @@ export function ThreatIntelligencePage() {
       }
       return b.timestamp - a.timestamp;
     });
-  }, [search, selectedCategory, selectedSeverity, sortBy]);
+  }, [advSearch, selectedCategory, selectedSeverity, sortBy]);
 
   const handleCopyIocs = async (adv: ThreatAdvisory) => {
     const text = [
@@ -170,24 +324,16 @@ export function ThreatIntelligencePage() {
       await navigator.clipboard.writeText(text);
       setCopiedIoc(adv.id);
       setTimeout(() => setCopiedIoc(null), 2500);
-      toast({
-        title: "IOCs Copied",
-        description: `Exported indicators of compromise for ${adv.id}.`,
-        variant: "info",
-      });
+      toast({ title: "IOCs Copied", description: `Exported indicators of compromise for ${adv.id}.`, variant: "info" });
     } catch {
-      toast({
-        title: "Copy Failed",
-        description: "Clipboard access was denied by your browser.",
-        variant: "error",
-      });
+      toast({ title: "Copy Failed", description: "Clipboard access was denied by your browser.", variant: "error" });
     }
   };
 
   const severityTone = (sev: ThreatSeverity): "danger" | "warn" | "violet" | "cyan" => {
     switch (sev) {
       case "critical": return "danger";
-      case "high":     return "warn";
+      case "high": return "warn";
       case "elevated": return "violet";
       case "advisory": return "cyan";
     }
@@ -195,7 +341,7 @@ export function ThreatIntelligencePage() {
 
   return (
     <div className="space-y-8">
-      {/* ── 1. HEADER & GLOBAL DEFCON LEVEL HERO ── */}
+      {/* ── 1. HEADER & DEFCON HERO ── */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -207,131 +353,153 @@ export function ThreatIntelligencePage() {
             <div className="flex items-center gap-2">
               <span className="flex h-2.5 w-2.5 rounded-full bg-danger animate-ping" />
               <p className="font-mono text-xs font-bold uppercase tracking-wider text-danger">
-                Live Scam &amp; Threat Radar
+                Real Threat Intelligence &amp; CISA Catalog
               </p>
             </div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-text-pure sm:text-3xl mt-1">
-              Recent Scams &amp; Threat Alerts
+              Live Threat Intelligence &amp; Vulnerabilities
             </h1>
             <p className="mt-1 text-sm text-text-fog">
-              Track active online scams, new fake email tricks, and trending cyber warnings from around the web.
+              Direct feed from CISA Known Exploited Vulnerabilities (KEV), national CERT-In security bulletins, and verified online scams.
             </p>
           </div>
 
-          {/* Quick Metrics Badge */}
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="rounded-2xl border border-danger/40 bg-danger/10 px-4 py-2 flex items-center gap-3">
-              <i className="ti ti-shield-bolt text-2xl text-danger animate-pulse" />
-              <div>
-                <span className="text-xs font-semibold text-text-ash block">
-                  Current Threat Level
-                </span>
-                <span className="font-display text-sm sm:text-base font-bold text-danger">
-                  HIGH ALERT
-                </span>
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-border bg-surface px-4 py-2 flex items-center gap-3">
-              <i className="ti ti-radar text-2xl text-primary" />
-              <div>
-                <span className="text-xs font-semibold text-text-ash block">
-                  Trending Scams
-                </span>
-                <span className="font-display text-sm sm:text-base font-bold text-text-pure">
-                  {ADVISORIES.length} Active Bulletins
-                </span>
-              </div>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className={`rounded-2xl border px-3.5 py-2 flex items-center gap-2.5 text-xs ${
+              isLiveFeed ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400" : "border-border bg-surface text-text-fog"
+            }`}>
+              <i className={`ti ${isLiveFeed ? "ti-wifi" : "ti-database"} text-sm`} aria-hidden="true" />
+              <span className="font-mono font-medium">{feedStatus}</span>
             </div>
           </div>
         </div>
       </motion.div>
 
-      {/* ── 2. LIVE INTERACTIVE ATTACK RADAR CANVAS & TELEMETRY STREAM ── */}
+      {/* ── 2. RECHARTS ANALYTICS ROW ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Chart 1: Top Vendors with Exploited CVEs */}
+        <Card className="p-5 sm:p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-display text-sm font-bold text-text-pure">
+                Most Targeted Vendors (CISA KEV Catalog)
+              </h3>
+              <p className="text-xs text-text-fog">Number of actively weaponized zero-days and vulnerabilities</p>
+            </div>
+            <Pill tone="cyan">KEV Analysis</Pill>
+          </div>
+
+          <div className="h-48 w-full" aria-label="Vendor breakdown bar chart">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={vendorChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                <XAxis dataKey="name" stroke="#71717a" fontSize={11} tickLine={false} />
+                <YAxis stroke="#71717a" fontSize={11} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: "#18181b", borderColor: "#3f3f46", borderRadius: "0.75rem", fontSize: "12px", color: "#f4f4f5" }}
+                  itemStyle={{ color: "#38bdf8" }}
+                />
+                <Bar dataKey="count" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+
+        {/* Chart 2: Weekly Threat Wave & Ransomware Campaign Trend */}
+        <Card className="p-5 sm:p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="font-display text-sm font-bold text-text-pure">
+                7-Day Infiltration &amp; Ransomware Frequency
+              </h3>
+              <p className="text-xs text-text-fog">Simulated telemetry trend across critical infrastructure sectors</p>
+            </div>
+            <Pill tone="warn">Telemetry Trend</Pill>
+          </div>
+
+          <div className="h-48 w-full" aria-label="7-day trend line chart">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={trendData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                <XAxis dataKey="day" stroke="#71717a" fontSize={11} tickLine={false} />
+                <YAxis stroke="#71717a" fontSize={11} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: "#18181b", borderColor: "#3f3f46", borderRadius: "0.75rem", fontSize: "12px", color: "#f4f4f5" }}
+                />
+                <Line type="monotone" dataKey="exploits" stroke="#38bdf8" strokeWidth={2.5} dot={{ r: 3 }} name="Exploit Attempts" />
+                <Line type="monotone" dataKey="ransomware" stroke="#ef4444" strokeWidth={2.5} dot={{ r: 3 }} name="Ransomware Vectors" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </Card>
+      </div>
+
+      {/* ── 3. SIMULATED RADAR VISUALIZATION (HONEST LABELLING) ── */}
       <Card className="p-0 overflow-hidden border-border bg-surface-elevated shadow-xl">
         <div className="p-4 sm:p-5 border-b border-border bg-surface flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div className="h-3 w-3 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-display text-base font-bold text-text-pure">
-              Global Threat Map (Live Simulation)
+              Simulated Global Threat Telemetry
             </span>
-            <span className="hidden sm:inline text-xs text-text-ash">
-              (Live visual demo of simulated attack traffic)
+            <span className="px-2 py-0.5 rounded-full bg-surface-elevated border border-border text-[10px] font-bold text-text-dim">
+              Simulated Visualisation
             </span>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => setLiveStreamPaused((p) => !p)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors border ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors border cursor-pointer ${
                 liveStreamPaused
                   ? "border-warn bg-warn/10 text-warn"
                   : "border-border bg-surface text-text-ash hover:text-text-pure"
               }`}
             >
-              <i className={`ti ${liveStreamPaused ? "ti-player-play" : "ti-player-pause"} text-xs`} />
-              <span>{liveStreamPaused ? "Resume Feed" : "Pause Feed"}</span>
+              <i className={`ti ${liveStreamPaused ? "ti-player-play" : "ti-player-pause"} text-xs`} aria-hidden="true" />
+              <span>{liveStreamPaused ? "Resume Telemetry" : "Pause"}</span>
             </button>
-            <div className="text-xs font-semibold text-text-ash px-2.5 py-1 rounded-lg bg-surface border border-border">
-              {attacks.length} Live Signals
-            </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12">
           {/* Visual SVG World Canvas */}
-          <div className="lg:col-span-8 p-4 sm:p-6 bg-[#070b14] relative overflow-hidden flex items-center justify-center min-h-[320px]">
-            {/* Grid Pattern Background */}
-            <div 
+          <div className="lg:col-span-8 p-4 sm:p-6 bg-[#070b14] relative overflow-hidden flex items-center justify-center min-h-[300px]">
+            <div
               className="absolute inset-0 opacity-20 pointer-events-none"
               style={{
                 backgroundImage: "radial-gradient(#38bdf8 1px, transparent 1px)",
-                backgroundSize: "24px 24px"
+                backgroundSize: "24px 24px",
               }}
             />
 
-            {/* SVG Attack Projection */}
-            <svg
-              viewBox="0 0 840 380"
-              className="w-full h-auto max-h-[340px] select-none relative z-10"
-            >
+            <svg viewBox="0 0 840 380" className="w-full h-auto max-h-[320px] select-none relative z-10" aria-label="World attack map schematic">
               <defs>
                 <linearGradient id="attackBeamGrad" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#ef4444" stopOpacity="0.9" />
                   <stop offset="50%" stopColor="#f59e0b" stopOpacity="0.8" />
                   <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.2" />
                 </linearGradient>
-                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
               </defs>
 
-              {/* World Continents Schematic Outline */}
+              {/* Continents outline */}
               <g fill="#162036" stroke="#223354" strokeWidth="0.8" opacity="0.6">
-                {/* North America */}
                 <path d="M 90 90 L 250 80 L 280 140 L 240 210 L 170 230 L 130 170 Z" />
-                {/* South America */}
                 <path d="M 240 240 L 320 250 L 300 360 L 250 340 Z" />
-                {/* Europe */}
                 <path d="M 380 90 L 480 80 L 490 160 L 390 170 Z" />
-                {/* Africa */}
                 <path d="M 400 180 L 510 180 L 490 320 L 420 300 Z" />
-                {/* Asia */}
                 <path d="M 500 70 L 740 80 L 730 220 L 610 240 L 520 180 Z" />
-                {/* Australia */}
                 <path d="M 680 270 L 780 280 L 760 360 L 680 340 Z" />
               </g>
 
               {/* Dynamic Attack Laser Beams */}
-              {attacks.slice(0, 5).map((atk) => {
+              {attacks.slice(0, 4).map((atk) => {
                 const midX = (atk.x1 + atk.x2) / 2;
                 const midY = Math.min(atk.y1, atk.y2) - 35;
                 const pathD = `M ${atk.x1} ${atk.y1} Q ${midX} ${midY} ${atk.x2} ${atk.y2}`;
 
                 return (
                   <g key={atk.id}>
-                    {/* Background Arc */}
                     <path
                       d={pathD}
                       fill="none"
@@ -340,20 +508,17 @@ export function ThreatIntelligencePage() {
                       strokeDasharray="4 4"
                       opacity="0.4"
                     />
-                    {/* Pulsing projectile along path */}
                     <path
                       d={pathD}
                       fill="none"
                       stroke="url(#attackBeamGrad)"
                       strokeWidth="2.5"
-                      filter="url(#glow)"
                       className="animate-pulse"
                     />
-                    {/* Target Impact Burst */}
                     <circle
                       cx={atk.x2}
                       cy={atk.y2}
-                      r="7"
+                      r="6"
                       fill="none"
                       stroke={atk.severity === "critical" ? "#ef4444" : "#38bdf8"}
                       strokeWidth="1.5"
@@ -365,86 +530,56 @@ export function ThreatIntelligencePage() {
 
               {/* Hub Nodes */}
               {RADAR_HUBS.map((hub) => (
-                <g key={hub.name} className="cursor-pointer group">
-                  <circle
-                    cx={hub.x}
-                    cy={hub.y}
-                    r="4"
-                    fill="#38bdf8"
-                    className="group-hover:fill-white transition-colors"
-                  />
-                  <circle
-                    cx={hub.x}
-                    cy={hub.y}
-                    r="9"
-                    fill="none"
-                    stroke="#38bdf8"
-                    strokeWidth="0.8"
-                    opacity="0.5"
-                  />
-                  <text
-                    x={hub.x}
-                    y={hub.y - 12}
-                    textAnchor="middle"
-                    fill="#94a3b8"
-                    fontSize="9"
-                    fontFamily="monospace"
-                    className="group-hover:fill-white font-bold transition-colors"
-                  >
+                <g key={hub.name}>
+                  <circle cx={hub.x} cy={hub.y} r="3.5" fill="#38bdf8" />
+                  <text x={hub.x} y={hub.y - 10} textAnchor="middle" fill="#94a3b8" fontSize="8.5" fontFamily="monospace">
                     {hub.name}
                   </text>
                 </g>
               ))}
             </svg>
 
-            {/* Radar Coordinates Overlay */}
-            <div className="absolute bottom-3 left-4 text-xs font-semibold text-text-ash flex items-center gap-4 bg-black/60 px-3 py-1.5 rounded-lg border border-border/40 backdrop-blur-md">
-              <span className="text-emerald-400 font-semibold">● LIVE GLOBAL SIMULATION</span>
-              <span className="hidden sm:inline text-text-fog">Showing simulated real-time attack attempts</span>
+            <div className="absolute bottom-3 left-4 text-[11px] font-semibold text-text-ash flex items-center gap-2 bg-black/70 px-3 py-1 rounded-lg border border-border/40 backdrop-blur-md">
+              <span className="text-amber-400 font-bold">● SIMULATED TELEMETRY</span>
+              <span className="hidden sm:inline text-text-fog">Illustrative visualization of global attack traffic</span>
             </div>
           </div>
 
-          {/* Right: Real-time Telemetry Stream Ticker */}
-          <div className="lg:col-span-4 p-4 border-t lg:border-t-0 lg:border-l border-border bg-surface flex flex-col justify-between max-h-[380px]">
+          {/* Telemetry Stream Ticker */}
+          <div className="lg:col-span-4 p-4 border-t lg:border-t-0 lg:border-l border-border bg-surface flex flex-col justify-between max-h-[340px]">
             <div>
-              <div className="flex items-center justify-between pb-3 border-b border-border mb-3">
-                <span className="text-sm font-bold text-text-pure flex items-center gap-1.5">
-                  <i className="ti ti-terminal text-primary" /> Live Attack Log
+              <div className="flex items-center justify-between pb-2.5 border-b border-border mb-2.5">
+                <span className="text-xs font-bold text-text-pure flex items-center gap-1.5">
+                  <i className="ti ti-terminal text-primary" aria-hidden="true" /> Simulated Attack Log
                 </span>
-                <span className="text-xs font-semibold text-emerald-400">REALTIME</span>
+                <span className="text-[10px] font-mono font-semibold text-emerald-400">DEMO FEED</span>
               </div>
 
-              <div className="space-y-2 overflow-y-auto max-h-[260px] pr-1">
+              <div className="space-y-2 overflow-y-auto max-h-[220px] pr-1">
                 <AnimatePresence initial={false}>
-                  {attacks.slice(0, 6).map((atk) => (
+                  {attacks.slice(0, 5).map((atk) => (
                     <motion.div
                       key={atk.id}
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
                       transition={{ duration: 0.2 }}
-                      className="p-2.5 rounded-xl border border-border bg-surface-elevated text-xs space-y-1 hover:border-primary/40 transition-colors"
+                      className="p-2.5 rounded-xl border border-border bg-surface-elevated text-xs space-y-1"
                     >
-                      <div className="flex items-center justify-between text-xs font-mono">
+                      <div className="flex items-center justify-between text-[11px] font-mono">
                         <span className="text-text-ash">[{atk.time}]</span>
-                        <span
-                          className={`font-semibold uppercase px-2 py-0.5 rounded text-[10px] ${
-                            atk.severity === "critical"
-                              ? "bg-danger/20 text-danger border border-danger/30"
-                              : atk.severity === "high"
-                              ? "bg-warn/20 text-warn border border-warn/30"
-                              : "bg-primary/20 text-primary border border-primary/30"
-                          }`}
-                        >
+                        <span className={`font-semibold uppercase px-1.5 py-0.5 rounded text-[9px] ${
+                          atk.severity === "critical" ? "bg-danger/20 text-danger" : "bg-warn/20 text-warn"
+                        }`}>
                           {atk.severity}
                         </span>
                       </div>
-                      <div className="font-semibold text-text-pure truncate text-xs sm:text-sm">
+                      <div className="font-semibold text-text-pure truncate text-xs">
                         {atk.attackType}
                       </div>
-                      <div className="flex items-center justify-between text-xs text-text-fog">
+                      <div className="flex items-center justify-between text-[11px] text-text-fog">
                         <span>{atk.sourceCity} &rarr; {atk.targetCity}</span>
-                        <span className="text-text-ash font-medium">{atk.targetSector}</span>
+                        <span className="text-text-ash">{atk.targetSector}</span>
                       </div>
                     </motion.div>
                   ))}
@@ -452,576 +587,453 @@ export function ThreatIntelligencePage() {
               </div>
             </div>
 
-            <div className="pt-3 border-t border-border mt-3 text-xs text-text-ash flex items-center justify-between">
-              <span>Updated: Just now</span>
-              <span className="text-primary font-semibold">Active Sync</span>
+            <div className="pt-2 border-t border-border mt-2 text-[11px] text-text-ash flex items-center justify-between">
+              <span>Updated: Simulated Stream</span>
+              <span className="text-primary font-semibold">Active</span>
             </div>
           </div>
         </div>
       </Card>
 
-      {/* ── 3. THREAT SEARCH, CATEGORY TABS & SEVERITY FILTER ── */}
+      {/* ── 4. DUAL INTEL FEED SWITCHER ── */}
       <div className="space-y-4">
-        <div className="flex flex-col md:flex-row gap-3">
-          {/* Search Input */}
-          <div className="relative flex-1">
-            <i className="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-text-ash" />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search scams and security alerts (e.g., 'teams', 'sms', 'apk', 'ransomware')..."
-              className="input pl-10 text-xs sm:text-sm py-2.5"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch("")}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-ash hover:text-text-pure"
-              >
-                <i className="ti ti-x text-sm" />
-              </button>
-            )}
-          </div>
-
-          {/* Severity, Sort & Density Controls */}
-          <div className="flex flex-wrap items-center gap-2">
-            <select
-              value={selectedSeverity}
-              onChange={(e) => setSelectedSeverity(e.target.value)}
-              className="select text-xs py-2 px-3 bg-surface border-border rounded-xl font-mono text-text-pure"
-            >
-              <option value="all">All Severities</option>
-              <option value="critical">Critical Only</option>
-              <option value="high">High Only</option>
-              <option value="elevated">Elevated Only</option>
-              <option value="advisory">Advisory Only</option>
-            </select>
-
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as "recent" | "severity")}
-              className="select text-xs py-2 px-3 bg-surface border-border rounded-xl font-mono text-text-pure"
-            >
-              <option value="recent">Sort: Most Recent</option>
-              <option value="severity">Sort: Highest Severity</option>
-            </select>
-
-            {/* Density toggle: Cards vs List */}
-            <div className="flex items-center rounded-xl bg-surface border border-border p-0.5">
-              <button
-                type="button"
-                onClick={() => setFeedDensity("standard")}
-                className={`px-2.5 py-1 rounded-lg text-xs font-mono flex items-center gap-1 transition-all ${
-                  feedDensity === "standard"
-                    ? "bg-primary text-white font-bold shadow-sm"
-                    : "text-text-ash hover:text-text-pure"
-                }`}
-                title="Cards View"
-              >
-                <i className="ti ti-layout-grid text-xs" />
-                <span className="hidden sm:inline">Cards</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => setFeedDensity("compact")}
-                className={`px-2.5 py-1 rounded-lg text-xs font-mono flex items-center gap-1 transition-all ${
-                  feedDensity === "compact"
-                    ? "bg-primary text-white font-bold shadow-sm"
-                    : "text-text-ash hover:text-text-pure"
-                }`}
-                title="List View"
-              >
-                <i className="ti ti-list text-xs" />
-                <span className="hidden sm:inline">List</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Category Pill Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-surface border border-border">
-          {categories.map((c) => (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+          <div className="flex items-center gap-2" role="tablist" aria-label="Intel Feed Category">
             <button
-              key={c}
-              onClick={() => setSelectedCategory(c)}
-              className={`px-3 py-1.5 rounded-xl font-mono text-xs font-medium transition-all ${
-                selectedCategory === c
-                  ? "bg-primary text-white shadow-sm font-bold"
-                  : "text-text-fog hover:text-text-pure hover:bg-surface-elevated"
+              role="tab"
+              aria-selected={activeIntelView === "cisa"}
+              onClick={() => setActiveIntelView("cisa")}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeIntelView === "cisa"
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-text-fog hover:text-text-pure hover:bg-surface"
               }`}
             >
-              {c === "all" ? "All Advisories" : c}
+              <i className="ti ti-shield-code mr-1.5" aria-hidden="true" />
+              CISA Known Exploited Vulnerabilities ({filteredKev.length})
             </button>
-          ))}
-        </div>
-      </div>
 
-      {/* ── 4. THREAT DOSSIERS FEED ── */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between text-xs text-text-ash font-mono px-1">
-          <span>Showing {filteredAdvisories.length} verified security warnings</span>
-          <span className="hidden sm:inline">Continuously tracked from trusted cyber advisories</span>
-        </div>
-
-        {filteredAdvisories.length === 0 ? (
-          <Card className="p-10 text-center space-y-3">
-            <i className="ti ti-radar-off text-3xl text-text-ash" />
-            <h3 className="font-display text-base font-bold text-text-pure">
-              No Warnings Match Your Filter
-            </h3>
-            <p className="text-xs text-text-fog max-w-sm mx-auto">
-              Try clearing your search query or selecting &apos;All Advisories&apos; to view all warnings.
-            </p>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => { setSearch(""); setSelectedCategory("all"); setSelectedSeverity("all"); }}
-              className="text-xs"
+            <button
+              role="tab"
+              aria-selected={activeIntelView === "bulletins"}
+              onClick={() => setActiveIntelView("bulletins")}
+              className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                activeIntelView === "bulletins"
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-text-fog hover:text-text-pure hover:bg-surface"
+              }`}
             >
-              Reset Filters
-            </Button>
-          </Card>
-        ) : feedDensity === "compact" ? (
-          /* Sleek Compact List View */
-          <div className="space-y-2">
-            {filteredAdvisories.map((adv, i) => (
-              <motion.div
-                key={adv.id}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.02, duration: 0.2 }}
-                className="group p-3 sm:p-4 rounded-2xl border border-border bg-surface hover:bg-surface-elevated hover:border-primary/40 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-              >
-                <div className="flex-1 min-w-0 space-y-1.5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <Pill tone={severityTone(adv.severity)} size="sm">
-                      {adv.severity.toUpperCase()}
-                    </Pill>
-                    <span className="text-[11px] font-semibold text-text-ash px-2 py-0.5 rounded-full bg-surface-elevated border border-border">
-                      {adv.category}
-                    </span>
-                    {adv.cve && (
-                      <span className="text-[11px] font-mono text-primary font-bold px-1.5 py-0.5 rounded bg-primary/10 border border-primary/20">
-                        {adv.cve}
-                      </span>
-                    )}
-                    <span className="text-[11px] text-text-ash font-mono ml-auto sm:ml-0">
-                      {adv.date}
-                    </span>
-                  </div>
-                  <h4 
-                    onClick={() => setSelectedAdvisory(adv)}
-                    className="font-display text-sm font-bold text-text-pure hover:text-primary transition-colors cursor-pointer truncate"
-                  >
-                    {adv.title}
-                  </h4>
-                  <p className="text-xs text-text-fog line-clamp-1">
-                    {adv.summary}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0 pt-2 sm:pt-0 border-t sm:border-t-0 border-border">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    icon={<i className="ti ti-eye" />}
-                    onClick={() => setSelectedAdvisory(adv)}
-                    className="text-xs px-2.5 py-1.5 h-8"
-                  >
-                    Details
-                  </Button>
-                  <button
-                    type="button"
-                    onClick={() => handleCopyIocs(adv)}
-                    className="h-8 w-8 rounded-xl border border-border bg-surface flex items-center justify-center text-text-ash hover:text-text-pure hover:bg-surface-elevated transition-colors text-xs"
-                    title="Copy details"
-                  >
-                    <i className={`ti ${copiedIoc === adv.id ? "ti-check text-emerald-400" : "ti-copy"}`} />
-                  </button>
-                  {adv.simulationUrl && (
-                    <Link to={adv.simulationUrl}>
-                      <button
-                        type="button"
-                        className="h-8 px-2.5 rounded-xl border border-primary/30 bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-xs font-semibold flex items-center gap-1"
-                        title={adv.simulationLabel || "Simulate"}
-                      >
-                        <i className="ti ti-player-play text-xs" />
-                        <span className="hidden md:inline">Simulate</span>
-                      </button>
-                    </Link>
-                  )}
-                </div>
-              </motion.div>
-            ))}
+              <i className="ti ti-alert-triangle mr-1.5" aria-hidden="true" />
+              Scam &amp; Phishing Bulletins ({filteredAdvisories.length})
+            </button>
           </div>
-        ) : (
-          /* Standard Card View with Collapsible Breakdown */
+        </div>
+
+        {/* ── VIEW 1: CISA KEV CATALOG FEED ── */}
+        {activeIntelView === "cisa" && (
           <div className="space-y-4">
-            {filteredAdvisories.map((adv, i) => {
-              const isExpanded = expandedAdvisoryId === adv.id;
-              return (
-                <motion.div
-                  key={adv.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03, duration: 0.25 }}
-                >
-                  <Card className="p-5 sm:p-6 hover:border-primary/40 transition-all">
-                    {/* Top Badge Bar */}
-                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Pill tone={severityTone(adv.severity)} size="sm">
-                          {adv.severity.toUpperCase()}
-                        </Pill>
-                        <span className="text-xs font-semibold text-text-ash px-2.5 py-0.5 rounded-full bg-surface border border-border">
-                          {adv.category}
-                        </span>
-                        {adv.cve && (
-                          <span className="text-xs font-semibold text-primary px-2 py-0.5 rounded bg-primary/10 border border-primary/30">
-                            {adv.cve}
-                          </span>
-                        )}
-                        <span className="text-xs text-text-ash font-medium">
-                          Origin: <strong className="text-text-pure">{adv.originRegion}</strong>
-                        </span>
-                      </div>
-
-                      <div className="flex items-center gap-2 text-xs text-text-ash font-medium font-mono">
-                        <span>ALERT #{adv.id.replace("ADV-2025-", "").replace("ADV-2024-", "")}</span>
-                        <span>·</span>
-                        <span>{adv.date}</span>
-                      </div>
-                    </div>
-
-                    {/* Title & Summary */}
-                    <div className="mt-3.5">
-                      <h3 className="font-display text-base sm:text-lg font-bold text-text-pure leading-snug">
-                        {adv.title}
-                      </h3>
-                      <p className="mt-1.5 text-xs sm:text-sm leading-relaxed text-text-fog">
-                        {adv.summary}
-                      </p>
-                    </div>
-
-                    {/* Target Sectors */}
-                    <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                      <span className="text-[11px] font-medium text-text-ash mr-1">Most Targeted:</span>
-                      {adv.targetSectors.map((sec, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-0.5 rounded-md bg-surface text-[11px] font-medium text-text-pure border border-border"
-                        >
-                          {sec}
-                        </span>
-                      ))}
-                    </div>
-
-                    {/* Collapsible Attack Vector & Mitigation Drawer */}
-                    <div className="mt-4">
-                      <button
-                        type="button"
-                        onClick={() => setExpandedAdvisoryId(isExpanded ? null : adv.id)}
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-primary hover:text-primary-hover hover:underline transition-colors py-1"
-                      >
-                        <i className={`ti ${isExpanded ? "ti-chevron-up" : "ti-chevron-down"}`} />
-                        <span>{isExpanded ? "Hide Attack Vector & Protection" : "Inspect Attack Vector & Protection"}</span>
-                      </button>
-
-                      <AnimatePresence>
-                        {isExpanded && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: "auto" }}
-                            exit={{ opacity: 0, height: 0 }}
-                            className="mt-3 grid gap-3 sm:grid-cols-2 overflow-hidden"
-                          >
-                            <div className="rounded-2xl border border-danger/30 bg-danger/5 p-3.5 space-y-1">
-                              <span className="text-xs uppercase tracking-wider text-danger font-bold flex items-center gap-1.5">
-                                <i className="ti ti-target" /> How The Scam Works
-                              </span>
-                              <p className="text-xs sm:text-sm text-text-pure leading-relaxed">
-                                {adv.attackVector}
-                              </p>
-                            </div>
-
-                            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-3.5 space-y-1">
-                              <span className="text-xs uppercase tracking-wider text-emerald-400 font-bold flex items-center gap-1.5">
-                                <i className="ti ti-shield-check" /> How To Protect Yourself
-                              </span>
-                              <p className="text-xs sm:text-sm text-text-pure leading-relaxed">
-                                {adv.mitigation}
-                              </p>
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-
-                    {/* Footer Actions: Deep-Dive Dossier, Copy IOCs, Sandbox Link */}
-                    <div className="mt-4 pt-3.5 border-t border-border flex flex-wrap items-center justify-between gap-2.5">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Button
-                          variant="primary"
-                          size="sm"
-                          icon={<i className="ti ti-eye" />}
-                          onClick={() => setSelectedAdvisory(adv)}
-                          className="text-xs font-semibold"
-                        >
-                          Full Dossier &amp; Safety Steps
-                        </Button>
-
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          icon={<i className={`ti ${copiedIoc === adv.id ? "ti-check text-emerald-400" : "ti-copy"}`} />}
-                          onClick={() => handleCopyIocs(adv)}
-                          className="text-xs"
-                        >
-                          {copiedIoc === adv.id ? "Copied!" : "Copy Details"}
-                        </Button>
-                      </div>
-
-                      {adv.simulationUrl && (
-                        <Link to={adv.simulationUrl}>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            icon={<i className="ti ti-player-play text-primary" />}
-                            className="text-xs text-primary font-bold hover:bg-primary/10"
-                          >
-                            {adv.simulationLabel || "Try Simulation"} &rarr;
-                          </Button>
-                        </Link>
-                      )}
-                    </div>
-                  </Card>
-                </motion.div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* ── 5. DEEP-DIVE THREAT DOSSIER MODAL ── */}
-      <AnimatePresence>
-        {selectedAdvisory && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="w-full max-w-3xl rounded-3xl border border-border bg-surface-elevated shadow-2xl overflow-hidden max-h-[90vh] flex flex-col"
-            >
-              {/* Modal Header */}
-              <div className="p-6 border-b border-border bg-surface flex items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Pill tone={severityTone(selectedAdvisory.severity)}>
-                      {selectedAdvisory.severity.toUpperCase()}
-                    </Pill>
-                    <span className="font-mono text-xs text-text-ash">
-                      {selectedAdvisory.category}
-                    </span>
-                    {selectedAdvisory.cve && (
-                      <span className="font-mono text-xs font-bold text-primary px-2 py-0.5 rounded bg-primary/10 border border-primary/30">
-                        {selectedAdvisory.cve}
-                      </span>
-                    )}
-                  </div>
-                  <h2 className="mt-2 font-display text-lg sm:text-xl font-bold text-text-pure">
-                    {selectedAdvisory.title}
-                  </h2>
-                  <p className="mt-1 text-xs font-mono text-text-ash">
-                    Reference ID: {selectedAdvisory.id} · Recorded: {selectedAdvisory.date} · Region: {selectedAdvisory.originRegion}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => setSelectedAdvisory(null)}
-                  className="p-2 rounded-xl text-text-ash hover:text-text-pure hover:bg-surface border border-border transition-colors"
-                >
-                  <i className="ti ti-x text-lg" />
-                </button>
+            {/* Search & Filters */}
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <i className="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-text-ash" aria-hidden="true" />
+                <input
+                  type="text"
+                  value={kevSearch}
+                  onChange={(e) => setKevSearch(e.target.value)}
+                  placeholder="Search CVE ID, vendor (e.g. Fortinet, Microsoft), or product..."
+                  className="input pl-10 text-xs sm:text-sm py-2.5"
+                />
               </div>
 
-              {/* Modal Body */}
-              <div className="p-6 overflow-y-auto space-y-6 text-sm leading-relaxed">
-                {/* Full Threat Brief */}
-                <div className="space-y-2">
-                  <span className="text-xs uppercase tracking-wider text-text-ash font-bold block">
-                    1. Threat Overview
-                  </span>
-                  <p className="text-text-pure leading-relaxed text-sm bg-surface p-4 rounded-2xl border border-border">
-                    {selectedAdvisory.summary}
-                  </p>
-                </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={selectedVendor}
+                  onChange={(e) => setSelectedVendor(e.target.value)}
+                  className="select text-xs py-2 px-3 bg-surface border-border rounded-xl font-mono text-text-pure"
+                >
+                  <option value="all">All Vendors ({vendorList.length})</option>
+                  {vendorList.slice(0, 15).map((v) => (
+                    <option key={v} value={v}>{v}</option>
+                  ))}
+                </select>
 
-                {/* MITRE ATT&CK Matrix Mapping */}
-                <div className="space-y-3">
-                  <span className="text-xs uppercase tracking-wider text-text-ash font-bold block">
-                    2. How Attackers Operate (Techniques)
-                  </span>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {selectedAdvisory.mitre.map((m, idx) => (
-                      <div
-                        key={idx}
-                        className="p-3.5 rounded-xl border border-primary/30 bg-primary/5 flex items-start justify-between gap-2"
-                      >
-                        <div>
-                          <span className="text-xs text-primary uppercase font-bold block">
-                            Stage: {m.tactic}
-                          </span>
-                          <strong className="text-sm text-text-pure mt-0.5 block">
-                            {m.techniqueName}
-                          </strong>
-                        </div>
-                        <span className="font-mono text-xs font-semibold text-text-pure px-2.5 py-0.5 rounded bg-surface border border-border">
-                          {m.techniqueId}
-                        </span>
-                      </div>
-                    ))}
+                <select
+                  value={ransomwareFilter}
+                  onChange={(e) => setRansomwareFilter(e.target.value as typeof ransomwareFilter)}
+                  className="select text-xs py-2 px-3 bg-surface border-border rounded-xl font-mono text-text-pure"
+                >
+                  <option value="all">All Exploits</option>
+                  <option value="ransomware">Known Ransomware Campaigns</option>
+                </select>
+              </div>
+            </div>
+
+            {/* KEV Entries List */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredKev.slice(0, 30).map((item) => (
+                <Card
+                  key={item.cveID}
+                  className="p-5 border-border bg-surface hover:bg-surface-elevated hover:border-primary/40 transition-all space-y-3 flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-mono text-xs font-bold text-primary px-2 py-0.5 rounded bg-primary/10 border border-primary/20">
+                        {item.cveID}
+                      </span>
+                      {item.knownRansomwareCampaignUse.toLowerCase() === "known" && (
+                        <Pill tone="danger">Known Ransomware Vector</Pill>
+                      )}
+                    </div>
+
+                    <h4 className="font-bold text-sm text-text-pure">
+                      {item.vendorProject} - {item.product}
+                    </h4>
+
+                    <p className="text-xs text-text-fog leading-relaxed line-clamp-3">
+                      {item.shortDescription}
+                    </p>
                   </div>
-                </div>
 
-                {/* Indicators of Compromise (IOCs) */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs uppercase tracking-wider text-text-ash font-bold block">
-                      3. Known Suspicious Links &amp; Addresses
+                  <div className="pt-2 border-t border-border space-y-2">
+                    <div className="flex items-center justify-between text-[11px] text-text-ash font-mono">
+                      <span>Added: <strong>{formatRelativeTime(item.dateAdded)}</strong></span>
+                      <span>Due: <strong>{formatRelativeTime(item.dueDate)}</strong></span>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-1">
+                      <a
+                        href={`https://nvd.nist.gov/vuln/detail/${item.cveID}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] text-primary hover:underline font-bold flex items-center gap-1"
+                      >
+                        NVD Reference <i className="ti ti-external-link text-xs" aria-hidden="true" />
+                      </a>
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setSelectedKev(item)}
+                        className="text-xs h-7 px-2"
+                      >
+                        Action Required
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── VIEW 2: SCAM & PHISHING BULLETINS ── */}
+        {activeIntelView === "bulletins" && (
+          <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="relative flex-1">
+                <i className="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-text-ash" aria-hidden="true" />
+                <input
+                  type="text"
+                  value={advSearch}
+                  onChange={(e) => setAdvSearch(e.target.value)}
+                  placeholder="Search advisories (e.g., 'teams', 'sms', 'apk', 'wire')..."
+                  className="input pl-10 text-xs sm:text-sm py-2.5"
+                />
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="select text-xs py-2 px-3 bg-surface border-border rounded-xl font-mono text-text-pure"
+                >
+                  <option value="all">All Categories</option>
+                  <option value="Ransomware">Ransomware</option>
+                  <option value="Zero-Day">Zero-Day</option>
+                  <option value="Social Engineering">Social Engineering</option>
+                  <option value="Mobile Smishing">Mobile Smishing</option>
+                  <option value="AI & Emerging">AI & Emerging</option>
+                  <option value="Cloud & Network">Cloud & Network</option>
+                </select>
+
+                <select
+                  value={selectedSeverity}
+                  onChange={(e) => setSelectedSeverity(e.target.value)}
+                  className="select text-xs py-2 px-3 bg-surface border-border rounded-xl font-mono text-text-pure"
+                >
+                  <option value="all">All Severities</option>
+                  <option value="critical">Critical</option>
+                  <option value="high">High</option>
+                  <option value="elevated">Elevated</option>
+                  <option value="advisory">Advisory</option>
+                </select>
+
+                <select
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value as "recent" | "severity")}
+                  className="select text-xs py-2 px-3 bg-surface border-border rounded-xl font-mono text-text-pure"
+                >
+                  <option value="recent">Sort: Most Recent</option>
+                  <option value="severity">Sort: Highest Severity</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Curated Advisories Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredAdvisories.map((adv) => (
+                <Card
+                  key={adv.id}
+                  className="p-5 border-border bg-surface hover:bg-surface-elevated hover:border-primary/40 transition-all space-y-3 flex flex-col justify-between"
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <Pill tone={severityTone(adv.severity)}>
+                        {adv.severity.toUpperCase()}
+                      </Pill>
+                      <span className="text-[11px] font-semibold text-text-ash">
+                        {adv.category}
+                      </span>
+                    </div>
+
+                    <h4 className="font-bold text-sm text-text-pure">
+                      {adv.title}
+                    </h4>
+
+                    <p className="text-xs text-text-fog leading-relaxed line-clamp-3">
+                      {adv.summary}
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-border flex items-center justify-between">
+                    <span className="text-[11px] text-text-ash font-mono">
+                      {adv.date}
                     </span>
                     <Button
                       variant="secondary"
                       size="sm"
-                      icon={<i className={`ti ${copiedIoc === selectedAdvisory.id ? "ti-check text-emerald-400" : "ti-copy"}`} />}
-                      onClick={() => handleCopyIocs(selectedAdvisory)}
-                      className="text-xs py-1"
+                      onClick={() => setSelectedAdvisory(adv)}
+                      className="text-xs h-7 px-2.5"
                     >
-                      {copiedIoc === selectedAdvisory.id ? "Copied!" : "Copy Details"}
+                      Inspect Dossier
                     </Button>
                   </div>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
 
-                  <div className="p-4 rounded-2xl bg-surface border border-border space-y-3 font-mono text-xs">
-                    <div>
-                      <span className="text-text-ash block text-xs font-semibold uppercase mb-1">Scam Domains &amp; Websites:</span>
-                      <div className="space-y-1">
-                        {selectedAdvisory.iocs.domains.map((d, i) => (
-                          <div key={i} className="text-danger flex items-center gap-2">
-                            <i className="ti ti-world text-xs shrink-0" />
-                            <span>{d}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+      {/* ── 5. INDIA-SPECIFIC STATUTORY CYBER DEFENSE RESOURCES ── */}
+      <Card className="p-6 sm:p-8 space-y-4">
+        <div className="border-b border-border pb-3">
+          <div className="flex items-center gap-2">
+            <i className="ti ti-shield-check text-primary text-xl" aria-hidden="true" />
+            <h3 className="font-display text-base font-bold text-text-pure">
+              Official Indian Cyber Security Authorities &amp; CERT-In Advisories
+            </h3>
+          </div>
+          <p className="text-xs text-text-fog mt-1">
+            Authoritative national response agencies and statutory frameworks under the Ministry of Electronics &amp; Information Technology (MeitY) and Ministry of Home Affairs (MHA).
+          </p>
+        </div>
 
-                    <div className="pt-2 border-t border-border">
-                      <span className="text-text-ash block text-xs font-semibold uppercase mb-1">Scammer Server IPs:</span>
-                      <div className="space-y-1">
-                        {selectedAdvisory.iocs.ips.map((ip, i) => (
-                          <div key={i} className="text-warn flex items-center gap-2">
-                            <i className="ti ti-server text-xs shrink-0" />
-                            <span>{ip}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="pt-2 border-t border-border">
-                      <span className="text-text-ash block text-xs font-semibold uppercase mb-1">Dangerous File Hashes (SHA-256):</span>
-                      <div className="space-y-1">
-                        {selectedAdvisory.iocs.hashes.map((h, i) => (
-                          <div key={i} className="text-text-fog break-all flex items-center gap-2">
-                            <i className="ti ti-hash text-xs shrink-0" />
-                            <span>{h}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Hardening Checklist */}
-                <div className="space-y-2">
-                  <span className="text-xs uppercase tracking-wider text-emerald-400 font-bold block">
-                    4. How to Stay Safe
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+          {INDIA_SECURITY_CENTERS.map((item) => (
+            <a
+              key={item.name}
+              href={item.url}
+              target={item.url.startsWith("tel:") ? "_self" : "_blank"}
+              rel="noopener noreferrer"
+              className="p-4 rounded-xl border border-border bg-surface hover:bg-surface-elevated hover:border-primary/40 transition-all flex flex-col justify-between space-y-2 group"
+            >
+              <div className="space-y-1">
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-bold text-xs text-text-pure group-hover:text-primary transition-colors">
+                    {item.name}
                   </span>
-                  <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-text-pure space-y-2">
-                    <p className="leading-relaxed">
-                      {selectedAdvisory.mitigation}
-                    </p>
-                    <ul className="list-disc pl-4 space-y-1 text-text-fog text-sm">
-                      <li>Block access to listed fake websites and suspicious IP addresses.</li>
-                      <li>Scan your device for matching file downloads or suspicious background tasks.</li>
-                      <li>Share this advisory with friends, family, or coworkers who might receive similar messages.</li>
-                    </ul>
-                  </div>
+                  <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
+                    {item.tag}
+                  </span>
                 </div>
+                <p className="text-xs text-text-fog leading-relaxed">
+                  {item.desc}
+                </p>
               </div>
 
-              {/* Modal Footer */}
-              <div className="p-4 border-t border-border bg-surface flex flex-wrap items-center justify-between gap-3">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setSelectedAdvisory(null)}
-                  className="text-xs"
-                >
-                  Close Details
-                </Button>
+              <div className="text-[11px] font-semibold text-primary flex items-center gap-1 pt-1">
+                <span>{item.url.startsWith("tel:") ? "Emergency Helpline" : "Open Official Portal"}</span>
+                <i className="ti ti-arrow-right text-xs" aria-hidden="true" />
+              </div>
+            </a>
+          ))}
+        </div>
+      </Card>
 
-                {selectedAdvisory.simulationUrl && (
-                  <Link to={selectedAdvisory.simulationUrl}>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      icon={<i className="ti ti-player-play" />}
-                      className="text-xs font-bold"
-                    >
-                      {selectedAdvisory.simulationLabel || "Try Interactive Simulation"}
-                    </Button>
-                  </Link>
+      {/* ── 6. CISA KEV DETAIL MODAL ── */}
+      <AnimatePresence>
+        {selectedKev && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="max-w-2xl w-full bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
+            >
+              <div className="p-5 border-b border-border flex items-center justify-between">
+                <div>
+                  <span className="font-mono text-xs text-primary font-bold">{selectedKev.cveID}</span>
+                  <h4 className="font-bold text-base text-text-pure mt-0.5">
+                    {selectedKev.vendorProject} - {selectedKev.product}
+                  </h4>
+                </div>
+                <button
+                  onClick={() => setSelectedKev(null)}
+                  className="text-text-fog hover:text-text-pure p-1 rounded-lg"
+                  aria-label="Close modal"
+                >
+                  <i className="ti ti-x text-lg" aria-hidden="true" />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto space-y-4 text-xs text-text-fog">
+                <div>
+                  <span className="font-bold uppercase tracking-wider text-text-ash block mb-1">Vulnerability Summary</span>
+                  <p className="text-text-pure leading-relaxed bg-surface-elevated p-3.5 rounded-xl border border-border">
+                    {selectedKev.shortDescription}
+                  </p>
+                </div>
+
+                <div>
+                  <span className="font-bold uppercase tracking-wider text-danger block mb-1">Mandatory Required Action</span>
+                  <p className="text-danger leading-relaxed bg-danger/10 p-3.5 rounded-xl border border-danger/30">
+                    {selectedKev.requiredAction}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-2">
+                  <div className="p-3 rounded-xl bg-surface-elevated border border-border">
+                    <span className="text-text-dim block uppercase font-bold text-[10px]">Catalog Date Added</span>
+                    <span className="text-text-pure font-mono">{selectedKev.dateAdded} ({formatRelativeTime(selectedKev.dateAdded)})</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-surface-elevated border border-border">
+                    <span className="text-text-dim block uppercase font-bold text-[10px]">Remediation Due Date</span>
+                    <span className="text-text-pure font-mono">{selectedKev.dueDate} ({formatRelativeTime(selectedKev.dueDate)})</span>
+                  </div>
+                </div>
+
+                {selectedKev.notes && (
+                  <div>
+                    <span className="font-bold uppercase tracking-wider text-text-ash block mb-1">CISA Directive &amp; Vendor Advisory References</span>
+                    <p className="font-mono text-[11px] text-text-dim break-all bg-surface-elevated p-3 rounded-xl border border-border">
+                      {selectedKev.notes}
+                    </p>
+                  </div>
                 )}
+              </div>
+
+              <div className="p-4 border-t border-border bg-surface-elevated flex items-center justify-between">
+                <a
+                  href={`https://nvd.nist.gov/vuln/detail/${selectedKev.cveID}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-primary font-bold hover:underline"
+                >
+                  View Full NIST NVD Entry &rarr;
+                </a>
+                <Button variant="secondary" size="sm" onClick={() => setSelectedKev(null)} className="text-xs">
+                  Close
+                </Button>
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
 
-      {/* ── 6. THREAT INTEL NOTIFICATION SUBSCRIPTION BANNER ── */}
-      <Card className="p-6 sm:p-8 bg-gradient-to-r from-surface to-surface-elevated border-border flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="space-y-1 text-center md:text-left">
-          <div className="flex items-center justify-center md:justify-start gap-2">
-            <i className="ti ti-bell-ringing text-lg text-primary" />
-            <h3 className="font-display text-base font-bold text-text-pure">
-              Stay Alert to New Online Threats
-            </h3>
-          </div>
-          <p className="text-xs text-text-fog max-w-xl">
-            Receive instant notifications whenever a widespread phishing scam or high-risk online security issue is detected in your region.
-          </p>
-        </div>
+      {/* ── 7. ADVISORY DETAIL MODAL ── */}
+      <AnimatePresence>
+        {selectedAdvisory && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="max-w-2xl w-full bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden max-h-[85vh] flex flex-col"
+            >
+              <div className="p-5 border-b border-border flex items-center justify-between">
+                <div>
+                  <span className="text-xs font-semibold text-text-ash">{selectedAdvisory.category}</span>
+                  <h4 className="font-bold text-base text-text-pure mt-0.5">{selectedAdvisory.title}</h4>
+                </div>
+                <button
+                  onClick={() => setSelectedAdvisory(null)}
+                  className="text-text-fog hover:text-text-pure p-1 rounded-lg"
+                  aria-label="Close advisory"
+                >
+                  <i className="ti ti-x text-lg" aria-hidden="true" />
+                </button>
+              </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <Link to="/settings">
-            <Button
-              variant="primary"
-              size="sm"
-              icon={<i className="ti ti-settings" />}
-              className="text-xs font-bold"
-            >
-              Notification Settings
-            </Button>
-          </Link>
-          <Link to="/report">
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<i className="ti ti-flag" />}
-              className="text-xs"
-            >
-              Report a Scam
-            </Button>
-          </Link>
-        </div>
-      </Card>
+              <div className="p-6 overflow-y-auto space-y-4 text-xs text-text-fog">
+                <div>
+                  <span className="font-bold uppercase tracking-wider text-text-ash block mb-1">Threat Overview</span>
+                  <p className="text-text-pure leading-relaxed bg-surface-elevated p-3.5 rounded-xl border border-border">
+                    {selectedAdvisory.summary}
+                  </p>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="font-bold uppercase tracking-wider text-text-ash">Indicators of Compromise</span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleCopyIocs(selectedAdvisory)}
+                      className="text-xs h-6 px-2 text-primary"
+                    >
+                      {copiedIoc === selectedAdvisory.id ? "Copied!" : "Copy All IOCs"}
+                    </Button>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-surface-elevated border border-border space-y-2 font-mono text-[11px]">
+                    <div>
+                      <span className="text-text-dim block text-[10px] uppercase font-bold">Domains:</span>
+                      <p className="text-danger break-all">{selectedAdvisory.iocs.domains.join(", ") || "None listed"}</p>
+                    </div>
+                    <div>
+                      <span className="text-text-dim block text-[10px] uppercase font-bold">IP Addresses:</span>
+                      <p className="text-warn break-all">{selectedAdvisory.iocs.ips.join(", ") || "None listed"}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <span className="font-bold uppercase tracking-wider text-emerald-400 block mb-1">Recommended Containment</span>
+                  <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
+                    {selectedAdvisory.mitigation}
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 border-t border-border bg-surface-elevated flex items-center justify-between">
+                {selectedAdvisory.simulationUrl ? (
+                  <Link to={selectedAdvisory.simulationUrl}>
+                    <Button variant="primary" size="sm" className="text-xs">
+                      {selectedAdvisory.simulationLabel || "Launch Simulation"}
+                    </Button>
+                  </Link>
+                ) : (
+                  <div />
+                )}
+                <Button variant="secondary" size="sm" onClick={() => setSelectedAdvisory(null)} className="text-xs">
+                  Close
+                </Button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
+
+export default ThreatIntelligencePage;
