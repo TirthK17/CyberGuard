@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/primitives";
 import { useAuth } from "@/context/AuthContext";
@@ -15,7 +16,62 @@ import {
 } from "@/data/topics";
 export { AWARENESS_TOPICS, PANIC_SHORTCUTS, type AwarenessTopic, type PanicShortcut };
 
+const LOCALIZED_TOPICS: Record<string, { hi: { title: string; keyRedFlag: string }; gu: { title: string; keyRedFlag: string } }> = {
+  "digital-arrest": {
+    hi: {
+      title: "डिजिटल अरेस्ट और फर्जी पुलिस वीडियो कॉल",
+      keyRedFlag: "सीबीआई या पुलिस अधिकारी बनकर वीडियो कॉल पर बंधक बनाने और पैसे ट्रांसफर करने की धमकी देना।",
+    },
+    gu: {
+      title: "ડિજિટલ અરેસ્ટ અને નકલી પોલીસ વિડિયો કૉલ",
+      keyRedFlag: "સીબીઆઈ કે પોલીસ અધિકારી બનીને વિડીયો કોલ પર ધરપકડ કે પૈસા ટ્રાન્સફર કરવાની ધમકી આપવી.",
+    },
+  },
+  "upi-qr-fraud": {
+    hi: {
+      title: "यूपीआई कलेक्ट रिक्वेस्ट और क्यूआर कोड धोखाधड़ी",
+      keyRedFlag: "रिफंड या इनाम के लिए यूपीआई पिन दर्ज करने को कहना; पैसे प्राप्त करने के लिए कभी पिन नहीं चाहिए।",
+    },
+    gu: {
+      title: "યુપીઆઇ કલેક્ટ રિક્વેસ્ટ અને ક્યુઆર કોડ છેતરપિંડી",
+      keyRedFlag: "રિફંડ કે ઇનામ માટે યુપીઆઇ પિન નાખવાનું કહેવું; પૈસા મેળવવા માટે ક્યારેય પિનની જરૂર પડતી નથી.",
+    },
+  },
+  "fake-loan-apps": {
+    hi: {
+      title: "फर्जी इंस्टेंट लोन ऐप्स और ब्लैकमेल",
+      keyRedFlag: "बिना दस्तावेजों के त्वरित लोन का वादा करके फोन कॉन्टैक्ट्स और गैलरी का अनधिकृत एक्सेस मांगना।",
+    },
+    gu: {
+      title: "નકલી ઇન્સ્ટન્ટ લોન એપ્સ અને બ્લેકમેલ",
+      keyRedFlag: "દસ્તાવેજો વિના તાત્કાલિક લોનનું વચન આપીને ફોન સંપર્કો અને ગેલેરીની અનધિકૃત ઍક્સેસ માંગવી.",
+    },
+  },
+  "electricity-bill-sms": {
+    hi: {
+      title: "बिजली बिल डिस्कनेक्शन एसएमएस धमकी",
+      keyRedFlag: "बिल न भरने पर आज रात बिजली काटने की धमकी और अज्ञात नंबर पर कॉल करने का दबाव।",
+    },
+    gu: {
+      title: "વીજળી બિલ કનેક્શન કાપવાની ધમકી",
+      keyRedFlag: "બિલ ન ભરવા પર આજે રાત્રે વીજળી કાપવાની ધમકી અને અજાણ્યા નંબર પર ફોન કરવાનું દબાણ.",
+    },
+  },
+  "part-time-job-scam": {
+    hi: {
+      title: "टेलीग्राम / व्हाट्सएप पार्ट-टाइम 'टास्क' घोटाला",
+      keyRedFlag: "वीडियो लाइक करके आसान कमाई का लालच, और बाद में पैसे निकालने के लिए अग्रिम भुगतान की मांग।",
+    },
+    gu: {
+      title: "ટેલિગ્રામ / વ્હોટ્સએપ પાર્ટ-ટાઇમ 'ટાસ્ક' છેતરપિંડી",
+      keyRedFlag: "વિડીયો લાઇક કરીને સરળ કમાણીની લાલચ, અને બાદમાં પૈસા ઉપાડવા માટે એડવાન્સ ડિપોઝીટની માંગણી.",
+    },
+  },
+};
+
 export function TopicsPage() {
+  const { t, i18n } = useTranslation();
+  const currentLang = (i18n.language?.slice(0, 2) as "hi" | "gu") || "en";
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [activeAudience, setActiveAudience] = useState<string>("all");
   const [search, setSearch] = useState<string>("");
@@ -248,7 +304,7 @@ export function TopicsPage() {
                   </div>
 
                   <h3 className="font-display text-sm font-bold text-text-pure group-hover:text-primary transition-colors line-clamp-1">
-                    {topic.title}
+                    {LOCALIZED_TOPICS[topic.id]?.[currentLang]?.title || topic.title}
                   </h3>
 
                   <p className="mt-1 text-xs text-text-fog leading-relaxed line-clamp-2">
@@ -257,7 +313,9 @@ export function TopicsPage() {
 
                   <div className="mt-2.5 p-2 rounded-lg bg-danger/10 border border-danger/20 text-xs text-text-pure leading-snug">
                     <span className="font-bold text-danger text-[11px]">⚠️ Key Clue: </span>
-                    <span className="text-[11px] line-clamp-1">{topic.keyRedFlag}</span>
+                    <span className="text-[11px] line-clamp-1">
+                      {LOCALIZED_TOPICS[topic.id]?.[currentLang]?.keyRedFlag || topic.keyRedFlag}
+                    </span>
                   </div>
                 </div>
 
@@ -283,7 +341,7 @@ export function TopicsPage() {
             <i className="ti ti-search absolute left-3.5 top-1/2 -translate-y-1/2 text-sm text-text-ash" />
             <input
               type="text"
-              placeholder="Search scams, keywords, or tactics (UPI, Police, OTP)..."
+              placeholder={t("scams.searchPlaceholder", "Search scams, keywords, or tactics (UPI, Police, OTP)...")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 pr-8 py-2 rounded-xl border border-border bg-surface text-xs text-text-pure placeholder:text-text-ash focus:outline-none focus:border-primary shadow-xs transition"
@@ -412,7 +470,7 @@ export function TopicsPage() {
 
                   {/* Card Title */}
                   <h3 className="font-display text-sm font-bold text-text-pure group-hover:text-primary transition-colors line-clamp-2 min-h-[2.5rem]">
-                    {topic.title}
+                    {LOCALIZED_TOPICS[topic.id]?.[currentLang]?.title || topic.title}
                   </h3>
 
                   {/* Card Summary */}
@@ -458,7 +516,7 @@ export function TopicsPage() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <h4 className="font-semibold text-xs sm:text-sm text-text-pure group-hover:text-primary transition-colors truncate">
-                        {topic.title}
+                        {LOCALIZED_TOPICS[topic.id]?.[currentLang]?.title || topic.title}
                       </h4>
                       <Pill tone={topic.badgeTone} size="sm">{topic.categoryLabel}</Pill>
                     </div>

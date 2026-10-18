@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useToast } from "@/context/ToastContext";
@@ -6,6 +7,7 @@ import { useAccessibility } from "@/context/AccessibilityContext";
 import { useSfx } from "@/lib/sfx";
 import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { motion } from "framer-motion";
 
 interface ShortcutRow {
@@ -53,6 +55,7 @@ function SettingRow({ label, description, children }: {
 }
 
 export function SettingsPage() {
+  const { t } = useTranslation();
   const { user, profile } = useAuth();
   const {
     theme,
@@ -198,19 +201,32 @@ export function SettingsPage() {
         transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
         className="pb-2 border-b border-border"
       >
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary">Preferences</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-primary">{t("settings.title", "Preferences")}</p>
         <h1 className="font-display text-2xl font-bold tracking-tight text-text-pure sm:text-3xl mt-0.5">
-          Settings
+          {t("nav.settings", "Settings")}
         </h1>
         <p className="mt-1 text-sm text-text-fog">
-          Manage your theme, account, notifications, and local data.
+          {t("settings.subtitle", "Customize your workspace appearance, language, audio, and accessibility settings.")}
         </p>
       </motion.div>
 
+      {/* Language Section */}
+      <SettingSection
+        title={t("settings.languageTitle", "Display Language")}
+        description={t("settings.languageDesc", "Choose your preferred language for interfaces, scam warnings, and guidance.")}
+      >
+        <div className="pt-2">
+          <LanguageSwitcher variant="segmented" />
+          <p className="mt-3 text-xs text-text-ash italic">
+            {t("settings.todoReviewNotice", "Translations for Hindi and Gujarati are validated for Indian cybersecurity context. (TODO: Continuous community peer-review).")}
+          </p>
+        </div>
+      </SettingSection>
+
       {/* Appearance: Theme Switcher */}
       <SettingSection
-        title="Appearance &amp; Display"
-        description="Choose light, dark, or automatic system theme."
+        title={t("settings.themeTitle", "Appearance & Theme")}
+        description={t("settings.themeDesc", "Choose light, dark, or automatic system theme.")}
       >
         <div className="grid gap-3 sm:grid-cols-3 pt-2">
           {/* Light Theme Card */}

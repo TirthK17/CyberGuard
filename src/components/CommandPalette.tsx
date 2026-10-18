@@ -7,6 +7,7 @@ import { useTheme } from "@/context/ThemeContext";
 import { useSfx } from "@/lib/sfx";
 import { useToast } from "@/context/ToastContext";
 import { supabase } from "@/lib/supabase";
+import { changeLanguage } from "@/lib/i18n";
 
 interface SearchItem {
   id: string;
@@ -197,6 +198,39 @@ export function CommandPalette() {
         action: () => {
           window.dispatchEvent(new CustomEvent("cyberguard:start-onboarding"));
           toast({ title: "Launching Onboarding Tour", variant: "info" });
+        },
+      },
+      {
+        id: "act-lang-en",
+        label: "Switch Language to English",
+        hint: "Language",
+        icon: "ti-language",
+        category: "action",
+        action: () => {
+          changeLanguage("en");
+          toast({ title: "Language switched to English", variant: "info" });
+        },
+      },
+      {
+        id: "act-lang-hi",
+        label: "भाषा बदलकर हिन्दी करें (Switch to Hindi)",
+        hint: "Language",
+        icon: "ti-language",
+        category: "action",
+        action: () => {
+          changeLanguage("hi");
+          toast({ title: "भाषा बदलकर हिन्दी कर दी गई है", variant: "info" });
+        },
+      },
+      {
+        id: "act-lang-gu",
+        label: "ભાષા બદલીને ગુજરાતી કરો (Switch to Gujarati)",
+        hint: "Language",
+        icon: "ti-language",
+        category: "action",
+        action: () => {
+          changeLanguage("gu");
+          toast({ title: "ભાષા બદલીને ગુજરાતી કરવામાં આવી છે", variant: "info" });
         },
       },
       {

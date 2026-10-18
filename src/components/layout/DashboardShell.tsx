@@ -1,11 +1,13 @@
 import { type ReactNode, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { cn } from "@/lib/utils";
 import { Drawer } from "@/components/ui/primitives";
 import { CyberGuardLogo, CyberGuardLogoMark } from "@/components/ui/CyberGuardLogo";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 
 export interface NavItem {
   to: string;
@@ -85,6 +87,37 @@ function levelProgress(points: number) {
   return Math.round(((points - cur.minPoints) / (next.minPoints - cur.minPoints)) * 100);
 }
 
+const NAV_KEY_MAP: Record<string, string> = {
+  "/dashboard": "nav.dashboard",
+  "/training": "nav.training",
+  "/quizzes": "nav.quizzes",
+  "/simulations": "nav.simulations",
+  "/tools": "nav.tools",
+  "/topics": "nav.topics",
+  "/guide": "nav.guide",
+  "/threats": "nav.threats",
+  "/report": "nav.report",
+  "/leaderboard": "nav.leaderboard",
+  "/badges": "nav.badges",
+  "/certificate": "nav.certificate",
+  "/glossary": "nav.glossary",
+  "/settings": "nav.settings",
+  "/profile": "nav.profile",
+  "/admin": "nav.admin",
+};
+
+const SECTION_KEY_MAP: Record<string, string> = {
+  "Main": "nav.main",
+  "Academy & Drills": "nav.academy",
+  "Defense & Intel": "nav.defense",
+  "Standings & Growth": "nav.standings",
+  "Account": "nav.account",
+  "Overview": "nav.overview",
+  "Curriculum Management": "nav.curriculum",
+  "Operations & Users": "nav.operations",
+  "System": "nav.system",
+};
+
 function SidebarNav({
   sections,
   collapsed,
@@ -93,63 +126,74 @@ function SidebarNav({
   collapsed: boolean;
 }) {
   const location = useLocation();
+  const { t } = useTranslation();
 
   return (
     <nav className="flex flex-1 flex-col gap-1 overflow-y-auto overflow-x-hidden pb-2" aria-label="Main navigation">
-      {sections.map((section, si) => (
-        <div key={section.label} className={cn("", si > 0 && "mt-4")}>
-          {!collapsed && (
-            <p className="sidebar-section-label mb-1.5 px-3 text-xs font-semibold uppercase tracking-wider text-text-ash">
-              {section.label}
-            </p>
-          )}
-          {section.items.map((item, i) => {
-            const active = location.pathname === item.to;
-            return (
-              <motion.div
-                key={item.to}
-                initial={{ opacity: 0, x: -4 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{
-                  duration: 0.2,
-                  delay: si * 0.02 + i * 0.015,
-                  ease: [0.16, 1, 0.3, 1],
-                }}
-              >
-                <Link
-                  to={item.to}
-                  title={collapsed ? item.label : undefined}
-                  className={cn(
-                    "relative flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium",
-                    "transition-all duration-150 ease-out group",
-                    active
-                      ? "bg-surface-elevated text-text-pure font-semibold shadow-sm border border-border"
-                      : "text-text-fog hover:bg-surface-hover hover:text-text-pure border border-transparent"
-                  )}
+      {sections.map((section, si) => {
+        const localizedSectionLabel = SECTION_KEY_MAP[section.label]
+          ? t(SECTION_KEY_MAP[section.label], section.label)
+          : section.label;
+
+        return (
+          <div key={section.label} className={cn("", si > 0 && "mt-4")}>
+            {!collapsed && (
+              <p className="sidebar-section-label mb-1.5 px-3 text-xs font-semibold uppercase tracking-wider text-text-ash">
+                {localizedSectionLabel}
+              </p>
+            )}
+            {section.items.map((item, i) => {
+              const active = location.pathname === item.to;
+              const localizedLabel = NAV_KEY_MAP[item.to]
+                ? t(NAV_KEY_MAP[item.to], item.label)
+                : item.label;
+
+              return (
+                <motion.div
+                  key={item.to}
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{
+                    duration: 0.2,
+                    delay: si * 0.02 + i * 0.015,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
                 >
-                  {/* macOS active accent bar */}
-                  {active && (
-                    <motion.span
-                      layoutId="nav-active-bar"
-                      className="nav-active-bar"
-                      transition={{ type: "spring", stiffness: 500, damping: 40 }}
-                    />
-                  )}
-                  <i
+                  <Link
+                    to={item.to}
+                    title={collapsed ? localizedLabel : undefined}
                     className={cn(
-                      `ti ${item.icon} relative z-10 text-base shrink-0 transition-colors`,
-                      active ? "text-primary" : "text-text-ash group-hover:text-text-fog"
+                      "relative flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium",
+                      "transition-all duration-150 ease-out group",
+                      active
+                        ? "bg-surface-elevated text-text-pure font-semibold shadow-sm border border-border"
+                        : "text-text-fog hover:bg-surface-hover hover:text-text-pure border border-transparent"
                     )}
-                  />
-                  {!collapsed && (
-                    <span className="sidebar-label relative z-10 truncate">{item.label}</span>
-                  )}
-                </Link>
-              </motion.div>
-            );
-          })}
-        </div>
-      ))}
+                  >
+                    {/* macOS active accent bar */}
+                    {active && (
+                      <motion.span
+                        layoutId="nav-active-bar"
+                        className="nav-active-bar"
+                        transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                      />
+                    )}
+                    <i
+                      className={cn(
+                        `ti ${item.icon} relative z-10 text-base shrink-0 transition-colors`,
+                        active ? "text-primary" : "text-text-ash group-hover:text-text-fog"
+                      )}
+                    />
+                    {!collapsed && (
+                      <span className="sidebar-label relative z-10 truncate">{localizedLabel}</span>
+                    )}
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+        );
+      })}
     </nav>
   );
 }
@@ -165,6 +209,7 @@ export function DashboardShell({
 }) {
   const { profile, signOut } = useAuth();
   const { resolvedTheme, toggleTheme } = useTheme();
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -201,16 +246,19 @@ export function DashboardShell({
           </div>
         </div>
 
-        {/* Theme quick toggle */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          aria-label="Toggle dark/light mode"
-          title={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
-          className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-surface-elevated text-text-fog hover:text-text-pure transition-colors"
-        >
-          <i className={`ti ${resolvedTheme === "dark" ? "ti-sun" : "ti-moon"} text-xs`} />
-        </button>
+        {/* Controls: Language and Theme quick toggles */}
+        <div className="flex items-center gap-1.5">
+          {!collapsed && <LanguageSwitcher variant="compact" />}
+          <button
+            type="button"
+            onClick={toggleTheme}
+            aria-label="Toggle dark/light mode"
+            title={`Switch to ${resolvedTheme === "dark" ? "light" : "dark"} mode`}
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-surface-elevated text-text-fog hover:text-text-pure transition-colors cursor-pointer"
+          >
+            <i className={`ti ${resolvedTheme === "dark" ? "ti-sun" : "ti-moon"} text-xs`} />
+          </button>
+        </div>
       </div>
 
       {/* Brand Header */}
@@ -233,7 +281,7 @@ export function DashboardShell({
           className="sidebar-search mb-4 flex items-center gap-2 rounded-xl border border-border bg-surface-elevated px-3 py-2 text-xs text-text-fog transition-all duration-150 hover:border-border-strong hover:text-text-pure cursor-pointer"
         >
           <i className="ti ti-search text-xs text-text-ash" />
-          <span className="flex-1 text-left font-medium">Quick search…</span>
+          <span className="flex-1 text-left font-medium">{t("nav.quickSearch", "Quick search…")}</span>
           <kbd className="rounded border border-border bg-surface px-1.5 py-0.5 font-sans text-[11px] font-semibold text-text-ash leading-none">⌘K</kbd>
         </button>
       ) : (
@@ -241,8 +289,8 @@ export function DashboardShell({
           onClick={() => {
             window.dispatchEvent(new CustomEvent("cyberguard:open-command-palette"));
           }}
-          title="Quick search (⌘K)"
-          aria-label="Quick search (⌘K)"
+          title={t("nav.quickSearch", "Quick search (⌘K)")}
+          aria-label={t("nav.quickSearch", "Quick search (⌘K)")}
           className="mb-4 mx-auto flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-surface-elevated text-text-fog hover:text-text-pure hover:border-border-strong transition-colors cursor-pointer"
         >
           <i className="ti ti-search text-sm text-text-ash" />
@@ -257,8 +305,8 @@ export function DashboardShell({
         {!collapsed && profile && (
           <div className="mb-3 px-3">
             <div className="mb-1 flex items-center justify-between text-xs font-medium">
-              <span className="text-text-ash">Level {profile.level}</span>
-              <span className="text-primary font-semibold">{profile.points} XP</span>
+              <span className="text-text-ash">{t("common.level", "Level")} {profile.level}</span>
+              <span className="text-primary font-semibold">{profile.points} {t("common.xp", "XP")}</span>
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-elevated border border-border">
               <motion.div
@@ -292,15 +340,15 @@ export function DashboardShell({
 
         <button
           onClick={handleLogout}
-          title={collapsed ? "Sign out" : undefined}
+          title={collapsed ? t("nav.signOut", "Sign out") : undefined}
           className={cn(
             "mt-1 flex w-full items-center gap-2 rounded-xl px-3 py-2 text-[12px] text-text-ash",
-            "transition-colors duration-150 hover:bg-danger/10 hover:text-danger",
+            "transition-colors duration-150 hover:bg-danger/10 hover:text-danger cursor-pointer",
             collapsed && "justify-center"
           )}
         >
           <i className="ti ti-logout text-xs shrink-0" />
-          {!collapsed && <span className="text-[11px] font-medium">Sign out</span>}
+          {!collapsed && <span className="text-[11px] font-medium">{t("nav.signOut", "Sign out")}</span>}
         </button>
       </div>
     </div>
@@ -355,6 +403,7 @@ export function DashboardShell({
             <CyberGuardLogo size="xs" showText={true} />
           </div>
           <div className="flex items-center gap-1">
+            <LanguageSwitcher variant="compact" />
             <button
               onClick={() => window.dispatchEvent(new CustomEvent("cyberguard:open-command-palette"))}
               aria-label="Search and quick actions (Ctrl K)"
@@ -412,11 +461,11 @@ export function DashboardShell({
           className="fixed bottom-0 left-0 right-0 z-40 flex items-center justify-around border-t border-border bg-surface/90 backdrop-blur-xl py-2 px-2 lg:hidden shadow-[0_-4px_16px_rgba(0,0,0,0.06)]"
         >
           {[
-            { to: "/dashboard", label: "Dashboard", icon: "ti-layout-dashboard" },
-            { to: "/training", label: "Training", icon: "ti-book-2" },
-            { to: "/simulations", label: "Sims", icon: "ti-flask" },
-            { to: "/tools", label: "Tools", icon: "ti-tools" },
-            { to: "/threats", label: "Threats", icon: "ti-radar" },
+            { to: "/dashboard", label: t("nav.dashboard", "Dashboard"), icon: "ti-layout-dashboard" },
+            { to: "/training", label: t("nav.training", "Training"), icon: "ti-book-2" },
+            { to: "/simulations", label: t("nav.simulations", "Sims"), icon: "ti-flask" },
+            { to: "/tools", label: t("nav.tools", "Tools"), icon: "ti-tools" },
+            { to: "/threats", label: t("nav.threats", "Threats"), icon: "ti-radar" },
           ].map((tab) => {
             const isActive = location.pathname === tab.to || location.pathname.startsWith(`${tab.to}/`);
             return (

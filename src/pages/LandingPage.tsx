@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/primitives";
 import { motion, AnimatePresence } from "framer-motion";
 import { CyberGuardLogoMark } from "@/components/ui/CyberGuardLogo";
+import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    LIVE REAL-TIME THREAT ADVISORY TICKER
@@ -225,6 +227,8 @@ const AUDIT_QUESTIONS = [
    COMPONENT: LANDING PAGE
 ───────────────────────────────────────────────────────────────────────────── */
 export function LandingPage() {
+  const { t } = useTranslation();
+
   // Scenario state
   const [activeScenario, setActiveScenario] = useState<ScenarioId>("smishing");
   const [showXRay, setShowXRay] = useState(false);
@@ -253,6 +257,20 @@ export function LandingPage() {
 
   return (
     <div className="overflow-x-hidden bg-canvas">
+      {/* ── 0. NATIONAL HELPLINE BANNER & LANGUAGE SWITCHER ── */}
+      <div className="bg-primary/10 border-b border-primary/20 px-4 py-2 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div className="flex items-center gap-2 text-primary font-semibold">
+          <i className="ti ti-phone-call text-sm" />
+          <span>{t("landing.emergencyCallout", "National Cyber Crime Helpline: Call 1930 or visit cybercrime.gov.in")}</span>
+        </div>
+        <div className="flex items-center gap-3 ml-auto">
+          <LanguageSwitcher variant="compact" />
+          <Link to="/login" className="font-semibold text-text-pure hover:text-primary transition-colors">
+            Login
+          </Link>
+        </div>
+      </div>
+
       {/* ── 1. LIVE THREAT ADVISORY TICKER ── */}
       <div className="relative border-b border-border bg-surface-elevated overflow-hidden py-2.5 text-xs flex items-center">
         <div className="relative z-10 flex items-center gap-1.5 px-3 py-1 bg-danger/10 text-danger text-xs font-semibold uppercase tracking-wide rounded-md shrink-0 ml-4 shadow-sm border border-danger/20">
@@ -284,7 +302,7 @@ export function LandingPage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
             </span>
-            <span>Easy Cybersecurity Training for Everyday Life</span>
+            <span>{t("landing.badge", "NEXT-GEN DEFENSE & SIMULATION")}</span>
           </motion.div>
 
           {/* Headline */}
@@ -294,10 +312,7 @@ export function LandingPage() {
             transition={{ duration: 0.35, delay: 0.05 }}
             className="mt-6 font-display text-4xl font-bold tracking-tight text-text-pure sm:text-5xl lg:text-6xl max-w-4xl mx-auto leading-tight"
           >
-            Learn To Spot Online Scams &amp;{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-cyan-500 to-emerald-500">
-              Protect Yourself.
-            </span>
+            {t("landing.heroTitle", "Master Cyber Defense Through Realistic Simulations")}
           </motion.h1>
 
           <motion.p
@@ -306,7 +321,7 @@ export function LandingPage() {
             transition={{ duration: 0.35, delay: 0.1 }}
             className="mt-5 text-base sm:text-lg text-text-fog max-w-3xl mx-auto leading-relaxed"
           >
-            Over 90% of cyber attacks trick people rather than breaking code. CyberGuard teaches you how to recognize fake emails, suspicious texts, AI phone scams, and unsafe Wi-Fi through simple, hands-on practice.
+            {t("landing.heroSubtitle", "Protect yourself and your organization against phishing, UPI refund scams, ransomware, and digital arrest threats. Experience hands-on interactive training designed for Indian cyber safety.")}
           </motion.p>
 
           {/* Hero CTAs */}
@@ -317,17 +332,17 @@ export function LandingPage() {
             className="mt-8 flex flex-wrap items-center justify-center gap-3.5"
           >
             <Button to="/register" variant="primary" size="lg" icon={<i className="ti ti-shield-check" aria-hidden="true" />}>
-              Start Free
+              {t("landing.getStarted", "Start Free")}
             </Button>
             <a
               href="#interactive-lab"
               className="relative inline-flex items-center justify-center gap-2 select-none font-medium transition-all duration-150 ease-out px-6 py-2.5 text-sm sm:text-base font-semibold rounded-xl bg-surface-elevated border border-border text-text-pure shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-surface-hover hover:border-border-strong cursor-pointer"
             >
               <i className="ti ti-target" aria-hidden="true" />
-              <span>Try Scam Spotter</span>
+              <span>{t("common.learnMore", "Try Scam Spotter")}</span>
             </a>
             <Button to="/simulations" variant="ghost" size="lg" icon={<i className="ti ti-device-laptop" aria-hidden="true" />}>
-              Practice Simulations
+              {t("landing.exploreSimulations", "Practice Simulations")}
             </Button>
           </motion.div>
 

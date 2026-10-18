@@ -1,9 +1,23 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { Card } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
 
 const situations = [
+  {
+    id: "upi-digital-arrest",
+    label: "UPI scam or Digital Arrest police call",
+    icon: "ti-shield-alert",
+    urgency: "Immediate Golden Hour Action",
+    steps: [
+      "If money was sent via UPI/netbanking, dial National Cybercrime Helpline 1930 immediately to freeze recipient accounts.",
+      "If on a video call with fake Police, CBI, or ED threatening 'Digital Arrest', disconnect immediately. Law enforcement never arrests citizens via Skype or WhatsApp.",
+      "Never transfer any security deposit, bond fee, or verification money under intimidation.",
+      "File a formal complaint on cybercrime.gov.in and preserve screenshot evidence, call logs, and transaction UTR numbers.",
+      "Block the sender number and warn family members not to answer calls from the same caller.",
+    ],
+  },
   {
     id: "phishing-link",
     label: "I clicked a suspicious / phishing link",
@@ -97,7 +111,44 @@ const situations = [
   },
 ];
 
+const LOCALIZED_SITUATIONS: Record<string, { hi: string; gu: string }> = {
+  "upi-digital-arrest": {
+    hi: "यूपीआई घोटाला या डिजिटल अरेस्ट फर्जी पुलिस कॉल",
+    gu: "યુપીઆઇ છેતરપિંડી અથવા ડિજિટલ અરેસ્ટ નકલી પોલીસ કૉલ",
+  },
+  "phishing-link": {
+    hi: "मैंने किसी संदिग्ध / फ़िशिंग लिंक पर क्लिक कर दिया",
+    gu: "મેં શંકાસ્પદ / ફિશિંગ લિંક પર ક્લિક કર્યું છે",
+  },
+  "hacked": {
+    hi: "मेरा खाता या ईमेल हैक / समझौता हो गया",
+    gu: "મારું એકાઉન્ટ અથવા ઇમેઇલ હેક થઈ ગયું છે",
+  },
+  "suspicious-file": {
+    hi: "मैंने संदिग्ध फ़ाइल डाउनलोड या ओपन कर ली",
+    gu: "મેં શંકાસ્પદ ફાઇલ ડાઉનલોડ અથવા ઓપન કરી છે",
+  },
+  "compromised-device": {
+    hi: "मेरा मोबाइल या कंप्यूटर मैलवेयर/रिमोट कंट्रोल से प्रभावित है",
+    gu: "મારો મોબાઇલ અથવા કમ્પ્યુટર માલવેરથી પ્રભાવિત છે",
+  },
+  "leaked-credentials": {
+    hi: "मेरा पासवर्ड या डेटा किसी लीक में पाया गया",
+    gu: "મારો પાસવર્ડ અથવા ડેટા લીકમાં મળી આવ્યો",
+  },
+  "unsecured-wifi": {
+    hi: "मैंने असुरक्षित सार्वजनिक वाई-फ़ाई का उपयोग किया",
+    gu: "મેં અસુરક્ષિત સાર્વજનિક વાઇ-ફાઇનો ઉપયોગ કર્યો",
+  },
+  "suspicious-call": {
+    hi: "मुझे फर्जी बैंक या तत्काल फोन कॉल / एसएमएस आया",
+    gu: "મને શંકાસ્પદ તાત્કાલિક ફોન કૉલ અથવા એસએમએસ આવ્યો",
+  },
+};
+
 export function SecurityGuidePage() {
+  const { t, i18n } = useTranslation();
+  const currentLang = (i18n.language?.slice(0, 2) as "hi" | "gu") || "en";
   const [active, setActive] = useState(situations[0].id);
   const current = situations.find((s) => s.id === active) ?? situations[0];
 
@@ -161,7 +212,7 @@ export function SecurityGuidePage() {
             icon={<i className="ti ti-printer" />}
             onClick={() => window.print()}
           >
-            Print Playbook
+            {t("common.print", "Print Playbook")}
           </Button>
         </div>
       </motion.div>
@@ -171,6 +222,7 @@ export function SecurityGuidePage() {
         <div className="space-y-2 no-print">
           {situations.map((s) => {
             const isSelected = active === s.id;
+            const label = LOCALIZED_SITUATIONS[s.id]?.[currentLang] || s.label;
             return (
               <button
                 key={s.id}
@@ -190,7 +242,7 @@ export function SecurityGuidePage() {
                 >
                   <i className={`ti ${s.icon} text-base`} />
                 </div>
-                <span className="flex-1 leading-snug">{s.label}</span>
+                <span className="flex-1 leading-snug">{label}</span>
               </button>
             );
           })}
@@ -217,14 +269,14 @@ export function SecurityGuidePage() {
                         {current.urgency}
                       </span>
                       <h2 className="mt-0.5 font-display text-lg sm:text-xl font-bold text-text-pure">
-                        {current.label}
+                        {LOCALIZED_SITUATIONS[current.id]?.[currentLang] || current.label}
                       </h2>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 text-xs text-text-ash no-print">
                     <span>
-                      {checkedSteps.length} of {current.steps.length} completed
+                      {checkedSteps.length} of {current.steps.length} {t("common.completed", "completed")}
                     </span>
                     {checkedSteps.length > 0 && (
                       <button
@@ -232,7 +284,7 @@ export function SecurityGuidePage() {
                         onClick={resetSteps}
                         className="text-primary hover:underline font-semibold ml-2 cursor-pointer"
                       >
-                        Reset
+                        {t("common.reset", "Reset")}
                       </button>
                     )}
                   </div>

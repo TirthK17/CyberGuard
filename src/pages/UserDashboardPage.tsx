@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
 import { Card, Pill, ProgressBar, AnimatedNumber } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
@@ -155,6 +156,7 @@ const ACTIVE_THREAT_NOTICES = [
    COMPONENT: USER DASHBOARD PAGE
 ───────────────────────────────────────────────────────────────────────────── */
 export function UserDashboardPage() {
+  const { t } = useTranslation();
   const { profile } = useAuth();
   const { data: modules } = useModules();
   const { data: progress } = useUserProgress(profile?.id);
@@ -316,10 +318,10 @@ export function UserDashboardPage() {
                 <span>•</span>
                 <span>{timeGreeting()}</span>
                 <span>•</span>
-                <span className="text-text-pure font-semibold font-mono">Level {profile?.level ?? 1}</span>
+                <span className="text-text-pure font-semibold font-mono">{t("common.level", "Level")} {profile?.level ?? 1}</span>
               </div>
               <h1 className="font-display text-lg sm:text-xl font-bold tracking-tight text-text-pure">
-                Welcome back, {profile?.full_name ?? "Member"}
+                {t("dashboard.welcome", "Welcome back")}, {profile?.full_name ?? "Member"}
               </h1>
             </div>
           </div>
@@ -332,8 +334,8 @@ export function UserDashboardPage() {
               </div>
               <div>
                 <div className="flex items-center gap-1">
-                  <span className="font-bold text-amber-500 font-mono text-[11px]">{streakDays} Days</span>
-                  <span className="text-[10px] text-text-ash">Streak</span>
+                  <span className="font-bold text-amber-500 font-mono text-[11px]">{streakDays}</span>
+                  <span className="text-[10px] text-text-ash">{t("dashboard.streak", "Days Streak")}</span>
                 </div>
                 <p className="text-[10px] text-text-fog leading-none">
                   {streakCompletedToday ? "Active today" : "Complete 1 drill"}
@@ -443,7 +445,7 @@ export function UserDashboardPage() {
             </div>
             <div>
               <div className="flex items-center gap-2 text-[11px] text-primary font-bold uppercase tracking-wider">
-                <span>Continue Where You Left Off</span>
+                <span>{t("dashboard.continueLearning", "Continue Where You Left Off")}</span>
                 <span>•</span>
                 <span className="text-text-ash capitalize">{nextUp.category?.replace(/_/g, " ")}</span>
               </div>
@@ -462,7 +464,7 @@ export function UserDashboardPage() {
               size="sm"
               icon={<i className="ti ti-arrow-right" />}
             >
-              Resume Module
+              {t("dashboard.resume", "Resume Module")}
             </Button>
           </div>
         </motion.div>
@@ -537,15 +539,15 @@ export function UserDashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-surface border border-border">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-wider text-primary font-mono">Tailored Cybersecurity Tracks</span>
-          <h2 className="text-sm sm:text-base font-bold text-text-pure">Select Your Persona Learning Path</h2>
-          <p className="text-xs text-text-fog mt-0.5">Prioritizes threats and simulations most relevant to your daily routine.</p>
+          <h2 className="text-sm sm:text-base font-bold text-text-pure">{t("dashboard.personaTitle", "Select Your Learning Path")}</h2>
+          <p className="text-xs text-text-fog mt-0.5">{t("dashboard.personaSubtitle", "Prioritizes threats and simulations most relevant to your daily routine.")}</p>
         </div>
         <div className="flex items-center gap-1.5 p-1 rounded-xl bg-surface-elevated border border-border text-xs">
           {[
-            { id: "all", label: "General" },
-            { id: "student", label: "Student" },
-            { id: "employee", label: "Office / Enterprise" },
-            { id: "senior", label: "Senior Citizen" },
+            { id: "all", label: t("dashboard.personaGeneral", "General") },
+            { id: "student", label: t("dashboard.personaStudent", "Student") },
+            { id: "employee", label: t("dashboard.personaCorporate", "Office / Enterprise") },
+            { id: "senior", label: t("dashboard.personaSenior", "Senior Citizen") },
           ].map((path) => (
             <button
               key={path.id}
