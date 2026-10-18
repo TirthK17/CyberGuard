@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
-import { Pill } from "@/components/ui/primitives";
 import { celebrate } from "@/lib/celebrate";
-import { simulationXp } from "@/lib/gamification";
+import { AttackerTerminal, ScoreCard } from "./shared";
 
 interface MitmPaymentSandboxProps {
   onComplete: (score: number, meta: Record<string, unknown>) => void;
@@ -25,7 +23,6 @@ type Act =
   | "final_score";
 
 export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
-  const navigate = useNavigate();
 
   // Story & simulation states
   const [act, setAct] = useState<Act>("story_intro");
@@ -846,52 +843,10 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
           </div>
 
           {/* Hacker Terminal Window */}
-          <div className="rounded-2xl border-2 border-danger/40 bg-zinc-950 shadow-2xl overflow-hidden text-xs font-mono">
-            {/* Terminal Title Bar */}
-            <div className="bg-zinc-900 px-4 py-2.5 flex items-center justify-between border-b border-zinc-800">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />
-                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block" />
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-                <span className="text-[11px] text-zinc-400 ml-2 font-mono">root@kali-pineapple:~# ./mitm_intercept</span>
-              </div>
-              <span className="text-[10px] text-danger font-bold uppercase tracking-wider">
-                {vpnActive ? "ENCRYPTED - BLOCKED" : "SNIFFER ACTIVE"}
-              </span>
-            </div>
-
-            {/* Terminal Output Log Feed */}
-            <div className="p-4 space-y-2 h-[260px] overflow-y-auto bg-black/90 text-[11px] leading-relaxed scrollbar-thin">
-              {hackerLogs.map((log, i) => (
-                <div
-                  key={i}
-                  className={`${
-                    log.includes("CRITICAL") || log.includes("ERROR")
-                      ? "text-emerald-400 font-bold"
-                      : log.includes("TAMPERING") || log.includes("$$$")
-                      ? "text-red-400 font-extrabold bg-red-950/30 p-1 rounded"
-                      : log.includes("VICTIM") || log.includes("SNOOPED")
-                      ? "text-amber-300"
-                      : "text-zinc-400"
-                  }`}
-                >
-                  {log}
-                </div>
-              ))}
-            </div>
-
-            {/* Live Packet Inspection Bar */}
-            <div className="p-3 bg-zinc-900/90 border-t border-zinc-800 grid grid-cols-2 gap-2 text-[10px]">
-              <div>
-                <span className="text-zinc-500 block">ROGUE SSID BROADCAST:</span>
-                <span className="text-emerald-400 font-bold">Cafe_FREE_HighSpeed_WiFi</span>
-              </div>
-              <div>
-                <span className="text-zinc-500 block">VICTIM IP &amp; MAC:</span>
-                <span className="text-zinc-300 font-mono">192.168.1.104 &bull; 8A:4F:92:B1</span>
-              </div>
-            </div>
-          </div>
+          <AttackerTerminal
+            logs={hackerLogs}
+            title="ATTACKER ROGUE AP SNIFFER: MITM_INTERCEPT"
+          />
 
           {/* ── EXPLANATION CARDS (HOW MITM REALLY WORKS) ── */}
           {act === "how_it_works" && (
@@ -940,61 +895,37 @@ export function MitmPaymentSandbox({ onComplete }: MitmPaymentSandboxProps) {
 
           {/* ── FINAL SCORECARD & SURVIVAL CHEATSHEET ── */}
           {act === "final_score" && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="rounded-2xl border border-primary/30 bg-surface p-6 shadow-md space-y-5"
-            >
-              <div className="text-center space-y-2">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-3xl text-primary">
-                  <i className={`ti ${score >= 70 ? "ti-shield-check" : "ti-alert-triangle"}`} />
-                </div>
-                <h2 className="text-xl font-bold text-text-high">DRILL COMPLETE</h2>
-                <div className="text-4xl font-black text-primary font-mono">
-                  Score: {score}/100
-                </div>
-                <div className="flex justify-center gap-2 pt-1">
-                  <Pill tone="primary" size="md">+{simulationXp(score)} XP Earned</Pill>
-                  <Pill tone={score >= 70 ? "emerald" : "warning"} size="md">
-                    {score >= 70 ? "🛡️ Threat Neutralized" : "⚠️ Needs Defense Practice"}
-                  </Pill>
-                </div>
-              </div>
-
-              {/* Actionable Golden Rules */}
-              <div className="space-y-2 pt-2 border-t border-border">
-                <div className="text-xs font-bold text-text-high">
-                  🛡️ 4 Golden Rules for Public Wi-Fi:
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2 text-[11px] text-text-low">
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">1. Never Pay on Open Wi-Fi:</strong>
-                    Turn off Wi-Fi and use your 4G/5G mobile hotspot for payments and banking.
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">2. Respect Certificate Warnings:</strong>
-                    If your browser says &quot;Certificate invalid&quot;, someone is likely intercepting your traffic.
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">3. Always Check the Final ₹ Amount:</strong>
-                    Check the UPI PIN prompt or SMS OTP to ensure the amount matches your cart.
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">4. Use a VPN on Public Networks:</strong>
-                    A VPN encrypts your traffic so hackers sitting nearby only see meaningless scramble.
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-2 pt-3">
-                <Button variant="secondary" onClick={handleReset} className="flex-1 text-xs">
-                  <i className="ti ti-rotate-clockwise mr-1.5" /> Replay Scenario
-                </Button>
-                <Button variant="primary" onClick={() => navigate("/simulations")} className="flex-1 text-xs">
-                  More Defense Sandboxes <i className="ti ti-arrow-right ml-1.5" />
-                </Button>
-              </div>
-            </motion.div>
+            <ScoreCard
+              score={score}
+              scenarioTitle="Man-in-the-Middle Defense Drill"
+              goldenRule="Never conduct payments on unverified public Wi-Fi; always respect browser certificate warnings and use mobile cellular data or a verified VPN."
+              breakdown={[
+                ...(userDecision === "cancel" || userDecision === "vpn"
+                  ? [
+                      {
+                        type: "success" as const,
+                        text: "Heeded the SSL certificate mismatch warning and refused to authorize a tampered transaction on public Wi-Fi.",
+                      },
+                      ...(vpnActive
+                        ? [
+                            {
+                              type: "success" as const,
+                              text: "Encrypted all local traffic with a secure tunnel, rendering adversary packet sniffing useless.",
+                            },
+                          ]
+                        : []),
+                    ]
+                  : [
+                      {
+                        type: "warning" as const,
+                        text: "Ignored the browser certificate security warning and authorized an attacker-tampered transaction amount.",
+                      },
+                    ]),
+              ]}
+              onRetry={handleReset}
+              nextSimulationUrl="/simulations"
+              nextSimulationLabel="More Threat Sandboxes"
+            />
           )}
 
         </div>

@@ -22,6 +22,62 @@ const SmishingSimulator = lazy(() =>
 const MitmPaymentSandbox = lazy(() =>
   import("@/components/simulations/MitmPaymentSandbox").then((m) => ({ default: m.MitmPaymentSandbox }))
 );
+const UpiCollectScamSandbox = lazy(() =>
+  import("@/components/simulations/UpiCollectScamSandbox").then((m) => ({ default: m.UpiCollectScamSandbox }))
+);
+const QuishingSandbox = lazy(() =>
+  import("@/components/simulations/QuishingSandbox").then((m) => ({ default: m.QuishingSandbox }))
+);
+
+interface SandboxConfig {
+  component: React.LazyExoticComponent<React.ComponentType<{ onComplete: (score: number, meta: Record<string, unknown>) => void }>>;
+  badges: { label: string; tone: "primary" | "emerald" | "danger" | "warn" }[];
+}
+
+const SANDBOXES: Record<string, SandboxConfig> = {
+  "phishing-email": {
+    component: PhishingMailSandbox,
+    badges: [
+      { label: "Fake Work Email", tone: "primary" },
+      { label: "Interactive Mailbox", tone: "emerald" },
+    ],
+  },
+  "ransomware-response": {
+    component: RansomwareContainmentDrill,
+    badges: [
+      { label: "Virus & Ransomware Alert", tone: "danger" },
+      { label: "Action Checklist", tone: "primary" },
+    ],
+  },
+  "social-engineering-call": {
+    component: SmishingSimulator,
+    badges: [
+      { label: "Fake Bank SMS & Call", tone: "warn" },
+      { label: "Phone & Scammer View", tone: "primary" },
+    ],
+  },
+  "mitm-attack": {
+    component: MitmPaymentSandbox,
+    badges: [
+      { label: "Unsafe Public Wi-Fi", tone: "danger" },
+      { label: "Interactive Demo", tone: "primary" },
+    ],
+  },
+  "upi-collect": {
+    component: UpiCollectScamSandbox,
+    badges: [
+      { label: "UPI & Mobile Fraud", tone: "warn" },
+      { label: "Interactive Banking", tone: "primary" },
+    ],
+  },
+  "quishing": {
+    component: QuishingSandbox,
+    badges: [
+      { label: "Physical QR Phishing", tone: "danger" },
+      { label: "Camera & Browser Inspection", tone: "primary" },
+    ],
+  },
+};
 
 const SLUG_ALIASES: Record<string, string> = {
   phishing: "phishing-email",
@@ -29,6 +85,9 @@ const SLUG_ALIASES: Record<string, string> = {
   smishing: "social-engineering-call",
   mitm: "mitm-attack",
   "public-wifi": "mitm-attack",
+  upi: "upi-collect",
+  "upi-scam": "upi-collect",
+  "qr-phishing": "quishing",
 };
 
 export function SimulationPlayerPage() {
@@ -126,7 +185,9 @@ export function SimulationPlayerPage() {
   if (!simulation) return <PageSpinner />;
 
   // Specialized Real-Time Interactive Simulation Modes:
-  if (activeSlug === "phishing-email") {
+  const sandbox = SANDBOXES[activeSlug];
+  if (sandbox) {
+    const SandboxComponent = sandbox.component;
     return (
       <div className="space-y-6">
         <div className="flex items-center justify-between">
@@ -134,69 +195,15 @@ export function SimulationPlayerPage() {
             <i className="ti ti-arrow-left mr-1.5" /> Back to Simulations
           </Button>
           <div className="flex items-center gap-2">
-            <Pill tone="primary" size="sm">Fake Work Email</Pill>
-            <Pill tone="emerald" size="sm">Interactive Mailbox</Pill>
+            {sandbox.badges.map((b, i) => (
+              <Pill key={i} tone={b.tone} size="sm">
+                {b.label}
+              </Pill>
+            ))}
           </div>
         </div>
         <Suspense fallback={<PageSpinner />}>
-          <PhishingMailSandbox onComplete={handleSandboxComplete} />
-        </Suspense>
-      </div>
-    );
-  }
-
-  if (activeSlug === "ransomware-response") {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/simulations")}>
-            <i className="ti ti-arrow-left mr-1.5" /> Back to Simulations
-          </Button>
-          <div className="flex items-center gap-2">
-            <Pill tone="danger" size="sm">Virus &amp; Ransomware Alert</Pill>
-            <Pill tone="primary" size="sm">Action Checklist</Pill>
-          </div>
-        </div>
-        <Suspense fallback={<PageSpinner />}>
-          <RansomwareContainmentDrill onComplete={handleSandboxComplete} />
-        </Suspense>
-      </div>
-    );
-  }
-
-  if (activeSlug === "social-engineering-call") {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/simulations")}>
-            <i className="ti ti-arrow-left mr-1.5" /> Back to Simulations
-          </Button>
-          <div className="flex items-center gap-2">
-            <Pill tone="warning" size="sm">Fake Bank SMS &amp; Call</Pill>
-            <Pill tone="primary" size="sm">Phone &amp; Scammer View</Pill>
-          </div>
-        </div>
-        <Suspense fallback={<PageSpinner />}>
-          <SmishingSimulator onComplete={handleSandboxComplete} />
-        </Suspense>
-      </div>
-    );
-  }
-
-  if (activeSlug === "mitm-attack" || activeSlug === "public-wifi") {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => navigate("/simulations")}>
-            <i className="ti ti-arrow-left mr-1.5" /> Back to Simulations
-          </Button>
-          <div className="flex items-center gap-2">
-            <Pill tone="danger" size="sm">Unsafe Public Wi-Fi</Pill>
-            <Pill tone="primary" size="sm">Interactive Demo</Pill>
-          </div>
-        </div>
-        <Suspense fallback={<PageSpinner />}>
-          <MitmPaymentSandbox onComplete={handleSandboxComplete} />
+          <SandboxComponent onComplete={handleSandboxComplete} />
         </Suspense>
       </div>
     );

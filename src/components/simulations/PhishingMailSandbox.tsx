@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
-import { Pill } from "@/components/ui/primitives";
 import { celebrate } from "@/lib/celebrate";
-import { simulationXp } from "@/lib/gamification";
+import { AttackerTerminal, ScoreCard } from "./shared";
 
 interface PhishingMailSandboxProps {
   onComplete: (score: number, meta: Record<string, unknown>) => void;
@@ -21,7 +19,6 @@ type Act =
   | "final_score";
 
 export function PhishingMailSandbox({ onComplete }: PhishingMailSandboxProps) {
-  const navigate = useNavigate();
 
   // State machine
   const [act, setAct] = useState<Act>("story_intro");
@@ -743,52 +740,10 @@ export function PhishingMailSandbox({ onComplete }: PhishingMailSandboxProps) {
           </div>
 
           {/* Attacker Terminal */}
-          <div className="rounded-2xl border-2 border-danger/40 bg-zinc-950 shadow-2xl overflow-hidden text-xs font-mono">
-            {/* Terminal Title Bar */}
-            <div className="bg-zinc-900 px-4 py-2.5 flex items-center justify-between border-b border-zinc-800">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />
-                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block" />
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-                <span className="text-[11px] text-zinc-400 ml-2">root@c2-phish-ops:~# evilginx2</span>
-              </div>
-              <span className="text-[10px] text-danger font-bold uppercase tracking-wider">
-                {hasReported ? "SERVER BLACKLISTED" : "LISTENING (PORT 443)"}
-              </span>
-            </div>
-
-            {/* Terminal Logs */}
-            <div className="p-4 space-y-2 h-[260px] overflow-y-auto bg-black/90 text-[11px] leading-relaxed scrollbar-thin">
-              {hackerLogs.map((log, i) => (
-                <div
-                  key={i}
-                  className={`${
-                    log.includes("CRITICAL") || log.includes("$$$")
-                      ? "text-red-400 font-extrabold bg-red-950/40 p-1 rounded"
-                      : log.includes("BLOCKED")
-                      ? "text-emerald-400 font-bold"
-                      : log.includes("KEYLOGGER") || log.includes("CAPTURED")
-                      ? "text-amber-300 font-bold"
-                      : "text-zinc-400"
-                  }`}
-                >
-                  {log}
-                </div>
-              ))}
-            </div>
-
-            {/* Telemetry Footer */}
-            <div className="p-3 bg-zinc-900/90 border-t border-zinc-800 grid grid-cols-2 gap-2 text-[10px]">
-              <div>
-                <span className="text-zinc-500 block">SPOOFED DOMAIN:</span>
-                <span className="text-amber-400 font-bold">auth-portal.net</span>
-              </div>
-              <div>
-                <span className="text-zinc-500 block">HARVESTED TOKENS:</span>
-                <span className="text-zinc-300">{act === "account_takeover" ? "SID, HSID, 2FA_OTP" : "None"}</span>
-              </div>
-            </div>
-          </div>
+          <AttackerTerminal
+            logs={hackerLogs}
+            title="ATTACKER C2 SERVER: EVILGINX2"
+          />
 
           {/* ── EDUCATIONAL DEBRIEF: WHAT CAN PHISHING DO? ── */}
           {act === "what_is_phishing" && (
@@ -837,61 +792,41 @@ export function PhishingMailSandbox({ onComplete }: PhishingMailSandboxProps) {
 
           {/* ── FINAL SCORECARD & SURVIVAL RULES ── */}
           {act === "final_score" && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="rounded-2xl border border-primary/30 bg-surface p-6 shadow-md space-y-5"
-            >
-              <div className="text-center space-y-2">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-3xl text-primary">
-                  <i className={`ti ${score >= 70 ? "ti-shield-check" : "ti-alert-triangle"}`} />
-                </div>
-                <h2 className="text-xl font-bold text-text-high">PHISHING DEFENSE COMPLETE</h2>
-                <div className="text-4xl font-black text-primary font-mono">
-                  Score: {score}/100
-                </div>
-                <div className="flex justify-center gap-2 pt-1">
-                  <Pill tone="primary" size="md">+{simulationXp(score)} XP Earned</Pill>
-                  <Pill tone={score >= 70 ? "emerald" : "danger"} size="md">
-                    {score >= 70 ? "🛡️ Phishing Reflex: EXCELLENT" : "⚠️ Compromised: Needs Practice"}
-                  </Pill>
-                </div>
-              </div>
-
-              {/* Actionable Rules */}
-              <div className="space-y-2 pt-2 border-t border-border">
-                <div className="text-xs font-bold text-text-high">
-                  🛡️ 4 Golden Rules to Never Get Phished:
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2 text-[11px] text-text-low">
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">1. Never Click Email Links:</strong>
-                    If you get an account alert, open a new tab and type <code>google.com</code> manually.
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">2. Check the Root Domain:</strong>
-                    Look before the last slash: <code>google.com</code> is safe, but <code>google.auth-portal.net</code> belongs to the attacker!
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">3. Urgency = Red Flag:</strong>
-                    Any email demanding action in &quot;2 hours&quot; or &quot;immediate account deletion&quot; is 99% a scam.
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">4. Use Passkeys &amp; Security Keys:</strong>
-                    FIDO2 Passkeys cannot be phished because your browser verifies the real domain cryptographically!
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-2 pt-3">
-                <Button variant="secondary" onClick={handleReset} className="flex-1 text-xs">
-                  <i className="ti ti-rotate-clockwise mr-1.5" /> Replay Scenario
-                </Button>
-                <Button variant="primary" onClick={() => navigate("/simulations")} className="flex-1 text-xs">
-                  More Threat Sandboxes <i className="ti ti-arrow-right ml-1.5" />
-                </Button>
-              </div>
-            </motion.div>
+            <ScoreCard
+              score={score}
+              scenarioTitle="Phishing Defense Simulation"
+              goldenRule="Never click security verification links inside emails; always navigate directly to the root domain in a new browser tab."
+              breakdown={[
+                ...(hasReported
+                  ? [
+                      {
+                        type: "success" as const,
+                        text: "Reported the suspicious email to security operations before credentials could be exploited.",
+                      },
+                      ...(inspectedSender && inspectedLink
+                        ? [
+                            {
+                              type: "success" as const,
+                              text: "Excellently scrutinized the sender root domain and discovered the lookalike URL spoof.",
+                            },
+                          ]
+                        : []),
+                    ]
+                  : [
+                      {
+                        type: "warning" as const,
+                        text: "Fell for the artificial urgency lure and opened the deceptive login portal.",
+                      },
+                      {
+                        type: "warning" as const,
+                        text: "Submitted credentials and 2FA OTP to an adversary reverse proxy.",
+                      },
+                    ]),
+              ]}
+              onRetry={handleReset}
+              nextSimulationUrl="/simulations"
+              nextSimulationLabel="More Threat Sandboxes"
+            />
           )}
 
         </div>

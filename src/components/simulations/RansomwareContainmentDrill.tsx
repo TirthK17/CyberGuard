@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
-import { Pill } from "@/components/ui/primitives";
 import { celebrate } from "@/lib/celebrate";
-import { simulationXp } from "@/lib/gamification";
+import { AttackerTerminal, ScoreCard } from "./shared";
 
 interface RansomwareContainmentDrillProps {
   onComplete: (score: number, meta: Record<string, unknown>) => void;
@@ -29,7 +27,6 @@ interface DesktopFile {
 }
 
 export function RansomwareContainmentDrill({ onComplete }: RansomwareContainmentDrillProps) {
-  const navigate = useNavigate();
 
   // Act & perspective states
   const [act, setAct] = useState<Act>("story_intro");
@@ -788,52 +785,10 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
           </div>
 
           {/* Attacker C2 Terminal */}
-          <div className="rounded-2xl border-2 border-danger/40 bg-zinc-950 shadow-2xl overflow-hidden text-xs font-mono">
-            {/* Terminal Title Bar */}
-            <div className="bg-zinc-900 px-4 py-2.5 flex items-center justify-between border-b border-zinc-800">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" />
-                <span className="w-2.5 h-2.5 rounded-full bg-yellow-500 inline-block" />
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
-                <span className="text-[11px] text-zinc-400 ml-2">darkvault@c2-tor-node:~# ./lockbit_srv</span>
-              </div>
-              <span className="text-[10px] text-danger font-bold uppercase tracking-wider">
-                {backupVerified ? "LEVERAGE DESTROYED" : "PAYLOAD ACTIVE"}
-              </span>
-            </div>
-
-            {/* Terminal Logs */}
-            <div className="p-4 space-y-2 h-[260px] overflow-y-auto bg-black/90 text-[11px] leading-relaxed scrollbar-thin">
-              {c2Logs.map((log, i) => (
-                <div
-                  key={i}
-                  className={`${
-                    log.includes("CRITICAL") || log.includes("REFUSED")
-                      ? "text-emerald-400 font-bold"
-                      : log.includes("DESTROYED") || log.includes("$$$")
-                      ? "text-red-400 font-extrabold bg-red-950/40 p-1 rounded"
-                      : log.includes("BEACON") || log.includes("ENCRYPTING")
-                      ? "text-amber-300 font-bold"
-                      : "text-zinc-400"
-                  }`}
-                >
-                  {log}
-                </div>
-              ))}
-            </div>
-
-            {/* C2 Telemetry Footer */}
-            <div className="p-3 bg-zinc-900/90 border-t border-zinc-800 grid grid-cols-2 gap-2 text-[10px]">
-              <div>
-                <span className="text-zinc-500 block">ENCRYPTION CIPHER:</span>
-                <span className="text-amber-400 font-bold">AES-256-CBC + RSA-4096</span>
-              </div>
-              <div>
-                <span className="text-zinc-500 block">SHADOW COPIES:</span>
-                <span className="text-danger font-bold">{act === "story_intro" ? "INTACT" : "WIPED (vssadmin)"}</span>
-              </div>
-            </div>
-          </div>
+          <AttackerTerminal
+            logs={c2Logs}
+            title="DARK VAULT RANSOMWARE C2: LOCKBIT_SRV"
+          />
 
           {/* ── EDUCATIONAL DEBRIEF: HOW RANSOMWARE REALLY WORKS ── */}
           {act === "how_ransomware_works" && (
@@ -882,61 +837,37 @@ export function RansomwareContainmentDrill({ onComplete }: RansomwareContainment
 
           {/* ── FINAL SCORECARD & SURVIVAL RULES ── */}
           {act === "final_score" && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.96 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="rounded-2xl border border-primary/30 bg-surface p-6 shadow-md space-y-5"
-            >
-              <div className="text-center space-y-2">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-3xl text-primary">
-                  <i className={`ti ${score >= 70 ? "ti-shield-check" : "ti-alert-triangle"}`} />
-                </div>
-                <h2 className="text-xl font-bold text-text-high">RANSOMWARE CONTAINMENT COMPLETE</h2>
-                <div className="text-4xl font-black text-primary font-mono">
-                  Score: {score}/100
-                </div>
-                <div className="flex justify-center gap-2 pt-1">
-                  <Pill tone="primary" size="md">+{simulationXp(score)} XP Earned</Pill>
-                  <Pill tone={score >= 70 ? "emerald" : "danger"} size="md">
-                    {score >= 70 ? "🛡️ Incident Triage: EXPERT" : "⚠️ Compromised: Needs Practice"}
-                  </Pill>
-                </div>
-              </div>
-
-              {/* Actionable Rules */}
-              <div className="space-y-2 pt-2 border-t border-border">
-                <div className="text-xs font-bold text-text-high">
-                  🛡️ 4 Golden Rules to Defeat Ransomware:
-                </div>
-                <div className="grid gap-2 sm:grid-cols-2 text-[11px] text-text-low">
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">1. Never Pay the Ransom:</strong>
-                    Paying guarantees nothing, funds crime, and makes you a repeat target.
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">2. Isolate Network Immediately:</strong>
-                    Pull the ethernet cable or turn off Wi-Fi within seconds to prevent spread.
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">3. Maintain Offline Backups:</strong>
-                    Cloud sync folders can get encrypted too! Keep an unplugged external hard drive.
-                  </div>
-                  <div className="p-2.5 rounded-xl bg-surface-elevated border border-border">
-                    <strong className="text-text-pure block mb-0.5">4. Check NoMoreRansom.org:</strong>
-                    Before panicking, check if global law enforcement has released a free decryption key.
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-2 pt-3">
-                <Button variant="secondary" onClick={handleReset} className="flex-1 text-xs">
-                  <i className="ti ti-rotate-clockwise mr-1.5" /> Replay Drill
-                </Button>
-                <Button variant="primary" onClick={() => navigate("/simulations")} className="flex-1 text-xs">
-                  More Threat Sandboxes <i className="ti ti-arrow-right ml-1.5" />
-                </Button>
-              </div>
-            </motion.div>
+            <ScoreCard
+              score={score}
+              scenarioTitle="Ransomware Incident Containment"
+              goldenRule="Never pay the ransom; isolate the network within seconds to prevent lateral spread, then restore clean data from immutable offline backups."
+              breakdown={[
+                ...(userChoice === "isolate"
+                  ? [
+                      {
+                        type: "success" as const,
+                        text: "Immediately cut network connectivity, preventing ransomware from spreading to file servers and active directories.",
+                      },
+                      ...(processTerminated
+                        ? [
+                            {
+                              type: "success" as const,
+                              text: "Terminated the malicious encryption process via Task Manager and initiated cold backup recovery.",
+                            },
+                          ]
+                        : []),
+                    ]
+                  : [
+                      {
+                        type: "warning" as const,
+                        text: "Attempted to pay the ransom or delayed network containment, allowing files to be fully destroyed.",
+                      },
+                    ]),
+              ]}
+              onRetry={handleReset}
+              nextSimulationUrl="/simulations"
+              nextSimulationLabel="More Threat Sandboxes"
+            />
           )}
 
         </div>

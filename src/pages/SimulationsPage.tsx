@@ -10,6 +10,8 @@ const categoryIcons: Record<string, string> = {
   phishing: "ti-mail-exclamation",
   social_engineering: "ti-user-question",
   ransomware: "ti-file-lock",
+  banking: "ti-device-mobile",
+  payments: "ti-credit-card",
 };
 
 const SIMULATION_BADGES: Record<string, { label: string; tone: "primary" | "emerald" | "danger" | "warning" }> = {
@@ -17,6 +19,8 @@ const SIMULATION_BADGES: Record<string, { label: string; tone: "primary" | "emer
   "phishing-email": { label: "Fake Email Lab", tone: "primary" },
   "ransomware-response": { label: "Virus Containment", tone: "danger" },
   "social-engineering-call": { label: "SMS & OTP Scam", tone: "warning" },
+  "upi-collect": { label: "UPI PIN Scam", tone: "warning" },
+  "quishing": { label: "QR Code Phishing", tone: "danger" },
 };
 
 const DIFFICULTIES = ["all", "beginner", "intermediate", "advanced"] as const;
@@ -208,9 +212,13 @@ export function SimulationsPage() {
                           <span className="text-xs font-semibold uppercase tracking-wider text-text-muted">
                             {s.category.replace("_", " ")}
                           </span>
-                          {badgeMeta && (
+                          {badgeMeta ? (
                             <Pill tone={badgeMeta.tone} size="sm">
                               {badgeMeta.label}
+                            </Pill>
+                          ) : (
+                            <Pill tone="primary" size="sm">
+                              Interactive Lab
                             </Pill>
                           )}
                         </div>

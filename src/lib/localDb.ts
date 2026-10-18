@@ -1060,6 +1060,30 @@ const DEFAULT_SIMULATIONS: Simulation[] = [
     learning_objective: "Recognize rogue Wi-Fi hotspots, spot unverified SSL certificate warnings, and block Man-in-the-Middle (MITM) attacks.",
     is_published: true,
   },
+  {
+    id: "sim-5",
+    title: "The Reverse Refund: UPI Collect Request Scam",
+    slug: "upi-collect",
+    category: "social_engineering",
+    description: "An online buyer claims to send you money for an item, but sends a UPI Collect Request instead. Watch as scammers manipulate victims into entering their secret UPI PIN.",
+    scenario: "A buyer on OLX insists on paying ₹4,500 immediately. You receive a notification saying 'Collect Request from Priya Traders'.",
+    difficulty: "beginner",
+    duration_minutes: 5,
+    learning_objective: "Understand that receiving money never requires entering a UPI PIN, detect collect request traps, and immediately reject fraudulent VPA demands.",
+    is_published: true,
+  },
+  {
+    id: "sim-6",
+    title: "Quishing: Weaponized Parking Meter QR Phishing",
+    slug: "quishing",
+    category: "phishing",
+    description: "A deceptive paper QR sticker is pasted over a municipal parking meter. Experience how attackers harvest credit cards through reverse-proxy credential traps.",
+    scenario: "You park downtown and scan a QR code on the meter. The URL points to a lookalike .top site asking for payment card details.",
+    difficulty: "intermediate",
+    duration_minutes: 6,
+    learning_objective: "Inspect public QR codes for physical sticker tampering, check URL domains in camera previews, and report quishing to authorities.",
+    is_published: true,
+  },
 ];
 
 const DEFAULT_SIMULATION_STEPS: SimulationStepData[] = [
