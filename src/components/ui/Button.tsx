@@ -1,13 +1,16 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode, Ref } from "react";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/primitives";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "ghost" | "danger" | "google";
   size?: "xs" | "sm" | "md" | "lg";
   icon?: ReactNode;
   loading?: boolean;
+  to?: string;
+  ref?: Ref<HTMLButtonElement>;
 }
 
 export function Button({
@@ -18,6 +21,8 @@ export function Button({
   className,
   children,
   disabled,
+  to,
+  ref,
   ...props
 }: ButtonProps) {
   const isDisabled = disabled || loading;
@@ -52,8 +57,22 @@ export function Button({
     lg: "px-6 py-2.5 text-sm sm:text-base font-semibold rounded-xl",
   };
 
+  if (to) {
+    return (
+      <Link
+        to={to}
+        className={cn(base, variants[variant], sizes[size], className)}
+        {...(props as unknown as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      >
+        {icon}
+        {children}
+      </Link>
+    );
+  }
+
   return (
     <motion.button
+      ref={ref}
       whileTap={isDisabled ? undefined : { scale: 0.98 }}
       transition={{ type: "spring", stiffness: 500, damping: 32 }}
       disabled={isDisabled}

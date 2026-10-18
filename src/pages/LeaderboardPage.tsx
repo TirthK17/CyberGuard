@@ -4,7 +4,7 @@ import { useLeaderboard, useBadges, useUserBadges } from "@/hooks/useContent";
 import { Card, Pill, SkeletonCard, ProgressBar } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    CONSTANTS & CONFIGURATIONS
@@ -517,15 +517,14 @@ function BadgesTab() {
                     {isEarned ? "STATUS: UNLOCKED" : "STATUS: LOCKED"}
                   </span>
 
-                  <Link to={meta.actionLink}>
-                    <Button
-                      variant={isEarned ? "secondary" : "primary"}
-                      size="sm"
-                      className="text-[11px] py-1 px-2.5"
-                    >
-                      {isEarned ? "Review Task" : meta.actionLabel}
-                    </Button>
-                  </Link>
+                  <Button
+                    to={meta.actionLink}
+                    variant={isEarned ? "secondary" : "primary"}
+                    size="sm"
+                    className="text-[11px] py-1 px-2.5"
+                  >
+                    {isEarned ? "Review Task" : meta.actionLabel}
+                  </Button>
                 </div>
               </motion.div>
             );

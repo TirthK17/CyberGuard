@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { cn } from "@/lib/utils";
+import { Drawer } from "@/components/ui/primitives";
 import { CyberGuardLogo, CyberGuardLogoMark } from "@/components/ui/CyberGuardLogo";
 
 export interface NavItem {
@@ -296,6 +297,11 @@ export function DashboardShell({
 
   return (
     <div className="relative z-10 flex min-h-screen bg-canvas">
+      {/* Skip to Main Content Link for Keyboard / Screen Reader Navigation */}
+      <a href="#main-content" className="skip-to-content">
+        Skip to main content
+      </a>
+
       {/* Desktop Sidebar */}
       <motion.aside
         animate={{ width: collapsed ? 64 : 240 }}
@@ -309,41 +315,26 @@ export function DashboardShell({
         <div className="absolute -right-3 top-16 z-50 hidden lg:block">
           <button
             onClick={() => setCollapsed((c) => !c)}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-border bg-surface text-text-ash shadow-sm transition-colors hover:text-text-pure hover:border-border-strong"
+            className="flex h-6 w-6 items-center justify-center rounded-full border border-border bg-surface text-text-ash shadow-sm transition-colors hover:text-text-pure hover:border-border-strong cursor-pointer"
             aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
-            <i className={`ti ${collapsed ? "ti-chevron-right" : "ti-chevron-left"} text-[10px]`} />
+            <i className={`ti ${collapsed ? "ti-chevron-right" : "ti-chevron-left"} text-[10px]`} aria-hidden="true" />
           </button>
         </div>
         {SidebarContent}
       </motion.aside>
 
-      {/* Mobile Drawer */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-50 flex lg:hidden"
-          >
-            <motion.div
-              initial={{ x: -280 }}
-              animate={{ x: 0 }}
-              exit={{ x: -280 }}
-              transition={{ type: "spring", stiffness: 380, damping: 36 }}
-              className="w-64 border-r border-border bg-surface px-3 py-4 flex flex-col"
-            >
-              {SidebarContent}
-            </motion.div>
-            <div
-              className="flex-1 bg-black/40 backdrop-blur-sm"
-              onClick={() => setMobileOpen(false)}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Accessible Mobile Drawer */}
+      <Drawer
+        id="mobile-navigation-drawer"
+        isOpen={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        title="Navigation"
+        position="left"
+        className="w-64 max-w-[85vw] p-3"
+      >
+        {SidebarContent}
+      </Drawer>
 
       {/* Main Page Area */}
       <div className="flex min-h-screen flex-1 flex-col min-w-0">
@@ -361,16 +352,18 @@ export function DashboardShell({
             <button
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="rounded-lg p-1.5 text-text-fog hover:bg-surface-elevated transition-colors"
+              className="rounded-lg p-1.5 text-text-fog hover:bg-surface-elevated transition-colors cursor-pointer"
             >
-              <i className={`ti ${resolvedTheme === "dark" ? "ti-sun" : "ti-moon"} text-base`} />
+              <i className={`ti ${resolvedTheme === "dark" ? "ti-sun" : "ti-moon"} text-base`} aria-hidden="true" />
             </button>
             <button
               onClick={() => setMobileOpen(true)}
-              aria-label="Open navigation"
-              className="rounded-lg p-1.5 text-text-fog hover:bg-surface-elevated transition-colors"
+              aria-label="Open navigation menu"
+              aria-expanded={mobileOpen}
+              aria-controls="mobile-navigation-drawer"
+              className="rounded-lg p-1.5 text-text-fog hover:bg-surface-elevated transition-colors cursor-pointer"
             >
-              <i className="ti ti-menu-2 text-xl" />
+              <i className="ti ti-menu-2 text-xl" aria-hidden="true" />
             </button>
           </div>
         </div>
@@ -378,12 +371,14 @@ export function DashboardShell({
         {/* Content */}
         <AnimatePresence mode="wait">
           <motion.main
+            id="main-content"
+            tabIndex={-1}
             key={location.pathname}
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -4 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="flex-1 px-5 py-6 sm:px-8 lg:px-10 lg:py-8 max-w-[1500px] w-full"
+            className="flex-1 px-5 py-6 sm:px-8 lg:px-10 lg:py-8 max-w-[1500px] w-full focus:outline-none"
           >
             {children}
           </motion.main>

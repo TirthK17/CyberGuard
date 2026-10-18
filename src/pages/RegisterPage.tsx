@@ -58,11 +58,9 @@ export function RegisterPage() {
             You are now signed in.
           </p>
           <div className="mt-6 flex justify-center">
-            <Link to="/dashboard">
-              <Button variant="primary" size="sm">
-                Go to Dashboard
-              </Button>
-            </Link>
+            <Button to="/dashboard" variant="primary" size="sm">
+              Go to Dashboard
+            </Button>
           </div>
         </motion.div>
       </div>

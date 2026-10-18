@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
 import { Card, Pill, PageSpinner } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { Module, Difficulty } from "@/types";
 import { useToast } from "@/context/ToastContext";
 
@@ -23,6 +24,7 @@ export function AdminCoursesPage() {
   const [modules, setModules] = useState<Module[] | null>(null);
   const [editing, setEditing] = useState<Module | null>(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [moduleToDelete, setModuleToDelete] = useState<Module | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
 
@@ -95,13 +97,20 @@ export function AdminCoursesPage() {
     load();
   };
 
-  const handleDelete = async (m: Module) => {
-    if (!confirm(`Delete "${m.title}"? This also removes its lessons.`)) return;
+  const handleDelete = (m: Module) => {
+    setModuleToDelete(m);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!moduleToDelete) return;
+    const m = moduleToDelete;
+    setModuleToDelete(null);
     const { error } = await supabase.from("modules").delete().eq("id", m.id);
     if (error) {
       toast({ title: `Failed to delete course: ${error.message}`, variant: "error" });
       return;
     }
+    toast({ title: `Course "${m.title}" deleted`, variant: "info" });
     load();
   };
 
@@ -189,6 +198,17 @@ export function AdminCoursesPage() {
           </Card>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={Boolean(moduleToDelete)}
+        title="Delete Course Module"
+        message={`Are you sure you want to delete course module "${moduleToDelete?.title}"? All lessons associated with this module will also be deleted.`}
+        confirmLabel="Delete Module"
+        cancelLabel="Cancel"
+        confirmTone="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setModuleToDelete(null)}
+      />
     </div>
   );
 }

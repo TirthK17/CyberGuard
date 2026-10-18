@@ -22,29 +22,17 @@ export function QuizTakingPage() {
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  useEffect(() => {
-    supabase
-      .from("questions")
-      .select("*")
-      .eq("quiz_id", id)
-      .order("order_index")
-      .then(({ data }) => setQuestions(data as Question[]));
-  }, [id]);
-
-  if (!questions) return <PageSpinner />;
-  if (!questions.length) return <EmptyState title="This quiz has no questions yet" icon="ti-clipboard-check" />;
-
-  const current = questions[index];
-  const score = questions.reduce((acc, q) => acc + (answers[q.id] === q.correct_answer ? 1 : 0), 0);
+  const current = questions && questions.length > index ? questions[index] : null;
+  const score = questions ? questions.reduce((acc, q) => acc + (answers[q.id] === q.correct_answer ? 1 : 0), 0) : 0;
 
   const selectAnswer = (choice: "a" | "b" | "c" | "d") => {
-    if (revealed) return;
+    if (revealed || !current) return;
     setAnswers((prev) => ({ ...prev, [current.id]: choice }));
     setRevealed(true);
   };
 
   const saveResult = async () => {
-    if (!profile || !id) return;
+    if (!profile || !id || !questions) return;
     setSaving(true);
     setSaveError(null);
     try {
@@ -78,6 +66,7 @@ export function QuizTakingPage() {
   };
 
   const next = async () => {
+    if (!questions) return;
     if (index < questions.length - 1) {
       setIndex((i) => i + 1);
       setRevealed(false);
@@ -87,6 +76,56 @@ export function QuizTakingPage() {
     if ((score / questions.length) * 100 >= QUIZ_PASS) celebrate();
     await saveResult();
   };
+
+  useEffect(() => {
+    supabase
+      .from("questions")
+      .select("*")
+      .eq("quiz_id", id)
+      .order("order_index")
+      .then(({ data }) => setQuestions(data as Question[]));
+  }, [id]);
+
+  useEffect(() => {
+    if (finished || !current) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (
+        document.activeElement?.tagName === "INPUT" ||
+        document.activeElement?.tagName === "TEXTAREA"
+      ) {
+        return;
+      }
+
+      if (!revealed) {
+        if (e.key === "1" || e.key.toLowerCase() === "a") {
+          e.preventDefault();
+          selectAnswer("a");
+        } else if (e.key === "2" || e.key.toLowerCase() === "b") {
+          e.preventDefault();
+          selectAnswer("b");
+        } else if (e.key === "3" || e.key.toLowerCase() === "c") {
+          e.preventDefault();
+          selectAnswer("c");
+        } else if (e.key === "4" || e.key.toLowerCase() === "d") {
+          e.preventDefault();
+          selectAnswer("d");
+        }
+      } else {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          next();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [revealed, finished, index, current, questions]);
+
+  if (!questions) return <PageSpinner />;
+  if (!questions.length) return <EmptyState title="This quiz has no questions yet" icon="ti-clipboard-check" />;
+  if (!current) return <PageSpinner />;
 
   if (finished) {
     const pct = Math.round((score / questions.length) * 100);
@@ -167,12 +206,21 @@ export function QuizTakingPage() {
           transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
         >
           <Card className="p-7">
-            <h2 className="font-display text-lg font-semibold text-text leading-snug">
-              {current.question}
-            </h2>
+            <div className="flex items-center justify-between">
+              <h2 className="font-display text-lg font-semibold text-text leading-snug">
+                {current.question}
+              </h2>
+            </div>
+            <p className="mt-1 text-xs text-text-ash">
+              Use keys 1–4 or A–D to pick an answer
+            </p>
 
-            <div className="mt-6 space-y-3">
-              {options.map(([key, label]) => {
+            <div
+              role="radiogroup"
+              aria-label={`Question ${index + 1}: ${current.question}`}
+              className="mt-6 space-y-3"
+            >
+              {options.map(([key, label], optIdx) => {
                 const isSelected = answers[current.id] === key;
                 const isCorrect = key === current.correct_answer;
 
@@ -190,26 +238,36 @@ export function QuizTakingPage() {
                     btnStyle = "opacity-40 border-border bg-surface text-text-faint";
                   }
                 } else if (isSelected) {
-                  btnStyle = "border-cyan/50 bg-cyan/10 text-cyan";
-                  keyStyle = "border-cyan/50 bg-cyan/20 text-cyan";
+                  btnStyle = "border-primary/50 bg-primary/10 text-primary";
+                  keyStyle = "border-primary/50 bg-primary/20 text-primary";
                 }
 
                 return (
                   <button
                     key={key}
+                    type="button"
+                    role="radio"
+                    aria-checked={isSelected}
+                    tabIndex={isSelected || (!answers[current.id] && optIdx === 0) ? 0 : -1}
                     disabled={revealed}
                     onClick={() => selectAnswer(key)}
-                    className={`flex w-full items-center gap-3.5 rounded-2xl border p-4 text-left text-sm font-medium transition-all duration-150 ${btnStyle}`}
+                    className={`flex w-full items-center gap-3.5 rounded-2xl border p-4 text-left text-sm font-medium transition-all duration-150 cursor-pointer focus-visible:ring-2 focus-visible:ring-primary ${btnStyle}`}
                   >
                     <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl border text-xs font-bold uppercase transition-colors ${keyStyle}`}>
                       {key}
                     </span>
                     <span className="flex-1 leading-relaxed">{label}</span>
                     {revealed && isCorrect && (
-                      <i className="ti ti-circle-check-filled text-base text-success shrink-0" />
+                      <span className="flex items-center gap-1.5 text-xs font-bold text-success shrink-0">
+                        <i className="ti ti-circle-check-filled text-base" aria-hidden="true" />
+                        <span>Correct</span>
+                      </span>
                     )}
                     {revealed && isSelected && !isCorrect && (
-                      <i className="ti ti-circle-x-filled text-base text-danger shrink-0" />
+                      <span className="flex items-center gap-1.5 text-xs font-bold text-danger shrink-0">
+                        <i className="ti ti-circle-x-filled text-base" aria-hidden="true" />
+                        <span>Incorrect</span>
+                      </span>
                     )}
                   </button>
                 );
@@ -221,13 +279,16 @@ export function QuizTakingPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
+                role="region"
+                aria-live="polite"
+                aria-label="Answer explanation"
                 className="mt-6 rounded-2xl border border-border bg-surface-2/70 p-4 text-xs leading-relaxed text-text-dim"
               >
                 <div className="flex items-center gap-2 text-text font-semibold mb-1">
-                  <i className="ti ti-bulb text-cyan text-sm" />
+                  <i className="ti ti-bulb text-primary text-sm" aria-hidden="true" />
                   <span>Key Takeaway</span>
                 </div>
-                {current.explanation}
+                <p>{current.explanation}</p>
               </motion.div>
             )}
 
@@ -235,8 +296,11 @@ export function QuizTakingPage() {
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mt-6 flex justify-end"
+                className="mt-6 flex items-center justify-between"
               >
+                <span className="text-[11px] text-text-ash">
+                  Press <kbd className="px-1.5 py-0.5 rounded border border-border bg-surface-elevated font-sans font-semibold">Enter ↵</kbd> to continue
+                </span>
                 <Button onClick={next}>
                   {index < questions.length - 1 ? "Next Question" : "Finish Quiz"}
                 </Button>

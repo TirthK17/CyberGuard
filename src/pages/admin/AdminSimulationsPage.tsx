@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Card, Pill, PageSpinner } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { Simulation, SimulationStep, SimulationStepOption } from "@/types";
 import { useToast } from "@/context/ToastContext";
 
@@ -18,6 +19,7 @@ export function AdminSimulationsPage() {
   const toast = useToast();
   const [sims, setSims] = useState<Simulation[] | null>(null);
   const [selected, setSelected] = useState<Simulation | null>(null);
+  const [simToDelete, setSimToDelete] = useState<Simulation | null>(null);
   const [steps, setSteps] = useState<SimulationStep[] | null>(null);
 
   const [title, setTitle] = useState("");
@@ -72,13 +74,20 @@ export function AdminSimulationsPage() {
     if (selected?.id === s.id) setSelected({ ...s, is_published: !s.is_published });
   };
 
-  const remove = async (s: Simulation) => {
-    if (!confirm(`Delete "${s.title}"? This also removes its steps.`)) return;
+  const remove = (s: Simulation) => {
+    setSimToDelete(s);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!simToDelete) return;
+    const s = simToDelete;
+    setSimToDelete(null);
     const { error } = await supabase.from("simulations").delete().eq("id", s.id);
     if (error) {
       toast({ title: `Failed to delete simulation: ${error.message}`, variant: "error" });
       return;
     }
+    toast({ title: `Simulation "${s.title}" deleted`, variant: "info" });
     if (selected?.id === s.id) {
       setSelected(null);
       setSteps(null);
@@ -255,6 +264,17 @@ export function AdminSimulationsPage() {
           </Card>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={Boolean(simToDelete)}
+        title="Delete Simulation"
+        message={`Are you sure you want to delete simulation "${simToDelete?.title}"? All associated scenario steps and options will also be permanently deleted.`}
+        confirmLabel="Delete Simulation"
+        cancelLabel="Cancel"
+        confirmTone="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setSimToDelete(null)}
+      />
     </div>
   );
 }

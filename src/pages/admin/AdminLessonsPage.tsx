@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Card, PageSpinner, EmptyState, Pill } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { Module, Lesson, LessonBlock } from "@/types";
 import { useToast } from "@/context/ToastContext";
 
@@ -163,6 +164,7 @@ export function AdminLessonsPage() {
   const [modules, setModules] = useState<Module[]>([]);
   const [moduleId, setModuleId] = useState("");
   const [lessons, setLessons] = useState<Lesson[] | null>(null);
+  const [lessonToDelete, setLessonToDelete] = useState<Lesson | null>(null);
   const [title, setTitle] = useState("");
   const [blocks, setBlocks] = useState<DraftBlock[]>([emptyBlock("paragraph")]);
   const [error, setError] = useState<string | null>(null);
@@ -230,13 +232,16 @@ export function AdminLessonsPage() {
     loadLessons(moduleId);
   };
 
-  const deleteLesson = async (id: string) => {
-    if (!confirm("Delete this lesson?")) return;
+  const handleConfirmDelete = async () => {
+    if (!lessonToDelete) return;
+    const id = lessonToDelete.id;
+    setLessonToDelete(null);
     const { error } = await supabase.from("lessons").delete().eq("id", id);
     if (error) {
       toast({ title: `Failed to delete lesson: ${error.message}`, variant: "error" });
       return;
     }
+    toast({ title: "Lesson deleted successfully", variant: "info" });
     loadLessons(moduleId);
   };
 
@@ -285,11 +290,22 @@ export function AdminLessonsPage() {
                 <span className="text-sm text-text">{l.title}</span>
                 <Pill>{l.content.length} block{l.content.length === 1 ? "" : "s"}</Pill>
               </div>
-              <Button size="sm" variant="danger" onClick={() => deleteLesson(l.id)}>Delete</Button>
+              <Button size="sm" variant="danger" onClick={() => setLessonToDelete(l)}>Delete</Button>
             </Card>
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={Boolean(lessonToDelete)}
+        title="Delete Lesson"
+        message={`Are you sure you want to delete lesson "${lessonToDelete?.title}"? This cannot be undone.`}
+        confirmLabel="Delete Lesson"
+        cancelLabel="Cancel"
+        confirmTone="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setLessonToDelete(null)}
+      />
     </div>
   );
 }

@@ -7,7 +7,6 @@ import { recordActivity } from "@/lib/gamification";
 import { supabase } from "@/lib/supabase";
 import { XP } from "@/lib/constants";
 import { useToast } from "@/context/ToastContext";
-import { Link } from "react-router-dom";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    TYPES & PRESETS
@@ -508,16 +507,15 @@ export function ReportIncidentPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link to="/threats">
-              <Button
-                variant="secondary"
-                size="sm"
-                icon={<i className="ti ti-radar" />}
-                className="text-xs"
-              >
-                View Recent Scams
-              </Button>
-            </Link>
+            <Button
+              to="/threats"
+              variant="secondary"
+              size="sm"
+              icon={<i className="ti ti-radar" aria-hidden="true" />}
+              className="text-xs"
+            >
+              View Recent Scams
+            </Button>
           </div>
         </div>
 
@@ -903,10 +901,12 @@ export function ReportIncidentPage() {
                 {history.map((rep) => {
                   const isSelected = selectedIncident?.id === rep.id;
                   return (
-                    <div
+                    <button
+                      type="button"
                       key={rep.id}
                       onClick={() => setSelectedIncident(rep)}
-                      className={`rounded-2xl border p-3.5 space-y-1.5 cursor-pointer transition-all ${
+                      aria-pressed={isSelected}
+                      className={`w-full text-left rounded-2xl border p-3.5 space-y-1.5 cursor-pointer transition-all focus-visible:ring-2 focus-visible:ring-primary ${
                         isSelected
                           ? "border-primary bg-primary/10 shadow-sm"
                           : "border-border bg-surface hover:border-primary/40"
@@ -924,7 +924,7 @@ export function ReportIncidentPage() {
                         <span>{new Date(rep.submittedAt).toLocaleDateString()}</span>
                         <span className="text-emerald-400 font-semibold">{rep.status}</span>
                       </div>
-                    </div>
+                    </button>
                   );
                 })}
               </div>

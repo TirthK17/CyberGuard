@@ -1,5 +1,4 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { PASS_MARK } from "@/lib/constants";
@@ -181,16 +180,10 @@ export function ProfilePage() {
 
         {/* Quick links */}
         <div className="mt-5 flex flex-wrap gap-2 border-t border-glass-edge pt-4">
-          <Link to="/badges">
-            <Button variant="ghost" size="xs" icon={<i className="ti ti-award text-xs" />}>Badges</Button>
-          </Link>
-          <Link to="/progress">
-            <Button variant="ghost" size="xs" icon={<i className="ti ti-trending-up text-xs" />}>My Progress</Button>
-          </Link>
+          <Button to="/badges" variant="ghost" size="xs" icon={<i className="ti ti-award text-xs" aria-hidden="true" />}>Badges</Button>
+          <Button to="/progress" variant="ghost" size="xs" icon={<i className="ti ti-trending-up text-xs" aria-hidden="true" />}>My Progress</Button>
           {stats?.hasCertificate && (
-            <Link to="/certificate">
-              <Button variant="ghost" size="xs" icon={<i className="ti ti-certificate text-xs" />}>Certificate</Button>
-            </Link>
+            <Button to="/certificate" variant="ghost" size="xs" icon={<i className="ti ti-certificate text-xs" aria-hidden="true" />}>Certificate</Button>
           )}
         </div>
       </div>

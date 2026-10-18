@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { ThemeProvider } from "@/context/ThemeContext";
+import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ProtectedRoute } from "@/components/layout/RouteGuards";
 import { PublicNavbar } from "@/components/layout/PublicNavbar";
@@ -102,8 +103,9 @@ function App() {
   return (
     <ErrorBoundary>
       <ThemeProvider>
-        <AuthProvider>
-          <ToastProvider>
+        <AccessibilityProvider>
+          <AuthProvider>
+            <ToastProvider>
             <BrowserRouter>
               <CommandPalette />
               <Suspense fallback={<PageSpinner />}>
@@ -162,6 +164,7 @@ function App() {
             </BrowserRouter>
           </ToastProvider>
         </AuthProvider>
+        </AccessibilityProvider>
       </ThemeProvider>
     </ErrorBoundary>
   );

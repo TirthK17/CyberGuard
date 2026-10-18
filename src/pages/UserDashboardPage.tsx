@@ -295,16 +295,16 @@ export function UserDashboardPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <a href="#daily-drill">
-              <Button variant="secondary" size="xs" icon={<i className="ti ti-target" />}>
-                Daily Quiz
-              </Button>
+            <a
+              href="#daily-drill"
+              className="relative inline-flex items-center justify-center gap-2 select-none font-medium transition-all duration-150 ease-out px-3 py-1 text-xs font-semibold rounded-lg bg-surface-elevated border border-border text-text-pure shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-surface-hover hover:border-border-strong cursor-pointer"
+            >
+              <i className="ti ti-target" aria-hidden="true" />
+              <span>Daily Quiz</span>
             </a>
-            <Link to="/tools">
-              <Button variant="secondary" size="xs" icon={<i className="ti ti-tools" />}>
-                Tools
-              </Button>
-            </Link>
+            <Button to="/tools" variant="secondary" size="xs" icon={<i className="ti ti-tools" aria-hidden="true" />}>
+              Tools
+            </Button>
             <button
               onClick={() => setShowSosGuide(true)}
               className="px-3 py-1.5 text-xs font-semibold rounded-xl bg-danger/10 border border-danger/30 text-danger hover:bg-danger/20 transition-colors flex items-center gap-1.5 cursor-pointer"
@@ -532,10 +532,11 @@ export function UserDashboardPage() {
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
                     <span className="font-bold text-text-pure text-[11px]">{v.score}%</span>
-                    <Link to={v.drillLink}>
-                      <button className="px-2 py-0.5 text-[10px] font-semibold rounded-md bg-surface border border-border text-primary hover:bg-primary/10 transition-colors cursor-pointer">
-                        {v.drillLabel}
-                      </button>
+                    <Link
+                      to={v.drillLink}
+                      className="px-2 py-0.5 text-[10px] font-semibold rounded-md bg-surface border border-border text-primary hover:bg-primary/10 transition-colors cursor-pointer inline-flex items-center"
+                    >
+                      {v.drillLabel}
                     </Link>
                   </div>
                 </div>
@@ -842,11 +843,9 @@ export function UserDashboardPage() {
                   </div>
                   <p className="text-xs font-medium text-text-pure">No activity logged yet</p>
                   <p className="text-[11px] text-text-ash mt-0.5">Complete a module to start earning Defense XP.</p>
-                  <Link to="/training" className="mt-3">
-                    <Button variant="secondary" size="xs">
-                      Start First Lesson
-                    </Button>
-                  </Link>
+                  <Button to="/training" variant="secondary" size="xs" className="mt-3">
+                    Start First Lesson
+                  </Button>
                 </div>
               )}
             </div>

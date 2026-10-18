@@ -155,12 +155,15 @@ export function TrainingPage() {
             </div>
 
             {nextToLearn && (
-              <Link to={`/training/${nextToLearn.slug}`}>
-                <Button variant="primary" size="sm" className="font-semibold text-sm shadow-md">
-                  <i className="ti ti-player-play mr-1.5" />
-                  {completedCount > 0 ? "Continue Learning" : "Start First Lesson"}
-                </Button>
-              </Link>
+              <Button
+                to={`/training/${nextToLearn.slug}`}
+                variant="primary"
+                size="sm"
+                className="font-semibold text-sm shadow-md"
+              >
+                <i className="ti ti-player-play mr-1.5" aria-hidden="true" />
+                {completedCount > 0 ? "Continue Learning" : "Start First Lesson"}
+              </Button>
             )}
           </div>
         </div>

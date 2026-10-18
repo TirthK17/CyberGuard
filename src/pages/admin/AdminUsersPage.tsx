@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Card, Pill, PageSpinner } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { Profile } from "@/types";
 import { useToast } from "@/context/ToastContext";
 
@@ -10,6 +11,7 @@ export function AdminUsersPage() {
   const [users, setUsers] = useState<Profile[] | null>(null);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
+  const [roleTarget, setRoleTarget] = useState<Profile | null>(null);
 
   const load = async () => {
     const { data } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
@@ -32,15 +34,17 @@ export function AdminUsersPage() {
     load();
   };
 
-  const toggleRole = async (u: Profile) => {
+  const handleConfirmRole = async () => {
+    if (!roleTarget) return;
+    const u = roleTarget;
+    setRoleTarget(null);
     const newRole = u.role === "admin" ? "user" : "admin";
-    const verb = newRole === "admin" ? "make this user an admin" : "remove admin access from this user";
-    if (!confirm(`Are you sure you want to ${verb}? (${u.email})`)) return;
     const { error } = await supabase.from("profiles").update({ role: newRole }).eq("id", u.id);
     if (error) {
       toast({ title: `Failed to update role: ${error.message}`, variant: "error" });
       return;
     }
+    toast({ title: `Role updated for ${u.full_name}`, variant: "success" });
     load();
   };
 
@@ -98,7 +102,7 @@ export function AdminUsersPage() {
                     <Button size="sm" variant="secondary" onClick={() => toggleStatus(u)}>
                       {u.status === "active" ? "Disable" : "Enable"}
                     </Button>
-                    <Button size="sm" variant={u.role === "admin" ? "danger" : "secondary"} onClick={() => toggleRole(u)}>
+                    <Button size="sm" variant={u.role === "admin" ? "danger" : "secondary"} onClick={() => setRoleTarget(u)}>
                       {u.role === "admin" ? "Remove admin" : "Make admin"}
                     </Button>
                   </div>
@@ -108,6 +112,21 @@ export function AdminUsersPage() {
           </tbody>
         </table>
       </Card>
+
+      <ConfirmDialog
+        isOpen={Boolean(roleTarget)}
+        title={roleTarget?.role === "admin" ? "Revoke Admin Privileges" : "Grant Admin Privileges"}
+        message={
+          roleTarget?.role === "admin"
+            ? `Are you sure you want to remove administrator privileges from ${roleTarget.full_name} (${roleTarget.email})?`
+            : `Are you sure you want to promote ${roleTarget?.full_name} (${roleTarget?.email}) to Administrator? Administrators have complete system access.`
+        }
+        confirmLabel={roleTarget?.role === "admin" ? "Revoke Admin" : "Make Admin"}
+        cancelLabel="Cancel"
+        confirmTone={roleTarget?.role === "admin" ? "danger" : "primary"}
+        onConfirm={handleConfirmRole}
+        onCancel={() => setRoleTarget(null)}
+      />
     </div>
   );
 }

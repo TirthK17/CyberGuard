@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from "react";
 import { Card, Pill } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router-dom";
 import { useToast } from "@/context/ToastContext";
 import {
   CISA_KEV_SNAPSHOT,
@@ -1016,11 +1015,14 @@ export function ThreatIntelligencePage() {
 
               <div className="p-4 border-t border-border bg-surface-elevated flex items-center justify-between">
                 {selectedAdvisory.simulationUrl ? (
-                  <Link to={selectedAdvisory.simulationUrl}>
-                    <Button variant="primary" size="sm" className="text-xs">
-                      {selectedAdvisory.simulationLabel || "Launch Simulation"}
-                    </Button>
-                  </Link>
+                  <Button
+                    to={selectedAdvisory.simulationUrl}
+                    variant="primary"
+                    size="sm"
+                    className="text-xs"
+                  >
+                    {selectedAdvisory.simulationLabel || "Launch Simulation"}
+                  </Button>
                 ) : (
                   <div />
                 )}

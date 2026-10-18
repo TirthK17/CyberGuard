@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { useToast } from "@/context/ToastContext";
+import { useAccessibility } from "@/context/AccessibilityContext";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { motion } from "framer-motion";
 
 interface ShortcutRow {
@@ -53,7 +54,10 @@ function SettingRow({ label, description, children }: {
 export function SettingsPage() {
   const { user, profile } = useAuth();
   const { theme, setTheme } = useTheme();
+  const { reducedMotion, setReducedMotion, isMotionReduced } = useAccessibility();
   const toast = useToast();
+
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const [emailAlerts, setEmailAlerts] = useState<boolean>(() => {
     try {
@@ -152,18 +156,27 @@ export function SettingsPage() {
   };
 
   const handleResetTelemetry = () => {
-    if (window.confirm("Are you sure you want to reset your local training progress and re-seed defaults? This cannot be undone.")) {
-      try {
-        localStorage.removeItem("cyberguard_local_db_v4");
-        toast({
-          title: "System Cache Cleared",
-          description: "Reloading clean telemetry...",
-          variant: "info",
-        });
-        setTimeout(() => {
-          window.location.reload();
-        }, 600);
-      } catch {}
+    setShowResetConfirm(true);
+  };
+
+  const handlePerformReset = () => {
+    setShowResetConfirm(false);
+    try {
+      localStorage.removeItem("cyberguard_local_db_v4");
+      toast({
+        title: "System Cache Cleared",
+        description: "Reloading clean telemetry...",
+        variant: "info",
+      });
+      setTimeout(() => {
+        window.location.reload();
+      }, 600);
+    } catch {
+      toast({
+        title: "Reset Failed",
+        description: "Could not reset local database.",
+        variant: "error",
+      });
     }
   };
 
@@ -274,6 +287,82 @@ export function SettingsPage() {
         </div>
       </SettingSection>
 
+      {/* Accessibility & Motion */}
+      <SettingSection
+        title="Accessibility &amp; Motion"
+        description="Configure animation preferences and accessibility settings to reduce discomfort."
+      >
+        <SettingRow
+          label="Reduced Motion Mode"
+          description="Limits background animations, pulsing orbs, radar sweeps, and floating transitions across all pages."
+        >
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-surface-elevated border border-border">
+            <button
+              type="button"
+              onClick={() => {
+                setReducedMotion("auto");
+                toast({ title: "Motion set to System Default", variant: "info" });
+              }}
+              className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                reducedMotion === "auto"
+                  ? "bg-primary text-white shadow-xs"
+                  : "text-text-fog hover:text-text-pure"
+              }`}
+            >
+              Auto (OS)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setReducedMotion("reduce");
+                toast({ title: "Reduced Motion Enabled", variant: "info" });
+              }}
+              className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                reducedMotion === "reduce"
+                  ? "bg-primary text-white shadow-xs"
+                  : "text-text-fog hover:text-text-pure"
+              }`}
+            >
+              Reduce
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setReducedMotion("no-preference");
+                toast({ title: "Standard Motion Enabled", variant: "info" });
+              }}
+              className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                reducedMotion === "no-preference"
+                  ? "bg-primary text-white shadow-xs"
+                  : "text-text-fog hover:text-text-pure"
+              }`}
+            >
+              Normal
+            </button>
+          </div>
+        </SettingRow>
+
+        <SettingRow
+          label="Current Motion Status"
+          description={
+            isMotionReduced
+              ? "All fluid animations, particle sweeps, and decorative transitions are currently suppressed."
+              : "Standard fluid spring animations and transitions are active."
+          }
+        >
+          <span
+            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
+              isMotionReduced
+                ? "bg-amber-500/10 text-amber-500 border border-amber-500/25"
+                : "bg-success/10 text-success border border-success/20"
+            }`}
+          >
+            <i className={`ti ${isMotionReduced ? "ti-player-pause" : "ti-player-play"} text-xs`} />
+            {isMotionReduced ? "Reduced Motion Active" : "Full Motion Active"}
+          </span>
+        </SettingRow>
+      </SettingSection>
+
       {/* Account Info */}
       <SettingSection title="Account Information" description="Your login email and account level.">
         <SettingRow label="Account Email" description="Email used to sign in.">
@@ -290,11 +379,9 @@ export function SettingsPage() {
           </span>
         </SettingRow>
         <div className="pt-3">
-          <Link to="/profile">
-            <Button variant="secondary" size="sm" icon={<i className="ti ti-user-edit" />}>
-              Edit Profile &amp; Settings
-            </Button>
-          </Link>
+          <Button to="/profile" variant="secondary" size="sm" icon={<i className="ti ti-user-edit" />}>
+            Edit Profile &amp; Settings
+          </Button>
         </div>
       </SettingSection>
 
@@ -412,6 +499,18 @@ export function SettingsPage() {
           ))}
         </div>
       </SettingSection>
+
+      {/* Confirm Reset Telemetry Dialog */}
+      <ConfirmDialog
+        isOpen={showResetConfirm}
+        title="Reset Local Telemetry &amp; Training"
+        message="Are you sure you want to reset your local training progress and re-seed defaults? All locally stored badges, quiz attempts, and scores will be restored to demo defaults. This cannot be undone."
+        confirmLabel="Reset Everything"
+        cancelLabel="Keep Progress"
+        confirmTone="danger"
+        onConfirm={handlePerformReset}
+        onCancel={() => setShowResetConfirm(false)}
+      />
     </div>
   );
 }

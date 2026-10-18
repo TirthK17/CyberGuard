@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Card, PageSpinner } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { Badge } from "@/types";
 import { useToast } from "@/context/ToastContext";
 
 export function AdminBadgesPage() {
   const toast = useToast();
   const [badges, setBadges] = useState<Badge[] | null>(null);
+  const [badgeToDelete, setBadgeToDelete] = useState<Badge | null>(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [icon, setIcon] = useState("ti-award");
@@ -34,13 +36,16 @@ export function AdminBadgesPage() {
     load();
   };
 
-  const remove = async (id: string) => {
-    if (!confirm("Delete this badge?")) return;
+  const handleConfirmDelete = async () => {
+    if (!badgeToDelete) return;
+    const id = badgeToDelete.id;
+    setBadgeToDelete(null);
     const { error } = await supabase.from("badges").delete().eq("id", id);
     if (error) {
       toast({ title: `Failed to delete badge: ${error.message}`, variant: "error" });
       return;
     }
+    toast({ title: "Badge deleted", variant: "info" });
     load();
   };
 
@@ -78,10 +83,21 @@ export function AdminBadgesPage() {
             <i className={`ti ${b.icon} text-xl text-cyan`} />
             <h3 className="mt-3 text-sm font-semibold text-text">{b.name}</h3>
             <p className="mt-1 text-xs text-text-dim">{b.description}</p>
-            <Button size="sm" variant="danger" className="mt-3" onClick={() => remove(b.id)}>Delete</Button>
+            <Button size="sm" variant="danger" className="mt-3" onClick={() => setBadgeToDelete(b)}>Delete</Button>
           </Card>
         ))}
       </div>
+
+      <ConfirmDialog
+        isOpen={Boolean(badgeToDelete)}
+        title="Delete Badge"
+        message={`Are you sure you want to delete badge "${badgeToDelete?.name}"? Users who unlocked this badge will lose it from their profile.`}
+        confirmLabel="Delete Badge"
+        cancelLabel="Cancel"
+        confirmTone="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setBadgeToDelete(null)}
+      />
     </div>
   );
 }

@@ -1,6 +1,6 @@
-import type { HTMLAttributes, ReactNode } from "react";
-import { useEffect } from "react";
-import { motion, useSpring, useTransform } from "framer-motion";
+import type { HTMLAttributes, ReactNode, KeyboardEvent as ReactKeyboardEvent } from "react";
+import { useEffect, useId, useRef } from "react";
+import { motion, AnimatePresence, useSpring, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 /* ─────────────────────────────── macOS Window Frame ───────────────────── */
@@ -52,18 +52,40 @@ export function SegmentedControl<T extends string>({
   onChange: (val: T) => void;
   className?: string;
 }) {
+  const handleKeyDown = (e: ReactKeyboardEvent<HTMLButtonElement>, currentIndex: number) => {
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      const nextIndex = (currentIndex + 1) % items.length;
+      onChange(items[nextIndex].id);
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      const prevIndex = (currentIndex - 1 + items.length) % items.length;
+      onChange(items[prevIndex].id);
+    } else if (e.key === "Home") {
+      e.preventDefault();
+      onChange(items[0].id);
+    } else if (e.key === "End") {
+      e.preventDefault();
+      onChange(items[items.length - 1].id);
+    }
+  };
+
   return (
-    <div className={cn("segmented-control", className)}>
-      {items.map((item) => {
+    <div role="tablist" className={cn("segmented-control", className)}>
+      {items.map((item, idx) => {
         const active = item.id === value;
         return (
           <button
             key={item.id}
             type="button"
+            role="tab"
+            aria-selected={active}
+            tabIndex={active ? 0 : -1}
             onClick={() => onChange(item.id)}
-            className={cn("segmented-item flex items-center gap-1.5", active && "active")}
+            onKeyDown={(e) => handleKeyDown(e, idx)}
+            className={cn("segmented-item flex items-center gap-1.5 focus-visible:ring-1 focus-visible:ring-primary", active && "active")}
           >
-            {item.icon && <i className={`ti ${item.icon} text-xs`} />}
+            {item.icon && <i className={`ti ${item.icon} text-xs`} aria-hidden="true" />}
             <span>{item.label}</span>
           </button>
         );
@@ -351,3 +373,255 @@ export function AnimatedNumber({ value, suffix = "" }: { value: number; suffix?:
 export function Divider({ className }: { className?: string }) {
   return <div className={cn("h-px w-full bg-border", className)} />;
 }
+
+/* ─────────────────────────────── Modal ─────────────────────────────── */
+
+export interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  description?: string;
+  children: ReactNode;
+  className?: string;
+  size?: "sm" | "md" | "lg" | "xl" | "full";
+}
+
+export function Modal({
+  isOpen,
+  onClose,
+  title,
+  description,
+  children,
+  className,
+  size = "md",
+}: ModalProps) {
+  const titleId = useId();
+  const descId = useId();
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousActiveRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      previousActiveRef.current = document.activeElement as HTMLElement | null;
+      document.body.style.overflow = "hidden";
+
+      // Focus modal or first focusable element
+      setTimeout(() => {
+        const focusable = modalRef.current?.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable && focusable.length > 0) {
+          focusable[0].focus();
+        } else {
+          modalRef.current?.focus();
+        }
+      }, 50);
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          onClose();
+        } else if (e.key === "Tab") {
+          const focusable = modalRef.current?.querySelectorAll<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          );
+          if (!focusable || focusable.length === 0) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = "";
+        previousActiveRef.current?.focus();
+      };
+    }
+  }, [isOpen, onClose]);
+
+  const sizeClasses = {
+    sm: "max-w-sm",
+    md: "max-w-lg",
+    lg: "max-w-2xl",
+    xl: "max-w-4xl",
+    full: "max-w-6xl",
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={title ? titleId : undefined}
+          aria-describedby={description ? descId : undefined}
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs"
+        >
+          {/* Backdrop Click */}
+          <div className="absolute inset-0" onClick={onClose} aria-hidden="true" />
+
+          {/* Modal Container */}
+          <motion.div
+            ref={modalRef}
+            tabIndex={-1}
+            initial={{ opacity: 0, scale: 0.96, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 10 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className={cn(
+              "relative z-10 w-full rounded-2xl border border-border bg-surface p-6 shadow-2xl focus:outline-none max-h-[90vh] overflow-y-auto",
+              sizeClasses[size],
+              className
+            )}
+          >
+            {(title || description) && (
+              <div className="mb-4 pb-3 border-b border-border flex items-start justify-between gap-3">
+                <div>
+                  {title && (
+                    <h3 id={titleId} className="font-display text-lg font-bold text-text-pure">
+                      {title}
+                    </h3>
+                  )}
+                  {description && (
+                    <p id={descId} className="mt-1 text-xs text-text-fog leading-relaxed">
+                      {description}
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close dialog"
+                  className="rounded-lg p-1 text-text-ash hover:text-text-pure hover:bg-surface-elevated transition-colors cursor-pointer"
+                >
+                  <i className="ti ti-x text-lg" aria-hidden="true" />
+                </button>
+              </div>
+            )}
+            {children}
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/* ─────────────────────────────── Drawer ─────────────────────────────── */
+
+export interface DrawerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title?: string;
+  children: ReactNode;
+  className?: string;
+  position?: "left" | "right";
+  id?: string;
+}
+
+export function Drawer({
+  isOpen,
+  onClose,
+  title,
+  children,
+  className,
+  position = "left",
+  id,
+}: DrawerProps) {
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const previousActiveRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      previousActiveRef.current = document.activeElement as HTMLElement | null;
+      document.body.style.overflow = "hidden";
+
+      setTimeout(() => {
+        const focusable = drawerRef.current?.querySelectorAll<HTMLElement>(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable && focusable.length > 0) {
+          focusable[0].focus();
+        } else {
+          drawerRef.current?.focus();
+        }
+      }, 50);
+
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          onClose();
+        }
+      };
+
+      window.addEventListener("keydown", handleKeyDown);
+      return () => {
+        window.removeEventListener("keydown", handleKeyDown);
+        document.body.style.overflow = "";
+        previousActiveRef.current?.focus();
+      };
+    }
+  }, [isOpen, onClose]);
+
+  const xOffset = position === "left" ? -320 : 320;
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div
+          id={id}
+          role="dialog"
+          aria-modal="true"
+          aria-label={title || "Navigation Drawer"}
+          className="fixed inset-0 z-[200] flex lg:hidden"
+        >
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+            onClick={onClose}
+            aria-hidden="true"
+          />
+
+          {/* Drawer Content */}
+          <motion.div
+            ref={drawerRef}
+            tabIndex={-1}
+            initial={{ x: xOffset }}
+            animate={{ x: 0 }}
+            exit={{ x: xOffset }}
+            transition={{ type: "spring", stiffness: 380, damping: 36 }}
+            className={cn(
+              "relative z-10 w-72 max-w-[85vw] border-r border-border bg-surface p-4 shadow-2xl flex flex-col focus:outline-none h-full",
+              position === "right" && "ml-auto border-r-0 border-l",
+              className
+            )}
+          >
+            {title && (
+              <div className="mb-4 flex items-center justify-between pb-2 border-b border-border">
+                <span className="font-display text-sm font-bold text-text-pure">{title}</span>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  aria-label="Close drawer"
+                  className="rounded-lg p-1 text-text-ash hover:text-text-pure cursor-pointer"
+                >
+                  <i className="ti ti-x text-base" aria-hidden="true" />
+                </button>
+              </div>
+            )}
+            {children}
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+

@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
@@ -38,9 +37,7 @@ export function AboutPage() {
       </div>
 
       <div className="mt-12">
-        <Link to="/register">
-          <Button variant="primary" size="lg">Get Started with CyberGuard</Button>
-        </Link>
+        <Button to="/register" variant="primary" size="lg">Get Started with CyberGuard</Button>
       </div>
     </div>
   );

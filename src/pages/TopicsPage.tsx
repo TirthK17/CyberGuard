@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/Button";
 import { Pill } from "@/components/ui/primitives";
@@ -657,11 +656,14 @@ export function TopicsPage() {
 
                 <div className="flex items-center gap-2 self-end sm:self-center">
                   {selectedTopic.relatedToolOrSim && (
-                    <Link to={selectedTopic.relatedToolOrSim.link} onClick={() => setSelectedTopic(null)}>
-                      <Button variant="primary" size="sm">
-                        {selectedTopic.relatedToolOrSim.label}
-                      </Button>
-                    </Link>
+                    <Button
+                      to={selectedTopic.relatedToolOrSim.link}
+                      variant="primary"
+                      size="sm"
+                      onClick={() => setSelectedTopic(null)}
+                    >
+                      {selectedTopic.relatedToolOrSim.label}
+                    </Button>
                   )}
                   <Button variant="secondary" size="sm" onClick={() => setSelectedTopic(null)}>
                     Close Dossier

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Card, Pill, PageSpinner } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import type { Quiz, Question, Module } from "@/types";
 import { useToast } from "@/context/ToastContext";
 
@@ -10,6 +11,7 @@ export function AdminQuizzesPage() {
   const [quizzes, setQuizzes] = useState<Quiz[] | null>(null);
   const [modules, setModules] = useState<Module[]>([]);
   const [selected, setSelected] = useState<Quiz | null>(null);
+  const [quizToDelete, setQuizToDelete] = useState<Quiz | null>(null);
   const [questions, setQuestions] = useState<Question[] | null>(null);
   const [newTitle, setNewTitle] = useState("");
   const [newCategory, setNewCategory] = useState("");
@@ -51,13 +53,20 @@ export function AdminQuizzesPage() {
     loadQuizzes();
   };
 
-  const deleteQuiz = async (q: Quiz) => {
-    if (!confirm(`Delete "${q.title}"?`)) return;
+  const deleteQuiz = (q: Quiz) => {
+    setQuizToDelete(q);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!quizToDelete) return;
+    const q = quizToDelete;
+    setQuizToDelete(null);
     const { error } = await supabase.from("quizzes").delete().eq("id", q.id);
     if (error) {
       toast({ title: `Failed to delete quiz: ${error.message}`, variant: "error" });
       return;
     }
+    toast({ title: `Quiz "${q.title}" deleted`, variant: "info" });
     if (selected?.id === q.id) setSelected(null);
     loadQuizzes();
   };
@@ -169,6 +178,17 @@ export function AdminQuizzesPage() {
         )}
       </div>
       {modules.length === 0 && null}
+
+      <ConfirmDialog
+        isOpen={Boolean(quizToDelete)}
+        title="Delete Quiz"
+        message={`Are you sure you want to delete quiz "${quizToDelete?.title}"? All questions under this quiz will also be permanently deleted.`}
+        confirmLabel="Delete Quiz"
+        cancelLabel="Cancel"
+        confirmTone="danger"
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setQuizToDelete(null)}
+      />
     </div>
   );
 }

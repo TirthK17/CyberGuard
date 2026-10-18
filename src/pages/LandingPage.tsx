@@ -316,21 +316,19 @@ export function LandingPage() {
             transition={{ duration: 0.35, delay: 0.15 }}
             className="mt-8 flex flex-wrap items-center justify-center gap-3.5"
           >
-            <Link to="/register">
-              <Button variant="primary" size="lg" icon={<i className="ti ti-shield-check" />}>
-                Start Free
-              </Button>
-            </Link>
-            <a href="#interactive-lab">
-              <Button variant="secondary" size="lg" icon={<i className="ti ti-target" />}>
-                Try Scam Spotter
-              </Button>
+            <Button to="/register" variant="primary" size="lg" icon={<i className="ti ti-shield-check" aria-hidden="true" />}>
+              Start Free
+            </Button>
+            <a
+              href="#interactive-lab"
+              className="relative inline-flex items-center justify-center gap-2 select-none font-medium transition-all duration-150 ease-out px-6 py-2.5 text-sm sm:text-base font-semibold rounded-xl bg-surface-elevated border border-border text-text-pure shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-surface-hover hover:border-border-strong cursor-pointer"
+            >
+              <i className="ti ti-target" aria-hidden="true" />
+              <span>Try Scam Spotter</span>
             </a>
-            <Link to="/simulations">
-              <Button variant="ghost" size="lg" icon={<i className="ti ti-device-laptop" />}>
-                Practice Simulations
-              </Button>
-            </Link>
+            <Button to="/simulations" variant="ghost" size="lg" icon={<i className="ti ti-device-laptop" aria-hidden="true" />}>
+              Practice Simulations
+            </Button>
           </motion.div>
 
           {/* ── 3. HERO INTERACTIVE SCAM SPOTTER & ATTACK INSPECTOR ── */}
@@ -672,11 +670,9 @@ export function LandingPage() {
                   </p>
                 </div>
 
-                <Link to="/training">
-                  <Button variant="primary" size="xs" icon={<i className="ti ti-arrow-right" />}>
-                    Improve Habits
-                  </Button>
-                </Link>
+                <Button to="/training" variant="primary" size="xs" icon={<i className="ti ti-arrow-right" aria-hidden="true" />}>
+                  Improve Habits
+                </Button>
               </motion.div>
             )}
           </div>
@@ -813,11 +809,9 @@ export function LandingPage() {
 
             <div className="mt-4 pt-3 border-t border-border flex flex-wrap items-center justify-between gap-2 text-xs">
               <span className="text-text-ash text-[11px]">Need to report a scam? We provide clear step-by-step reporting guidance.</span>
-              <Link to="/report">
-                <Button variant="secondary" size="xs" icon={<i className="ti ti-flag" />}>
-                  Report Incident
-                </Button>
-              </Link>
+              <Button to="/report" variant="secondary" size="xs" icon={<i className="ti ti-flag" aria-hidden="true" />}>
+                Report Incident
+              </Button>
             </div>
           </div>
         </div>
@@ -836,16 +830,12 @@ export function LandingPage() {
             Practice spotting real-world scams and protect your accounts with simple, practical daily habits. Free, zero-risk, and built for everyone.
           </p>
           <div className="mt-6 flex items-center justify-center gap-2.5">
-            <Link to="/register">
-              <Button variant="primary" size="md" icon={<i className="ti ti-arrow-right" />}>
-                Create Free Account
-              </Button>
-            </Link>
-            <Link to="/login">
-              <Button variant="secondary" size="md">
-                Try Demo
-              </Button>
-            </Link>
+            <Button to="/register" variant="primary" size="md" icon={<i className="ti ti-arrow-right" aria-hidden="true" />}>
+              Create Free Account
+            </Button>
+            <Button to="/login" variant="secondary" size="md">
+              Try Demo
+            </Button>
           </div>
         </div>
       </section>
