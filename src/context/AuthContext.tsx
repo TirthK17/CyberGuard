@@ -18,7 +18,6 @@ interface AuthContextValue {
   signInWithGoogle: () => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
-  switchUser: (role: "user" | "admin") => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -70,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
       options: { data: { full_name: fullName } },
     });
-    return { error: error ? "Failed to create account" : null };
+    return { error: error ? error.message : null };
   };
 
   const signIn = async (email: string, password?: string) => {
@@ -79,8 +78,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const signInWithGoogle = async () => {
-    await localDb.auth.signInWithOAuth({ provider: "google" });
-    return { error: null };
+    const { error } = await localDb.auth.signInWithOAuth({ provider: "google" });
+    return { error: error ? error.message : null };
   };
 
   const signOut = async () => {
@@ -89,11 +88,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshProfile = async () => {
     if (user) await loadProfile(user.id);
-  };
-
-  const switchUser = (role: "user" | "admin") => {
-    const email = role === "admin" ? "admin@cyberguard.dev" : "operator@cyberguard.dev";
-    signIn(email);
   };
 
   return (
@@ -109,7 +103,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         signInWithGoogle,
         signOut,
         refreshProfile,
-        switchUser,
       }}
     >
       {children}

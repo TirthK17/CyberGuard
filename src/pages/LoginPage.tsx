@@ -1,18 +1,18 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { Button, GoogleIcon } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { CyberGuardLogo } from "@/components/ui/CyberGuardLogo";
+import { DEMO_PASSWORD } from "@/lib/localDb";
 
 export function LoginPage() {
-  const { signIn, signInWithGoogle, user, profile, loading } = useAuth();
+  const { signIn, user, profile, loading } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -26,45 +26,31 @@ export function LoginPage() {
     e.preventDefault();
     setError(null);
     setSubmitting(true);
-    const { error } = await signIn(email, password);
+    const { error: signInErr } = await signIn(email, password);
     setSubmitting(false);
-    if (error) {
-      setError("Invalid email or password. Please try again or use the Instant Demo Access below.");
+    if (signInErr) {
+      setError(signInErr);
       return;
     }
     setSubmitted(true);
   };
 
-  const handleGoogleLogin = async () => {
-    setError(null);
-    setGoogleLoading(true);
-    const { error } = await signInWithGoogle();
-    if (error) {
-      setGoogleLoading(false);
-      setError(error);
-    }
-  };
-
-  // 1-Click Demo Sign-in for immediate evaluation & review
+  /** 1-click demo login — shows an error if sign-in fails (never silently redirects) */
   const handleDemoLogin = async (asAdmin: boolean = false) => {
     setError(null);
     setDemoLoading(true);
-    // Attempt sign in with standard demo credentials if created, else try user sign in
     const demoEmail = asAdmin ? "admin@cyberguard.dev" : "operator@cyberguard.dev";
-    const demoPass = "CyberGuard2026!";
-    const { error: signInErr } = await signIn(demoEmail, demoPass);
-    if (signInErr) {
-      // If demo account doesn't exist in Supabase yet, navigate directly to dashboard
-      // so reviewers can immediately inspect all tools without getting blocked!
-      navigate("/dashboard");
-    } else {
-      setSubmitted(true);
-    }
+    const { error: signInErr } = await signIn(demoEmail, DEMO_PASSWORD);
     setDemoLoading(false);
+    if (signInErr) {
+      setError(`Demo login failed: ${signInErr}. Try clearing localStorage and refreshing.`);
+      return;
+    }
+    setSubmitted(true);
   };
 
   return (
-    <div className="relative flex min-h-[calc(100vh-70px)] items-center justify-center px-6 py-12">
+    <div className="relative flex min-h-[100dvh] items-center justify-center px-6 py-12">
       <motion.div
         initial={{ opacity: 0, scale: 0.98, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -95,16 +81,32 @@ export function LoginPage() {
             Sign in to access your safety lessons, simulations, and security tools.
           </p>
 
-          {/* Quick Demo Access Callout for Evaluators & Judges */}
+          {/* Demo Credentials Box */}
           <div className="mt-5 rounded-xl border border-primary/20 bg-primary-subtle p-3.5">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-primary">Instant Preview Access</span>
-              <span className="text-[10px] uppercase font-bold text-primary tracking-wide">1-Click</span>
+              <span className="text-xs font-semibold text-primary">Demo Credentials</span>
+              <span className="text-[10px] uppercase font-bold text-primary tracking-wide">Offline Mode</span>
             </div>
-            <p className="text-[11px] text-text-fog mt-1">
-              Explore all features immediately with pre-loaded demo data:
+            <p className="text-[11px] text-text-fog mt-1 mb-2">
+              Use these to explore all features without registering:
             </p>
-            <div className="mt-3 flex items-center gap-2">
+            <table className="w-full text-[11px] text-text-fog mb-3">
+              <tbody>
+                <tr>
+                  <td className="pr-2 font-medium text-text-pure">Admin</td>
+                  <td className="font-mono">admin@cyberguard.dev</td>
+                </tr>
+                <tr>
+                  <td className="pr-2 font-medium text-text-pure">User</td>
+                  <td className="font-mono">operator@cyberguard.dev</td>
+                </tr>
+                <tr>
+                  <td className="pr-2 font-medium text-text-pure">Password</td>
+                  <td className="font-mono font-bold text-primary">{DEMO_PASSWORD}</td>
+                </tr>
+              </tbody>
+            </table>
+            <div className="flex items-center gap-2">
               <Button
                 type="button"
                 variant="primary"
@@ -113,7 +115,17 @@ export function LoginPage() {
                 onClick={() => handleDemoLogin(false)}
                 loading={demoLoading}
               >
-                Explore Demo Dashboard
+                1-Click User Demo
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="xs"
+                className="flex-1 py-1.5 font-semibold"
+                onClick={() => handleDemoLogin(true)}
+                loading={demoLoading}
+              >
+                Admin Demo
               </Button>
             </div>
           </div>
@@ -130,6 +142,8 @@ export function LoginPage() {
           <AnimatePresence>
             {error && (
               <motion.div
+                role="alert"
+                aria-live="assertive"
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
@@ -185,20 +199,6 @@ export function LoginPage() {
               Sign In
             </Button>
           </form>
-
-          {/* Google Login */}
-          <div className="mt-3">
-            <Button
-              type="button"
-              variant="google"
-              className="w-full justify-center gap-2.5 py-2 text-xs"
-              onClick={handleGoogleLogin}
-              loading={googleLoading}
-            >
-              <GoogleIcon />
-              <span>Continue with Google</span>
-            </Button>
-          </div>
 
           {/* Bottom link */}
           <p className="mt-6 text-center text-xs text-text-fog">

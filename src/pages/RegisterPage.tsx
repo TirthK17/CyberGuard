@@ -1,19 +1,18 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { Button, GoogleIcon } from "@/components/ui/Button";
+import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { CyberGuardLogo } from "@/components/ui/CyberGuardLogo";
 
 export function RegisterPage() {
-  const { signUp, signInWithGoogle } = useAuth();
+  const { signUp } = useAuth();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [googleLoading, setGoogleLoading] = useState(false);
   const [done, setDone] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -30,48 +29,38 @@ export function RegisterPage() {
     }
 
     setLoading(true);
-    const { error } = await signUp(email, password, fullName);
+    const { error: signUpErr } = await signUp(email, password, fullName);
     setLoading(false);
 
-    if (error) {
-      setError(error);
+    if (signUpErr) {
+      setError(signUpErr);
       return;
     }
     setDone(true);
   };
 
-  const handleGoogleSignUp = async () => {
-    setError(null);
-    setGoogleLoading(true);
-    const { error } = await signInWithGoogle();
-    if (error) {
-      setGoogleLoading(false);
-      setError(error);
-    }
-  };
-
   if (done) {
     return (
-      <div className="flex min-h-[calc(100vh-70px)] items-center justify-center px-6 py-16">
+      <div className="flex min-h-[100dvh] items-center justify-center px-6 py-16">
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           className="macos-window w-full max-w-md p-8 text-center"
         >
           <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl border border-success/30 bg-success/10 text-success">
-            <i className="ti ti-mail-check text-2xl" />
+            <i className="ti ti-check text-2xl" aria-hidden="true" />
           </div>
           <h2 className="mt-4 font-display text-xl font-bold text-text-pure">
-            Verification link sent
+            Account Created!
           </h2>
           <p className="mt-2 text-xs text-text-fog leading-relaxed">
-            We’ve sent a verification link to <strong className="text-text-pure">{email}</strong>.
-            Click the link in the message to activate your account.
+            Your account for <strong className="text-text-pure">{email}</strong> is ready.
+            You are now signed in.
           </p>
           <div className="mt-6 flex justify-center">
-            <Link to="/login">
+            <Link to="/dashboard">
               <Button variant="primary" size="sm">
-                Proceed to Sign In
+                Go to Dashboard
               </Button>
             </Link>
           </div>
@@ -81,7 +70,7 @@ export function RegisterPage() {
   }
 
   return (
-    <div className="relative flex min-h-[calc(100vh-70px)] items-center justify-center px-6 py-12">
+    <div className="relative flex min-h-[100dvh] items-center justify-center px-6 py-12">
       <motion.div
         initial={{ opacity: 0, scale: 0.98, y: 10 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -111,20 +100,6 @@ export function RegisterPage() {
             Start learning with interactive lessons, scam simulations, and free safety tools.
           </p>
 
-          {/* Google OAuth Button */}
-          <div className="mt-6">
-            <Button
-              type="button"
-              variant="google"
-              className="w-full justify-center gap-2.5 py-2 text-xs"
-              onClick={handleGoogleSignUp}
-              loading={googleLoading}
-            >
-              <GoogleIcon />
-              <span>Sign up with Google</span>
-            </Button>
-          </div>
-
           {/* Hairline Divider */}
           <div className="relative my-6 flex items-center justify-center">
             <div className="w-full border-t border-border" />
@@ -137,6 +112,8 @@ export function RegisterPage() {
           <AnimatePresence>
             {error && (
               <motion.div
+                role="alert"
+                aria-live="assertive"
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}

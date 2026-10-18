@@ -1308,9 +1308,10 @@ export interface DatabaseTableMap {
   incident_reports: { id: string; user_id: string; category: string; urgency: string; subject: string; details: string; status: string; created_at: string };
   progress: Progress;
   leaderboard: LeaderboardEntry;
+  certificates: { id: string; user_id: string; full_name: string; score: number; issued_at: string };
 }
 
-const STORAGE_KEY = "cyberguard_local_db_v4";
+const STORAGE_KEY = "cyberguard_local_db_v5";
 
 interface DatabaseState {
   profiles: Profile[];
@@ -1330,6 +1331,45 @@ interface DatabaseState {
   activity_logs: Array<{ id: string; user_id: string; action: string; meta: Record<string, unknown>; points_earned: number; created_at: string }>;
   incident_reports: Array<{ id: string; user_id: string; category: string; urgency: string; subject: string; details: string; status: string; created_at: string }>;
   progress: Progress[];
+  /** Issued certificates — stable ID, stored once on passing assessment */
+  certificates: Array<{ id: string; user_id: string; full_name: string; score: number; issued_at: string }>;
+  /** Hashed credentials — never store plain passwords here */
+  credentials: Array<{ user_id: string; salt: string; hash: string }>;
+}
+
+/**
+ * Demo account password (shown on LoginPage in the Demo Credentials box).
+ * Hashed lazily when localDb first loads. Never store plain-text passwords.
+ */
+export const DEMO_PASSWORD = "CyberGuard2026!";
+
+/** Hex-encode a Uint8Array */
+function toHex(buf: ArrayBuffer): string {
+  return Array.from(new Uint8Array(buf))
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+/** Generate a random 16-byte hex salt */
+function randomSalt(): string {
+  const arr = new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  return toHex(arr.buffer);
+}
+
+/** SHA-256 hash of (salt + password). Returns lowercase hex. */
+async function sha256(salt: string, password: string): Promise<string> {
+  const enc = new TextEncoder();
+  const data = enc.encode(salt + password);
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return toHex(buf);
+}
+
+/** Build a credential record for a profile+password pair */
+async function buildCredential(userId: string, password: string): Promise<{ user_id: string; salt: string; hash: string }> {
+  const salt = randomSalt();
+  const hash = await sha256(salt, password);
+  return { user_id: userId, salt, hash };
 }
 
 function getInitialState(): DatabaseState {
@@ -1361,6 +1401,9 @@ function getInitialState(): DatabaseState {
       { id: "prog-1", user_id: "user-demo-operator", module_id: "mod-1", completed_lessons: ["les-1-1", "les-1-2"], is_completed: true },
       { id: "prog-2", user_id: "user-demo-operator", module_id: "mod-3", completed_lessons: ["les-3-1", "les-3-2"], is_completed: true },
     ],
+    certificates: [],
+    /** credentials seeded asynchronously via seedDemoCredentials() */
+    credentials: [],
   };
 }
 
@@ -1418,6 +1461,14 @@ function loadDb(): DatabaseState {
       const existingIds = new Set((parsed.profiles || []).map((p: Profile) => p.id));
       const toAdd = DEFAULT_PROFILES.filter((p) => !existingIds.has(p.id));
       parsed.profiles = [...(parsed.profiles || []), ...toAdd];
+      saveDb(parsed);
+    }
+    if (!parsed.certificates) {
+      parsed.certificates = [];
+      saveDb(parsed);
+    }
+    if (!parsed.credentials) {
+      parsed.credentials = [];
       saveDb(parsed);
     }
     return parsed;
@@ -1635,36 +1686,69 @@ export class LocalQueryBuilder<T = any> implements PromiseLike<{ data: T; error:
 
 const AUTH_USER_KEY = "cyberguard_active_user";
 
+/** Demo accounts: seeded with known password on first load */
+const DEMO_ACCOUNTS = [
+  { email: "admin@cyberguard.dev",    userId: "user-demo-lead-1" },
+  { email: "operator@cyberguard.dev", userId: "user-demo-operator" },
+  { email: "sarah.chen@cyberguard.dev", userId: "user-demo-lead-1" },
+  { email: "marcus.v@cyberguard.dev",  userId: "user-demo-lead-2" },
+  { email: "elena.r@cyberguard.dev",   userId: "user-demo-lead-3" },
+  { email: "aisha.p@cyberguard.dev",   userId: "user-demo-lead-4" },
+  { email: "david.k@cyberguard.dev",   userId: "user-demo-lead-5" },
+  { email: "priya.s@cyberguard.dev",   userId: "user-demo-lead-6" },
+  { email: "liam.o@cyberguard.dev",    userId: "user-demo-lead-7" },
+];
+
+/**
+ * Seeds hashed demo credentials if they don't already exist.
+ * Called once on first access — async because Web Crypto is async.
+ */
+async function seedDemoCredentials(): Promise<void> {
+  const db = loadDb();
+  const seeded = new Set(db.credentials.map((c) => c.user_id));
+  const toSeed = DEMO_ACCOUNTS.filter((a) => !seeded.has(a.userId));
+  if (!toSeed.length) return;
+
+  const newCreds = await Promise.all(
+    toSeed.map((a) => buildCredential(a.userId, DEMO_PASSWORD))
+  );
+  db.credentials.push(...newCreds);
+  saveDb(db);
+}
+
 class LocalAuthClient {
   private listeners: Array<(event: string, session: { user: Profile } | null) => void> = [];
+  /** True after async seed is done — prevents race on first sign-in */
+  private _seedPromise: Promise<void> | null = null;
 
+  private ensureSeeded(): Promise<void> {
+    if (!this._seedPromise) {
+      this._seedPromise = seedDemoCredentials();
+    }
+    return this._seedPromise;
+  }
+
+  /** Returns the active session profile, or null if no one is logged in. */
   getCurrentUser(): Profile | null {
-    if (typeof window === "undefined") return DEFAULT_PROFILES[0];
+    if (typeof window === "undefined") return null;
     try {
       const raw = localStorage.getItem(AUTH_USER_KEY);
-      if (!raw) {
-        localStorage.setItem(AUTH_USER_KEY, JSON.stringify(DEFAULT_PROFILES[0]));
-        return DEFAULT_PROFILES[0];
-      }
-      return JSON.parse(raw);
+      if (!raw) return null;
+      return JSON.parse(raw) as Profile;
     } catch {
-      return DEFAULT_PROFILES[0];
+      return null;
     }
   }
 
   async getSession(): Promise<{ data: { session: { user: Profile } | null }; error: null }> {
     const user = this.getCurrentUser();
-    return {
-      data: {
-        session: user ? { user } : null,
-      },
-      error: null,
-    };
+    return { data: { session: user ? { user } : null }, error: null };
   }
 
   onAuthStateChange(callback: (event: string, session: { user: Profile } | null) => void) {
     this.listeners.push(callback);
     const user = this.getCurrentUser();
+    // Fire synchronously with current state
     callback("INITIAL_SESSION", user ? { user } : null);
     return {
       data: {
@@ -1677,53 +1761,81 @@ class LocalAuthClient {
     };
   }
 
-  async signInWithPassword({ email }: { email: string; password?: string }): Promise<{ error: null | { message: string } }> {
+  /**
+   * Signs in with email + password.
+   * - Rejects unknown emails (no silent account creation).
+   * - Verifies the SHA-256+salt hash.
+   * - Never derives role from email.
+   */
+  async signInWithPassword({ email, password = "" }: { email: string; password?: string }): Promise<{ error: null | { message: string } }> {
+    await this.ensureSeeded();
     const db = loadDb();
-    const found = db.profiles.find((p) => p.email.toLowerCase() === email.toLowerCase());
 
-    if (found) {
-      localStorage.setItem(AUTH_USER_KEY, JSON.stringify(found));
-      this.notify("SIGNED_IN", { user: found });
-      return { error: null };
+    const profile = db.profiles.find((p) => p.email.toLowerCase() === email.toLowerCase());
+    if (!profile) {
+      return { error: { message: "No account found with that email address." } };
     }
 
-    const newProfile: Profile = {
-      id: `user-${Date.now()}`,
-      full_name: email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
-      email,
-      role: email.includes("admin") ? "admin" : "user",
-      avatar_url: null,
-      points: 100,
-      level: 1,
-      awareness_score: 75,
-      status: "active",
-      created_at: new Date().toISOString(),
-    };
+    const cred = db.credentials.find((c) => c.user_id === profile.id);
+    if (!cred) {
+      // Account exists but has no credential record (edge-case for very old data).
+      // Treat as wrong password rather than auto-login.
+      return { error: { message: "Invalid password. Please use the demo credentials shown on this page." } };
+    }
 
-    db.profiles.push(newProfile);
-    saveDb(db);
+    const hash = await sha256(cred.salt, password);
+    if (hash !== cred.hash) {
+      return { error: { message: "Incorrect password. Please try again." } };
+    }
 
-    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(newProfile));
-    this.notify("SIGNED_IN", { user: newProfile });
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(profile));
+    this.notify("SIGNED_IN", { user: profile });
     return { error: null };
   }
 
-  async signUp({ email, options }: { email: string; password?: string; options?: { data?: { full_name?: string } } }): Promise<{ error: null | { message: string } }> {
+  /**
+   * Creates a new account.
+   * - Rejects duplicate emails.
+   * - Enforces minimum password length (8).
+   * - Always assigns role: 'user' (admins can only be promoted via admin panel).
+   * - Uses crypto.randomUUID() for IDs.
+   */
+  async signUp({
+    email,
+    password = "",
+    options,
+  }: {
+    email: string;
+    password?: string;
+    options?: { data?: { full_name?: string } };
+  }): Promise<{ error: null | { message: string } }> {
+    await this.ensureSeeded();
+    if (password.length < 8) {
+      return { error: { message: "Password must be at least 8 characters." } };
+    }
+
     const db = loadDb();
+    if (db.profiles.some((p) => p.email.toLowerCase() === email.toLowerCase())) {
+      return { error: { message: "An account with that email already exists." } };
+    }
+
+    const id = crypto.randomUUID();
     const newProfile: Profile = {
-      id: `user-${Date.now()}`,
-      full_name: options?.data?.full_name || email.split("@")[0],
+      id,
+      full_name: options?.data?.full_name || email.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
       email,
-      role: "user",
+      role: "user", // Role is ALWAYS 'user' on signup — never derived from email
       avatar_url: null,
-      points: 50,
+      points: 0,
       level: 1,
-      awareness_score: 70,
+      awareness_score: 0,
       status: "active",
       created_at: new Date().toISOString(),
     };
 
+    const cred = await buildCredential(id, password);
     db.profiles.push(newProfile);
+    db.credentials.push(cred);
     saveDb(db);
 
     localStorage.setItem(AUTH_USER_KEY, JSON.stringify(newProfile));
@@ -1732,11 +1844,16 @@ class LocalAuthClient {
   }
 
   async updateUser({ password: _pw }: { password?: string }): Promise<{ error: null | { message: string } }> {
+    // Password change not yet implemented for localDb mode.
     return { error: null };
   }
 
+  /**
+   * Previously called signInWithOAuth / "Continue with Google".
+   * Relabelled: signs in as the Demo Operator account using the known demo password.
+   */
   async signInWithOAuth({ provider: _provider }: { provider: string; options?: unknown }): Promise<{ error: null | { message: string } }> {
-    return this.signInWithPassword({ email: `operator@cyberguard.dev` });
+    return this.signInWithPassword({ email: "operator@cyberguard.dev", password: DEMO_PASSWORD });
   }
 
   async signOut(): Promise<void> {
