@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { CyberGuardLogoMark } from "@/components/ui/CyberGuardLogo";
+import { KavachLogoMark } from "@/components/ui/KavachLogo";
 import { Button } from "@/components/ui/Button";
+import { APP_NAME } from "@/lib/constants";
 
 interface CertRecord {
   id: string;
@@ -17,7 +18,7 @@ interface CertRecord {
  * Computes an immutable SHA-256 digital fingerprint to verify credential authenticity.
  */
 async function computeDigitalFingerprint(cert: CertRecord): Promise<string> {
-  const raw = `${cert.user_id}:${cert.id}:${cert.score}:${cert.issued_at}:cyberguard-root-ca-v1`;
+  const raw = `${cert.user_id}:${cert.id}:${cert.score}:${cert.issued_at}:kavach-root-ca-v1`;
   const enc = new TextEncoder().encode(raw);
   const buf = await crypto.subtle.digest("SHA-256", enc);
   return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, "0")).join("");
@@ -62,8 +63,8 @@ export function VerifyCertificatePage() {
     : "";
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#080c14] text-white px-6 py-16 relative overflow-hidden">
-      {/* Background radial glowing auras */}
+    <div className="min-h-screen flex flex-col items-center justify-center bg-[#000000] text-white px-6 py-16 relative overflow-hidden">
+      {/* Background subtle glowing auras */}
       <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-96 w-[600px] rounded-full bg-sky-500/10 blur-[120px]" />
       <div className="pointer-events-none absolute -bottom-40 left-1/2 -translate-x-1/2 h-96 w-[600px] rounded-full bg-amber-500/10 blur-[120px]" />
 
@@ -74,11 +75,11 @@ export function VerifyCertificatePage() {
         transition={{ duration: 0.35 }}
         className="mb-8 flex items-center gap-3"
       >
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/15 bg-slate-900/80 shadow-md p-1">
-          <CyberGuardLogoMark size={28} pulse={false} />
+        <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/15 bg-neutral-900/90 shadow-md p-1">
+          <KavachLogoMark size={28} pulse={false} />
         </div>
         <div>
-          <span className="font-display text-xl font-extrabold text-white tracking-tight block">CyberGuard</span>
+          <span className="font-display text-xl font-extrabold text-white tracking-tight block">{APP_NAME}</span>
           <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash">Public Verification Registry</span>
         </div>
       </motion.div>
@@ -108,13 +109,13 @@ export function VerifyCertificatePage() {
             <div>
               <p className="text-sm font-bold text-emerald-400">Authentic Certificate Verified</p>
               <p className="text-xs text-text-frost mt-0.5">
-                This credential is officially signed, cryptographically sealed, and registered on the CyberGuard Defense Council ledger.
+                This credential is officially signed, cryptographically sealed, and registered on the Kavach Defense Council ledger.
               </p>
             </div>
           </div>
 
           {/* Details Card */}
-          <div className="rounded-3xl border border-white/10 bg-slate-900/60 backdrop-blur-2xl p-7 space-y-4 shadow-[0_24px_64px_rgba(0,0,0,0.6)]">
+          <div className="rounded-3xl border border-white/10 bg-neutral-900/80 backdrop-blur-2xl p-7 space-y-4 shadow-[0_24px_64px_rgba(0,0,0,0.8)]">
             <div className="border-b border-white/10 pb-4 mb-2">
               <span className="font-mono text-[10px] uppercase tracking-widest text-amber-400 font-bold block">
                 ISSUED ACCREDITATION
@@ -128,7 +129,7 @@ export function VerifyCertificatePage() {
             <Row label="Credential Holder" value={cert.full_name} bold />
             <Row label="Assessment Score" value={`${cert.score}% (Pass & Distinction)`} />
             <Row label="Date of Conferment" value={formattedDate} />
-            <Row label="Issuing Authority" value="CyberGuard National Defense Council" />
+            <Row label="Issuing Authority" value="Kavach National Defense Council" />
 
             {fingerprint && (
               <div className="mt-4 pt-4 border-t border-white/10">

@@ -2,18 +2,71 @@
 <html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/shield.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/intro/kavach-final.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <!-- SEO -->
-    <title>CyberGuard — Cybersecurity Awareness &amp; Defense Portal</title>
-    <meta name="description" content="An Apple macOS-inspired cybersecurity awareness platform with interactive training, realistic phishing email simulations, and security telemetry." />
-    <meta name="theme-color" content="#0071e3" />
+    <!-- Intro Poster Preload for Instant First-Frame Paint -->
+    <link rel="preload" as="image" href="/intro/kavach-poster.jpg" />
 
-    <!-- Open Graph -->
-    <meta property="og:title" content="CyberGuard — Cybersecurity Awareness Platform" />
-    <meta property="og:description" content="Interactive training platform for phishing defense, password security, network safety, and more." />
+    <!-- SEO & Metadata -->
+    <title>Kavach — Cyber Awareness. Human Defence.</title>
+    <meta name="description" content="Kavach: Advanced cybersecurity awareness and human defense platform. Interactive simulations, threat intelligence, and human defense telemetry." />
+    <meta name="theme-color" content="#dfe5e6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+
+    <!-- Open Graph & Social Preview -->
+    <meta property="og:title" content="Kavach — Cyber Awareness. Human Defence." />
+    <meta property="og:description" content="Interactive cybersecurity awareness platform for phishing defense, realistic attacks, and human defense telemetry." />
     <meta property="og:type" content="website" />
+    <meta property="og:image" content="/og-image.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Kavach — Cyber Awareness. Human Defence." />
+    <meta name="twitter:description" content="Cyber awareness. Human defence. Interactive training & telemetry." />
+    <meta name="twitter:image" content="/og-image.png" />
+
+    <!-- Inline Pre-React Intro Check to Prevent Flash -->
+    <script>
+      (function() {
+        try {
+          var params = new URLSearchParams(window.location.search);
+          var forceIntro = params.get('intro') === '1';
+          var skipIntro = params.get('intro') === '0';
+          var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          var seen = sessionStorage.getItem('kavach_intro_seen_v1');
+          if (!skipIntro && (forceIntro || (!prefersReducedMotion && seen !== '1'))) {
+            document.documentElement.dataset.intro = 'on';
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <style>
+      :root {
+        --intro-bg: #dfe5e6;
+      }
+      html[data-intro="on"], html[data-intro="on"] body {
+        background-color: var(--intro-bg) !important;
+      }
+      html[data-intro="on"] #root:empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100dvh;
+        background: #dfe5e6 radial-gradient(ellipse at 50% 45%, #eef3f6 0%, #dfe5e6 70%);
+      }
+      html[data-intro="on"] #root:empty::before {
+        content: '';
+        display: block;
+        width: min(78vw, 980px);
+        aspect-ratio: 16 / 9;
+        background-image: url('/intro/kavach-poster.jpg');
+        background-size: contain;
+        background-position: center;
+        background-repeat: no-repeat;
+        -webkit-mask-image: radial-gradient(ellipse 46% 44% at 50% 50%, #000 0%, #000 36%, rgba(0, 0, 0, 0.85) 50%, rgba(0, 0, 0, 0.3) 72%, transparent 92%);
+        mask-image: radial-gradient(ellipse 46% 44% at 50% 50%, #000 0%, #000 36%, rgba(0, 0, 0, 0.85) 50%, rgba(0, 0, 0, 0.3) 72%, transparent 92%);
+      }
+    </style>
 
     <!-- Google Fonts — Plus Jakarta Sans, Inter, JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

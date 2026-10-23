@@ -507,7 +507,7 @@ export function ThreatIntelligencePage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12">
           {/* Visual SVG World Canvas */}
-          <div className="lg:col-span-8 p-4 sm:p-6 bg-[#070b14] relative overflow-hidden flex items-center justify-center min-h-[300px]">
+          <div className="lg:col-span-8 p-4 sm:p-6 bg-black relative overflow-hidden flex items-center justify-center min-h-[300px]">
             <div
               className="absolute inset-0 opacity-20 pointer-events-none"
               style={{

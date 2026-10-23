@@ -6,7 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { cn } from "@/lib/utils";
 import { Drawer } from "@/components/ui/primitives";
-import { CyberGuardLogo, CyberGuardLogoMark } from "@/components/ui/CyberGuardLogo";
+import { KavachLogo, KavachLogoMark } from "@/components/ui/KavachLogo";
+import { APP_NAME } from "@/lib/constants";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
 
@@ -257,7 +258,7 @@ export function DashboardShell({
       <div className={cn("mb-4 flex items-center justify-between px-2 pt-1")}>
         <div className="flex items-center gap-2">
           <div className="macos-traffic-lights">
-            <span className="macos-dot macos-dot-close" title="CyberGuard OS" />
+            <span className="macos-dot macos-dot-close" title={`${APP_NAME} OS`} />
             <button
               type="button"
               onClick={() => setCollapsed((c) => !c)}
@@ -306,10 +307,10 @@ export function DashboardShell({
       {/* Brand Header */}
       <div className={cn("mb-4 flex items-center px-2", collapsed ? "justify-center" : "gap-2.5")}>
         {collapsed ? (
-          <CyberGuardLogoMark size={32} pulse={false} />
+          <KavachLogoMark size={32} pulse={false} />
         ) : (
           <Link to="/dashboard" className="transition-opacity hover:opacity-90">
-            <CyberGuardLogo size="sm" subtitle={brandLabel || "DEFENSE PLATFORM"} pulse={false} />
+            <KavachLogo size="sm" subtitle={brandLabel || "DEFENSE PLATFORM"} pulse={false} />
           </Link>
         )}
       </div>
@@ -348,11 +349,11 @@ export function DashboardShell({
           <div className="mb-3 px-3">
             <div className="mb-1 flex items-center justify-between text-xs font-medium">
               <span className="text-text-ash">{t("common.level", "Level")} {profile.level}</span>
-              <span className="text-primary font-semibold">{profile.points} {t("common.xp", "XP")}</span>
+              <span className="text-amber-500 dark:text-amber-400 font-semibold font-mono">{profile.points} {t("common.xp", "XP")}</span>
             </div>
             <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-elevated border border-border">
               <motion.div
-                className="h-full rounded-full bg-primary"
+                className="h-full rounded-full bg-gradient-to-r from-sky-400 to-blue-500"
                 initial={{ width: 0 }}
                 animate={{ width: `${lvlPct}%` }}
                 transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
@@ -369,7 +370,7 @@ export function DashboardShell({
           )}
           title={collapsed ? profile?.full_name : undefined}
         >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 border border-primary/20 text-xs font-semibold text-primary">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 border border-sky-500/25 text-xs font-semibold text-sky-500 dark:text-sky-400">
             {initials}
           </div>
           {!collapsed && (
@@ -451,7 +452,7 @@ export function DashboardShell({
         {/* Mobile top bar (compact, clean without macOS dots) */}
         <div className="flex items-center justify-between border-b border-border bg-surface/85 backdrop-blur-xl px-4 py-2.5 lg:hidden sticky top-0 z-30">
           <div className="flex items-center gap-2">
-            <CyberGuardLogo size="xs" showText={true} />
+            <KavachLogo size="xs" showText={true} />
           </div>
           <div className="flex items-center gap-1">
             <LanguageSwitcher variant="compact" />

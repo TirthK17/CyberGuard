@@ -7,9 +7,9 @@
 ██║       ╚██╔╝  ██╔══██╗██╔══╝  ██╔══██╗██║   ██║██║   ██║██╔══██║██╔══██╗██║  ██║
 ╚██████╗   ██║   ██████╔╝███████╗██║  ██║╚██████╔╝╚██████╔╝██║  ██║██║  ██║██████╔╝
  ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ 
-```
+# Kavach (CyberGuard)
 
-### *Cybersecurity Awareness, Simulation & Incident Defense Portal*
+### *Cyber awareness. Human defence.*
 
 **Experiential learning platform that transforms passive training into hands-on cyber defence practice.**
 

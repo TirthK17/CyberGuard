@@ -68,7 +68,7 @@ export function ProfilePage() {
       });
     })();
     return () => { active = false; };
-  }, [profile?.id]);
+  }, [profile]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

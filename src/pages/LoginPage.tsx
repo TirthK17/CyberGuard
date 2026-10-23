@@ -3,7 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
-import { CyberGuardLogo } from "@/components/ui/CyberGuardLogo";
+import { KavachLogo } from "@/components/ui/KavachLogo";
+import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 import { DEMO_PASSWORD } from "@/lib/localDb";
 
 export function LoginPage() {
@@ -64,14 +65,14 @@ export function LoginPage() {
             <span className="macos-dot macos-dot-minimize" />
             <span className="macos-dot macos-dot-expand" />
           </div>
-          <span className="text-[11px] font-medium text-text-ash">CyberGuard</span>
+          <span className="text-[11px] font-medium text-text-ash">{APP_NAME}</span>
           <div className="w-10" />
         </div>
 
         <div className="p-8">
           {/* Brand mark */}
           <Link to="/" className="inline-block hover:opacity-90 transition-opacity">
-            <CyberGuardLogo size="md" subtitle="ONLINE SAFETY PORTAL" />
+            <KavachLogo size="md" subtitle={APP_TAGLINE} />
           </Link>
 
           <h1 className="mt-6 font-display text-2xl font-bold tracking-tight text-text-pure">

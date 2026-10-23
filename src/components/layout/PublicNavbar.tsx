@@ -4,7 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
 import { Button } from "@/components/ui/Button";
-import { CyberGuardLogo } from "@/components/ui/CyberGuardLogo";
+import { KavachLogo } from "@/components/ui/KavachLogo";
+import { APP_TAGLINE } from "@/lib/constants";
 
 const links = [
   { to: "/about", label: "About" },
@@ -26,7 +27,7 @@ export function PublicNavbar() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-3.5">
         {/* Brand */}
         <Link to="/" className="flex items-center group">
-          <CyberGuardLogo size="sm" subtitle="ONLINE SAFETY PORTAL" />
+          <KavachLogo size="sm" subtitle={APP_TAGLINE} />
         </Link>
 
         {/* Center Nav Links */}

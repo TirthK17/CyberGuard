@@ -6,9 +6,9 @@ import { useToast } from "@/context/ToastContext";
 import { EmptyState } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
-import { CyberGuardLogoMark } from "@/components/ui/CyberGuardLogo";
+import { KavachLogoMark } from "@/components/ui/KavachLogo";
 import { supabase } from "@/lib/supabase";
-import { PASS_MARK } from "@/lib/constants";
+import { PASS_MARK, APP_NAME } from "@/lib/constants";
 
 interface CertRecord {
   id: string;
@@ -29,7 +29,7 @@ async function generateCertId(): Promise<string> {
     const arr = new Uint8Array(4);
     crypto.getRandomValues(arr);
     const suffix = Array.from(arr, (b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
-    const id = `CG-${year}-${suffix}`;
+    const id = `KV-${year}-${suffix}`;
     const { data } = await supabase.from("certificates").select("id").eq("id", id).maybeSingle();
     if (!data) return id; // Guaranteed unique ID
   }
@@ -37,7 +37,7 @@ async function generateCertId(): Promise<string> {
   const fallbackArr = new Uint8Array(4);
   crypto.getRandomValues(fallbackArr);
   const fallbackSuffix = Array.from(fallbackArr, (b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
-  return `CG-${year}-${fallbackSuffix}`;
+  return `KV-${year}-${fallbackSuffix}`;
 }
 
 /**
@@ -45,7 +45,7 @@ async function generateCertId(): Promise<string> {
  * to guarantee authenticity and cryptographic integrity.
  */
 async function computeDigitalFingerprint(cert: CertRecord): Promise<string> {
-  const raw = `${cert.user_id}:${cert.id}:${cert.score}:${cert.issued_at}:cyberguard-root-ca-v1`;
+  const raw = `${cert.user_id}:${cert.id}:${cert.score}:${cert.issued_at}:kavach-root-ca-v1`;
   const enc = new TextEncoder().encode(raw);
   const buf = await crypto.subtle.digest("SHA-256", enc);
   return Array.from(new Uint8Array(buf), (b) => b.toString(16).padStart(2, "0")).join("");
@@ -234,7 +234,7 @@ export function CertificatePage() {
             Official Cyber Defense Certificate
           </h1>
           <p className="mt-1 text-xs text-text-fog max-w-xl leading-relaxed">
-            Cryptographically sealed and signed by the CyberGuard Defense Council. Scannable QR code guarantees permanent public verification for all employers and evaluators.
+            Cryptographically sealed and signed by the {APP_NAME} Defense Council. Scannable QR code guarantees permanent public verification for all employers and evaluators.
           </p>
         </div>
 
@@ -267,7 +267,7 @@ export function CertificatePage() {
         transition={{ delay: 0.1, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
         className="mx-auto max-w-3xl"
       >
-        <div className="relative overflow-hidden rounded-3xl border border-amber-400/35 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-6 sm:p-12 text-center shadow-[0_30px_90px_rgba(0,0,0,0.85),0_0_50px_rgba(245,158,11,0.12)]">
+        <div className="relative overflow-hidden rounded-3xl border border-amber-400/35 bg-gradient-to-br from-black via-neutral-950 to-black p-6 sm:p-12 text-center shadow-[0_30px_90px_rgba(0,0,0,0.95),0_0_50px_rgba(245,158,11,0.12)]">
           {/* Subtle gold / cyan ambient backdrops */}
           <div className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 h-56 w-[500px] rounded-full bg-amber-500/12 blur-[90px]" />
           <div className="pointer-events-none absolute -bottom-24 left-1/2 -translate-x-1/2 h-56 w-[500px] rounded-full bg-sky-500/10 blur-[90px]" />
@@ -286,7 +286,7 @@ export function CertificatePage() {
           <div className="relative flex items-center justify-center gap-4 mb-6 pt-2">
             <div className="h-px flex-1 bg-gradient-to-r from-transparent via-amber-400/30 to-amber-400/70" />
             <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-amber-400/50 bg-gradient-to-br from-slate-900 to-slate-950 shadow-[0_0_24px_rgba(245,158,11,0.3)] p-1.5">
-              <CyberGuardLogoMark size={44} pulse={false} />
+              <KavachLogoMark size={44} pulse={false} />
               <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-slate-950 font-bold text-[10px] shadow-sm">
                 <i className="ti ti-check" />
               </div>
@@ -295,7 +295,7 @@ export function CertificatePage() {
           </div>
 
           <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-amber-400 font-bold">
-            CYBERGUARD DEFENSE COUNCIL · ACCREDITATION REGISTRY
+            KAVACH DEFENSE COUNCIL · ACCREDITATION REGISTRY
           </p>
 
           <h2 className="mt-2 font-display text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white">
@@ -372,7 +372,7 @@ export function CertificatePage() {
               <p className="font-mono text-[9px] uppercase tracking-wider text-text-ash font-semibold">
                 Director of Cyber Defense
               </p>
-              <p className="text-[9px] text-text-fog">CyberGuard Operations Center</p>
+              <p className="text-[9px] text-text-fog">Kavach Operations Center</p>
             </div>
 
             {/* QR Code (Centered with Scan Guide) */}
@@ -463,7 +463,7 @@ export function CertificatePage() {
             align-items: center !important;
             justify-content: center !important;
             box-shadow: none !important;
-            background: #0b101b !important;
+            background: #000000 !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
           }

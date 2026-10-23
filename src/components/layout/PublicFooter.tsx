@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { CyberGuardLogo } from "@/components/ui/CyberGuardLogo";
+import { KavachLogo } from "@/components/ui/KavachLogo";
+import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 
 export function PublicFooter() {
   return (
@@ -8,7 +9,7 @@ export function PublicFooter() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-border">
           <div>
             <Link to="/" className="inline-block hover:opacity-90 transition-opacity">
-              <CyberGuardLogo size="sm" subtitle="ONLINE SAFETY & DEFENSE PORTAL" />
+              <KavachLogo size="sm" subtitle={APP_TAGLINE} />
             </Link>
             <p className="mt-2 text-xs text-text-fog max-w-md leading-relaxed">
               Empowering individuals and teams to build practical digital safety reflexes through interactive, zero-risk scam simulations and real-time threat intelligence.
@@ -39,7 +40,7 @@ export function PublicFooter() {
 
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-ash">
           <div className="flex items-center gap-2">
-            <span>&copy; {new Date().getFullYear()} CyberGuard. Built for community digital safety.</span>
+            <span>&copy; {new Date().getFullYear()} {APP_NAME}. Built for community digital safety.</span>
           </div>
 
           <div className="flex items-center gap-3">

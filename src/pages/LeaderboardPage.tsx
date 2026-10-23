@@ -281,7 +281,7 @@ function RankingsTab() {
 
         {/* Right side: Timeframe segmented pill filter */}
         <div className="flex items-center gap-3">
-          <div className="inline-flex items-center rounded-full border border-border bg-surface-elevated p-1 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/60 dark:shadow-lg">
+          <div className="inline-flex items-center rounded-full border border-border bg-surface-elevated p-1 shadow-sm backdrop-blur-xl dark:border-white/10 dark:bg-neutral-900/80 dark:shadow-lg">
             {(["weekly", "monthly", "all"] as const).map((tf) => {
               const label = tf === "weekly" ? "Weekly" : tf === "monthly" ? "Monthly" : "All Time";
               const isActive = timeframe === tf;
@@ -291,7 +291,7 @@ function RankingsTab() {
                   onClick={() => setTimeframe(tf)}
                   className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? "bg-surface text-text-pure shadow-sm font-semibold dark:bg-slate-700/85 dark:text-white"
+                      ? "bg-surface text-text-pure shadow-sm font-semibold dark:bg-neutral-800 dark:text-white"
                       : "text-text-fog hover:text-text-pure dark:hover:text-white"
                   }`}
                 >
@@ -307,7 +307,7 @@ function RankingsTab() {
             className={`rounded-full p-2 border transition-colors cursor-pointer ${
               showFilters
                 ? "bg-primary/20 text-primary border-primary/40"
-                : "border-border bg-surface-elevated text-text-fog hover:text-text-pure dark:border-white/10 dark:bg-slate-900/60 dark:hover:text-white"
+                : "border-border bg-surface-elevated text-text-fog hover:text-text-pure dark:border-white/10 dark:bg-neutral-900/80 dark:hover:text-white"
             }`}
             title="Filter & Search"
             aria-label="Filter & Search"
@@ -326,21 +326,21 @@ function RankingsTab() {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="flex flex-wrap items-center gap-3 p-3.5 rounded-2xl border border-border bg-surface-elevated backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/50">
+            <div className="flex flex-wrap items-center gap-3 p-3.5 rounded-2xl border border-border bg-surface-elevated backdrop-blur-xl dark:border-white/10 dark:bg-neutral-900/80">
               <div className="relative flex-1 min-w-[200px]">
                 <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-text-ash" />
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Filter learners by name..."
-                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-surface border border-border text-text-pure placeholder-text-ash focus:outline-none focus:border-primary/60 dark:bg-slate-950/60 dark:border-white/10 dark:text-white"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-surface border border-border text-text-pure placeholder-text-ash focus:outline-none focus:border-primary/60 dark:bg-black/70 dark:border-white/10 dark:text-white"
                 />
               </div>
 
               <select
                 value={tierFilter}
                 onChange={(e) => setTierFilter(e.target.value)}
-                className="text-xs py-1.5 px-3 rounded-xl bg-surface border border-border text-text-pure focus:outline-none focus:border-primary/60 dark:bg-slate-950/60 dark:border-white/10 dark:text-text-frost"
+                className="text-xs py-1.5 px-3 rounded-xl bg-surface border border-border text-text-pure focus:outline-none focus:border-primary/60 dark:bg-black/70 dark:border-white/10 dark:text-text-frost"
               >
                 <option value="all">All Levels</option>
                 <option value="5">Level 5 (Master)</option>
@@ -368,14 +368,14 @@ function RankingsTab() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.4 }}
-              className="relative rounded-3xl border border-slate-300 bg-gradient-to-b from-slate-100 to-slate-200/70 p-6 text-center shadow-md min-h-[250px] flex flex-col justify-end dark:border-slate-400/25 dark:bg-gradient-to-b dark:from-slate-400/10 dark:via-slate-900/60 dark:to-slate-950/85 dark:backdrop-blur-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+              className="relative rounded-3xl border border-slate-300 bg-gradient-to-b from-slate-100 to-slate-200/70 p-6 text-center shadow-md min-h-[250px] flex flex-col justify-end dark:border-white/15 dark:bg-gradient-to-b dark:from-white/10 dark:via-neutral-900/80 dark:to-black dark:backdrop-blur-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)]"
             >
               {/* Avatar with rank badge */}
               <div className="relative mx-auto mb-3">
-                <div className="rounded-full border-2 border-slate-300/80 p-0.5 shadow-sm dark:border-slate-300/50 dark:shadow-[0_0_20px_rgba(203,213,225,0.25)]">
+                <div className="rounded-full border-2 border-slate-300/80 p-0.5 shadow-sm dark:border-white/40 dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                   <AtmosphericAvatar gradient={AVATAR_PALETTES[1]} size="lg" />
                 </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 text-xs font-bold text-slate-950 shadow-md border-2 border-surface dark:border-slate-900">
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 text-xs font-bold text-slate-950 shadow-md border-2 border-surface dark:border-black">
                   2
                 </div>
               </div>
@@ -383,7 +383,7 @@ function RankingsTab() {
               <h3 className="font-display text-base font-bold text-text-pure tracking-tight truncate">
                 {top3[1]?.full_name}
               </h3>
-              <p className="mt-1 font-display text-sm font-semibold text-slate-600 dark:text-slate-300">
+              <p className="mt-1 font-display text-sm font-semibold text-slate-600 dark:text-text-frost">
                 {top3[1]?.displayPoints} XP
               </p>
             </motion.div>
@@ -393,7 +393,7 @@ function RankingsTab() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05, duration: 0.45 }}
-              className="relative rounded-3xl border-2 border-amber-400 bg-gradient-to-b from-amber-50 via-amber-100/60 to-surface p-7 text-center shadow-lg min-h-[295px] flex flex-col justify-end sm:-translate-y-3 dark:border dark:border-amber-400/40 dark:bg-gradient-to-b dark:from-amber-500/15 dark:via-slate-900/70 dark:to-slate-950/90 dark:backdrop-blur-2xl dark:shadow-[0_24px_64px_rgba(245,158,11,0.18)]"
+              className="relative rounded-3xl border-2 border-amber-400 bg-gradient-to-b from-amber-50 via-amber-100/60 to-surface p-7 text-center shadow-lg min-h-[295px] flex flex-col justify-end sm:-translate-y-3 dark:border dark:border-amber-400/40 dark:bg-gradient-to-b dark:from-amber-500/15 dark:via-neutral-900/80 dark:to-black dark:backdrop-blur-2xl dark:shadow-[0_24px_64px_rgba(245,158,11,0.18)]"
             >
               {/* Golden Crown hovering above */}
               <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center justify-center">
@@ -408,7 +408,7 @@ function RankingsTab() {
                 <div className="rounded-full border-2 border-amber-400 p-0.5 shadow-md dark:border-amber-400/80 dark:shadow-[0_0_28px_rgba(245,158,11,0.45)]">
                   <AtmosphericAvatar gradient={AVATAR_PALETTES[0]} size="xl" />
                 </div>
-                <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-amber-400 text-xs font-bold text-slate-950 shadow-md border-2 border-surface dark:border-slate-900">
+                <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 flex h-7 w-7 items-center justify-center rounded-full bg-amber-400 text-xs font-bold text-slate-950 shadow-md border-2 border-surface dark:border-black">
                   1
                 </div>
               </div>
@@ -426,14 +426,14 @@ function RankingsTab() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.4 }}
-              className="relative rounded-3xl border border-amber-600/30 bg-gradient-to-b from-amber-50/60 to-orange-100/60 p-6 text-center shadow-md min-h-[250px] flex flex-col justify-end dark:border-amber-700/30 dark:bg-gradient-to-b dark:from-amber-700/15 dark:via-slate-900/60 dark:to-slate-950/85 dark:backdrop-blur-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+              className="relative rounded-3xl border border-amber-600/30 bg-gradient-to-b from-amber-50/60 to-orange-100/60 p-6 text-center shadow-md min-h-[250px] flex flex-col justify-end dark:border-amber-700/30 dark:bg-gradient-to-b dark:from-amber-700/15 dark:via-neutral-900/80 dark:to-black dark:backdrop-blur-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)]"
             >
               {/* Avatar with bronze rank badge */}
               <div className="relative mx-auto mb-3">
                 <div className="rounded-full border-2 border-amber-600/60 p-0.5 shadow-sm dark:shadow-[0_0_20px_rgba(217,119,6,0.25)]">
                   <AtmosphericAvatar gradient={AVATAR_PALETTES[2]} size="lg" />
                 </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-amber-600 text-xs font-bold text-white shadow-md border-2 border-surface dark:border-slate-900">
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-amber-600 text-xs font-bold text-white shadow-md border-2 border-surface dark:border-black">
                   3
                 </div>
               </div>
@@ -454,7 +454,7 @@ function RankingsTab() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.45 }}
-        className="relative overflow-hidden rounded-3xl border border-border bg-surface p-4 sm:p-6 lg:p-8 shadow-sm dark:border-white/10 dark:bg-slate-900/40 dark:backdrop-blur-2xl dark:shadow-[0_30px_90px_rgba(0,0,0,0.7)]"
+        className="relative overflow-hidden rounded-3xl border border-border bg-surface p-4 sm:p-6 lg:p-8 shadow-sm dark:border-white/10 dark:bg-black/80 dark:backdrop-blur-2xl dark:shadow-[0_30px_90px_rgba(0,0,0,0.9)]"
       >
         {/* Table Column Headers */}
         <div className="grid grid-cols-12 gap-3 pb-4 border-b border-border dark:border-white/10 text-text-ash font-mono text-[11px] uppercase tracking-wider items-center px-3">

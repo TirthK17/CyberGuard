@@ -23,7 +23,9 @@ import {
   Sliders,
   Database,
   Check,
+  Play,
 } from "lucide-react";
+import { SOUND_PREF_KEY } from "@/lib/constants";
 
 function SettingCard({
   icon: Icon,
@@ -88,6 +90,15 @@ export function SettingsPage() {
   const { isMuted, toggleMute, playSfx } = useSfx();
   const { reducedMotion, setReducedMotion } = useAccessibility();
   const toast = useToast();
+
+  const [soundEffects, setSoundEffects] = useState<boolean>(() => {
+    try {
+      const saved = localStorage.getItem(SOUND_PREF_KEY);
+      return saved !== null ? saved === "true" : true;
+    } catch {
+      return true;
+    }
+  });
 
   const [showResetConfirm, setShowResetConfirm] = useState(false);
 
@@ -314,28 +325,54 @@ export function SettingsPage() {
             {hackerMode ? "Active" : "Off"}
           </button>
         </SettingRow>
+
+        <SettingRow label="Brand Animation" description="Replay the cinematic Kavach logo introduction">
+          <button
+            type="button"
+            onClick={() => {
+              try {
+                sessionStorage.removeItem("kavach_intro_seen_v1");
+              } catch {}
+              window.dispatchEvent(new CustomEvent("kavach:replay-intro"));
+              toast({ title: "Playing Kavach Intro", variant: "info" });
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-border bg-surface-elevated hover:bg-surface-hover text-text-pure transition-all cursor-pointer shadow-xs active:scale-95"
+          >
+            <Play className="h-3.5 w-3.5 text-primary fill-primary" />
+            <span>Replay Intro</span>
+          </button>
+        </SettingRow>
       </SettingCard>
 
       {/* 2. Audio & Accessibility */}
       <SettingCard icon={Sliders} title="Audio &amp; Accessibility" description="Sound feedback and animation controls">
-        <SettingRow label="Interface Audio" description="Tactile sound effects for interactions">
+        <SettingRow label="Sound Effects" description="Sound effects for interactions, alerts, and the intro splash">
           <button
             type="button"
             onClick={() => {
-              toggleMute();
+              const nextVal = !soundEffects;
+              setSoundEffects(nextVal);
+              try {
+                localStorage.setItem(SOUND_PREF_KEY, String(nextVal));
+              } catch {}
+              if (nextVal && isMuted) {
+                toggleMute();
+              } else if (!nextVal && !isMuted) {
+                toggleMute();
+              }
               toast({
-                title: isMuted ? "Sound Effects Enabled" : "Sound Effects Muted",
+                title: nextVal ? "Sound Effects Enabled" : "Sound Effects Muted",
                 variant: "info",
               });
             }}
             className={`px-3 py-1.5 text-xs font-semibold rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer ${
-              !isMuted
+              soundEffects
                 ? "border-primary bg-primary text-white shadow-xs"
                 : "border-border bg-surface-elevated text-text-fog hover:text-text-pure"
             }`}
           >
-            {!isMuted ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
-            <span>{!isMuted ? "Enabled" : "Muted"}</span>
+            {soundEffects ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+            <span>{soundEffects ? "Enabled" : "Muted"}</span>
           </button>
         </SettingRow>
 

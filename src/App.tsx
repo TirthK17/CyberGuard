@@ -17,6 +17,8 @@ import { ShortcutsModal } from "@/components/ui/ShortcutsModal";
 import { CelebrationModal } from "@/components/ui/CelebrationModal";
 import { PageSpinner } from "@/components/ui/primitives";
 import { userNav } from "@/lib/navigation";
+import { IntroSplash } from "@/components/intro/IntroSplash";
+import { APP_NAME } from "@/lib/constants";
 
 // ── CODE-SPLIT PAGE IMPORTS ──────────────────────────────────────────────────
 const LandingPage = lazy(() => import("@/pages/LandingPage").then((m) => ({ default: m.LandingPage })));
@@ -87,7 +89,7 @@ function TopicsWrapper() {
   if (user) {
     return (
       <ProtectedRoute>
-        <DashboardShell navItems={userNav} brandLabel="CyberGuard">
+        <DashboardShell navItems={userNav} brandLabel={APP_NAME}>
           <TopicsPage />
         </DashboardShell>
       </ProtectedRoute>
@@ -107,12 +109,14 @@ function App() {
         <AccessibilityProvider>
           <AuthProvider>
             <ToastProvider>
-            <BrowserRouter>
-              <CommandPalette />
-              <ShortcutsModal />
-              <CelebrationModal />
-              <Suspense fallback={<PageSpinner />}>
-                <Routes>
+              <BrowserRouter>
+                <IntroSplash />
+                <div id="app-root-container">
+                  <CommandPalette />
+                  <ShortcutsModal />
+                  <CelebrationModal />
+                  <Suspense fallback={<PageSpinner />}>
+                    <Routes>
                   {/* Public Routes */}
                   <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
                   <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
@@ -164,12 +168,13 @@ function App() {
                   <Route path="*" element={<NotFoundPage />} />
                 </Routes>
               </Suspense>
-            </BrowserRouter>
-          </ToastProvider>
-        </AuthProvider>
-        </AccessibilityProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+            </div>
+          </BrowserRouter>
+        </ToastProvider>
+      </AuthProvider>
+    </AccessibilityProvider>
+  </ThemeProvider>
+</ErrorBoundary>
   );
 }
 

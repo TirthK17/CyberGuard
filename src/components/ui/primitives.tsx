@@ -210,22 +210,24 @@ export function Pill({
   className,
 }: {
   children: ReactNode;
-  tone?: "default" | "cyan" | "violet" | "warn" | "danger" | "success" | "info" | "lime" | "primary" | "emerald" | "warning";
+  tone?: "default" | "cyan" | "violet" | "warn" | "warning" | "danger" | "success" | "info" | "lime" | "primary" | "emerald" | "amber" | "sky";
   size?: "sm" | "md" | "lg";
   className?: string;
 }) {
   const tones: Record<string, string> = {
     default: "bg-surface text-text-low border-border",
-    cyan:    "bg-primary/10 text-primary border-primary/20",
+    cyan:    "bg-sky-500/10 text-sky-500 dark:text-sky-400 border-sky-500/25",
+    sky:     "bg-sky-500/10 text-sky-500 dark:text-sky-400 border-sky-500/25",
     primary: "bg-primary/10 text-primary border-primary/20",
-    violet:  "bg-primary/10 text-primary border-primary/20",
-    warn:    "bg-amber-500/10 text-amber-500 border-amber-500/25",
-    warning: "bg-amber-500/10 text-amber-500 border-amber-500/25",
-    danger:  "bg-red-500/10 text-red-500 border-red-500/25",
-    success: "bg-emerald-500/10 text-emerald-500 border-emerald-500/25",
-    emerald: "bg-emerald-500/10 text-emerald-500 border-emerald-500/25",
-    info:    "bg-primary/10 text-primary border-primary/20",
-    lime:    "bg-emerald-500/10 text-emerald-500 border-emerald-500/25",
+    violet:  "bg-violet-500/10 text-violet-500 dark:text-violet-400 border-violet-500/25",
+    amber:   "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/25",
+    warn:    "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/25",
+    warning: "bg-amber-500/10 text-amber-500 dark:text-amber-400 border-amber-500/25",
+    danger:  "bg-rose-500/10 text-rose-500 dark:text-rose-400 border-rose-500/25",
+    success: "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/25",
+    emerald: "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/25",
+    lime:    "bg-emerald-500/10 text-emerald-500 dark:text-emerald-400 border-emerald-500/25",
+    info:    "bg-sky-500/10 text-sky-500 dark:text-sky-400 border-sky-500/25",
   };
   const sizeStyles = {
     sm: "px-2 py-0.5 text-xs font-semibold",
@@ -341,12 +343,29 @@ export function EmptyState({
 
 /* ─────────────────────────────── ProgressBar ───────────────────────── */
 
-export function ProgressBar({ value, className }: { value: number; className?: string }) {
+export function ProgressBar({
+  value,
+  className,
+  tone = "primary",
+}: {
+  value: number;
+  className?: string;
+  tone?: "primary" | "cyan" | "sky" | "emerald" | "amber" | "violet";
+}) {
   const pct = Math.min(100, Math.max(0, value));
+  const toneFill: Record<string, string> = {
+    primary: "bg-primary",
+    cyan: "bg-sky-500 dark:bg-sky-400",
+    sky: "bg-sky-500 dark:bg-sky-400",
+    emerald: "bg-emerald-500 dark:bg-emerald-400",
+    amber: "bg-amber-500 dark:bg-amber-400",
+    violet: "bg-violet-500 dark:bg-violet-400",
+  };
+
   return (
     <div className={cn("progress-track", className)}>
       <motion.div
-        className="progress-fill"
+        className={cn("progress-fill", toneFill[tone] ?? "bg-primary")}
         initial={{ width: 0 }}
         animate={{ width: `${pct}%` }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}

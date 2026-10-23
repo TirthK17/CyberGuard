@@ -6,6 +6,11 @@
  * must come from here — never hardcoded inline.
  */
 
+/** Brand constants */
+export const APP_NAME = "Kavach";
+export const APP_TAGLINE = "Cyber awareness. Human defence.";
+export const SOUND_PREF_KEY = "kavach_sound_effects_enabled";
+
 // ─── Assessment pass marks ────────────────────────────────────────────────────
 
 /** Minimum score (%) to pass the safety assessment and earn a certificate */

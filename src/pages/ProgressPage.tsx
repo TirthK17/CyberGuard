@@ -56,7 +56,7 @@ export function ProgressPage() {
       const { data: quizResults } = await supabase
         .from("quiz_results")
         .select("quiz_id, score, total_questions")
-        .eq("user_id", profile.id);
+        .eq("user_id", profileId);
       const { data: quizzes } = await supabase.from("quizzes").select("id, category");
       const quizCategoryById = new Map((quizzes ?? []).map((q) => [q.id, q.category]));
 
@@ -64,7 +64,7 @@ export function ProgressPage() {
       const { data: simResults } = await supabase
         .from("simulation_results")
         .select("simulation_id, score")
-        .eq("user_id", profile.id);
+        .eq("user_id", profileId);
       const { data: sims } = await supabase.from("simulations").select("id, category");
       const simCategoryById = new Map((sims ?? []).map((s) => [s.id, s.category]));
 

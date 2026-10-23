@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
-import { CyberGuardLogo } from "@/components/ui/CyberGuardLogo";
+import { KavachLogo } from "@/components/ui/KavachLogo";
+import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 
 export function RegisterPage() {
   const { signUp } = useAuth();
@@ -82,13 +83,13 @@ export function RegisterPage() {
             <span className="macos-dot macos-dot-minimize" />
             <span className="macos-dot macos-dot-expand" />
           </div>
-          <span className="text-[11px] font-medium text-text-ash">CyberGuard Sign Up</span>
+          <span className="text-[11px] font-medium text-text-ash">{APP_NAME} Sign Up</span>
           <div className="w-10" />
         </div>
 
         <div className="p-8">
           <Link to="/" className="inline-block hover:opacity-90 transition-opacity">
-            <CyberGuardLogo size="md" subtitle="ONLINE SAFETY PORTAL" />
+            <KavachLogo size="md" subtitle={APP_TAGLINE} />
           </Link>
 
           <h1 className="mt-6 font-display text-2xl font-bold tracking-tight text-text-pure">
