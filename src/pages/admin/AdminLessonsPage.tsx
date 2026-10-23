@@ -178,7 +178,7 @@ export function AdminLessonsPage() {
 
   const loadLessons = async (id: string) => {
     const { data } = await supabase.from("lessons").select("*").eq("module_id", id).order("order_index");
-    setLessons(data as Lesson[]);
+    setLessons((data ?? []) as unknown as Lesson[]);
   };
 
   useEffect(() => {

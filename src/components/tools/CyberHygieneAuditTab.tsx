@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, Pill, ProgressBar, AnimatedNumber } from "@/components/ui/primitives";
 import { useAuth } from "@/context/AuthContext";
 import { recordActivity } from "@/lib/gamification";
+import { drillsApi } from "@/lib/api/drills";
 import { XP } from "@/lib/constants";
 import { useToast } from "@/context/ToastContext";
 import { ResponsiveContainer, RadialBarChart, RadialBar, PolarAngleAxis } from "recharts";
@@ -151,6 +152,7 @@ export function CyberHygieneAuditTab() {
       next.add(check.id);
       setCheckedIds(next);
       if (profile) {
+        drillsApi.logToolUsage("cyber_hygiene_audit", "check_toggled", { check_id: check.id });
         try {
           await recordActivity({
             userId: profile.id,

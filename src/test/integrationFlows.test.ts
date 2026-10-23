@@ -125,6 +125,7 @@ describe("End-to-End User Journey & Security Integration", () => {
       user_id: userId,
       assessment_id: "asmt-1",
       score: assessmentScore,
+      band: "Pro",
       completed_at: new Date().toISOString(),
     });
 

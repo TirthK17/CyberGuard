@@ -5,30 +5,45 @@ import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { KavachLogo } from "@/components/ui/KavachLogo";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
-import { DEMO_PASSWORD } from "@/lib/localDb";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z.string().trim().email("Please enter a valid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 export function LoginPage() {
-  const { signIn, user, profile, loading } = useAuth();
+  const { signIn, signInWithGoogle, user, profile, loading } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-  const [demoLoading, setDemoLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  // Wait for profile to load before navigating
+  // Auto-route once session and profile are resolved
   useEffect(() => {
-    if (!submitted || loading || !user) return;
-    navigate(profile?.role === "admin" ? "/admin" : "/dashboard", { replace: true });
+    if (!user || loading) return;
+    if (submitted || user) {
+      navigate(profile?.role === "admin" ? "/admin" : "/dashboard", { replace: true });
+    }
   }, [submitted, loading, user, profile, navigate]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    const validation = loginSchema.safeParse({ email, password });
+    if (!validation.success) {
+      setError(validation.error.issues[0]?.message || "Invalid credentials provided");
+      return;
+    }
+
     setSubmitting(true);
-    const { error: signInErr } = await signIn(email, password);
+    const { error: signInErr } = await signIn(validation.data.email, validation.data.password);
     setSubmitting(false);
+
     if (signInErr) {
       setError(signInErr);
       return;
@@ -36,18 +51,14 @@ export function LoginPage() {
     setSubmitted(true);
   };
 
-  /** 1-click demo login — shows an error if sign-in fails (never silently redirects) */
-  const handleDemoLogin = async (asAdmin: boolean = false) => {
+  const handleGoogleSignIn = async () => {
     setError(null);
-    setDemoLoading(true);
-    const demoEmail = asAdmin ? "admin@cyberguard.dev" : "operator@cyberguard.dev";
-    const { error: signInErr } = await signIn(demoEmail, DEMO_PASSWORD);
-    setDemoLoading(false);
-    if (signInErr) {
-      setError(`Demo login failed: ${signInErr}. Try clearing localStorage and refreshing.`);
-      return;
+    setGoogleLoading(true);
+    const { error: err } = await signInWithGoogle();
+    setGoogleLoading(false);
+    if (err) {
+      setError(err);
     }
-    setSubmitted(true);
   };
 
   return (
@@ -76,68 +87,11 @@ export function LoginPage() {
           </Link>
 
           <h1 className="mt-6 font-display text-2xl font-bold tracking-tight text-text-pure">
-            Welcome Back
+            Account Access
           </h1>
           <p className="mt-1 text-xs text-text-fog">
-            Sign in to access your safety lessons, simulations, and security tools.
+            Sign in with your verified credentials to access defence lessons, live drills, and security tools.
           </p>
-
-          {/* Demo Credentials Box */}
-          <div className="mt-5 rounded-xl border border-primary/20 bg-primary-subtle p-3.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-primary">Demo Credentials</span>
-              <span className="text-[10px] uppercase font-bold text-primary tracking-wide">Offline Mode</span>
-            </div>
-            <p className="text-[11px] text-text-fog mt-1 mb-2">
-              Use these to explore all features without registering:
-            </p>
-            <table className="w-full text-[11px] text-text-fog mb-3">
-              <tbody>
-                <tr>
-                  <td className="pr-2 font-medium text-text-pure">Admin</td>
-                  <td className="font-mono">admin@cyberguard.dev</td>
-                </tr>
-                <tr>
-                  <td className="pr-2 font-medium text-text-pure">User</td>
-                  <td className="font-mono">operator@cyberguard.dev</td>
-                </tr>
-                <tr>
-                  <td className="pr-2 font-medium text-text-pure">Password</td>
-                  <td className="font-mono font-bold text-primary">{DEMO_PASSWORD}</td>
-                </tr>
-              </tbody>
-            </table>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="primary"
-                size="xs"
-                className="flex-1 py-1.5 font-semibold"
-                onClick={() => handleDemoLogin(false)}
-                loading={demoLoading}
-              >
-                1-Click User Demo
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="xs"
-                className="flex-1 py-1.5 font-semibold"
-                onClick={() => handleDemoLogin(true)}
-                loading={demoLoading}
-              >
-                Admin Demo
-              </Button>
-            </div>
-          </div>
-
-          {/* Hairline Divider */}
-          <div className="relative my-6 flex items-center justify-center">
-            <div className="w-full border-t border-border" />
-            <span className="absolute bg-surface px-3 text-[10px] uppercase font-medium tracking-wider text-text-ash">
-              or sign in with email
-            </span>
-          </div>
 
           {/* Error Banner */}
           <AnimatePresence>
@@ -148,7 +102,7 @@ export function LoginPage() {
                 initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -4 }}
-                className="mb-4 rounded-xl border border-danger/25 bg-danger/10 p-3 text-xs text-danger"
+                className="mt-4 rounded-xl border border-danger/25 bg-danger/10 p-3 text-xs text-danger"
               >
                 {error}
               </motion.div>
@@ -156,7 +110,7 @@ export function LoginPage() {
           </AnimatePresence>
 
           {/* Email / Password Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="mt-6 space-y-4">
             <div>
               <label className="mb-1.5 block text-xs font-medium text-text-pure" htmlFor="login-email">
                 Email Address
@@ -194,12 +148,31 @@ export function LoginPage() {
             <Button
               type="submit"
               variant="primary"
-              className="w-full py-2.5 font-semibold text-sm"
+              className="w-full py-2.5 font-semibold text-sm cursor-pointer"
               loading={submitting}
             >
               Sign In
             </Button>
           </form>
+
+          {/* Social login divider */}
+          <div className="relative my-6 flex items-center justify-center">
+            <div className="w-full border-t border-border" />
+            <span className="absolute bg-surface px-3 text-[10px] uppercase font-medium tracking-wider text-text-ash">
+              or continue with
+            </span>
+          </div>
+
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={handleGoogleSignIn}
+            loading={googleLoading}
+            className="w-full py-2 text-xs font-medium border border-border hover:bg-surface-elevated"
+          >
+            <i className="ti ti-brand-google mr-2 text-sm text-text-pure" />
+            Continue with Google
+          </Button>
 
           {/* Bottom link */}
           <p className="mt-6 text-center text-xs text-text-fog">

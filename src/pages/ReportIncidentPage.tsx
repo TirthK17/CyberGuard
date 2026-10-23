@@ -3,9 +3,7 @@ import { Card, Pill } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
-import { recordActivity } from "@/lib/gamification";
-import { supabase } from "@/lib/supabase";
-import { XP } from "@/lib/constants";
+import { incidentsApi } from "@/lib/api/incidents";
 import { useToast } from "@/context/ToastContext";
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -24,7 +22,7 @@ export interface IncidentReport {
   targetUrlOrHash?: string;
   details: string;
   submittedAt: string;
-  status: "Triage Complete" | "Draft Logged" | "Quarantined & Contained";
+  status: string;
   riskScore: string;
   socActions: string[];
   containmentPlaybook: string[];
@@ -185,62 +183,42 @@ export function ReportIncidentPage() {
   const [attachedFiles, setAttachedFiles] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // History loaded safely from localStorage only after profile.id is known
+  // History loaded safely from Supabase
   const [history, setHistory] = useState<IncidentReport[]>([]);
-  const [historyLoaded, setHistoryLoaded] = useState(false);
 
   useEffect(() => {
     if (!profile?.id) return;
-    try {
-      const saved = localStorage.getItem(`incident_reports_${profile.id}`);
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setHistory(parsed);
-        if (parsed.length > 0) {
-          setSelectedIncident((prev) => prev ?? parsed[0]);
-        }
-      } else {
-        const sampleReport: IncidentReport = {
-          id: "INC-2025-08412",
-          category: "Fake Email (Phishing)",
-          categoryId: "phish",
-          urgency: "high",
-          subject: "Microsoft 365 Password Expiration Alert with Cloned Portal",
-          senderOrSource: "helpdesk@microsoft-authenticator-notice.net",
-          targetUrlOrHash: "https://login.microsoftonline.com.account-reauth.shop/auth/login",
-          details: "Email claimed organizational mailbox would expire in 2 hours. Clicked link and arrived at lookalike Microsoft portal. Stopped before typing password.",
-          submittedAt: new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString(),
-          status: "Quarantined & Contained",
-          riskScore: "HIGH RISK — THREAT RECORDED",
-          socActions: [
-            "Draft Incident Record: Recorded external phishing domain 'account-reauth.shop'.",
-            "Recommended containment: Forwarded sample to IT administration and abuse desk.",
-            "Defensive recommendation: Force password change and revoke open web sessions.",
-          ],
-          containmentPlaybook: [
-            "Do NOT click links in emails warning of immediate password expiration.",
-            "Verify all Microsoft login URLs end with 'microsoft.com' or 'live.com'.",
-            "Report any future emails from the same external domain.",
-          ],
-          attachedFiles: ["screenshot_phish_login.png (142 KB)"],
-        };
-        setHistory([sampleReport]);
-        localStorage.setItem(`incident_reports_${profile.id}`, JSON.stringify([sampleReport]));
-        setSelectedIncident((prev) => prev ?? sampleReport);
-      }
-    } catch {
-      setHistory([]);
-    } finally {
-      setHistoryLoaded(true);
-    }
-  }, [profile?.id]);
+    let active = true;
 
-  useEffect(() => {
-    if (!profile?.id || !historyLoaded) return;
-    try {
-      localStorage.setItem(`incident_reports_${profile.id}`, JSON.stringify(history));
-    } catch {}
-  }, [history, profile?.id, historyLoaded]);
+    incidentsApi.getUserIncidents(profile.id).then((records) => {
+      if (!active) return;
+      const formatted: IncidentReport[] = records.map((r) => ({
+        id: r.id,
+        category: r.category,
+        categoryId: r.category_id,
+        urgency: r.urgency as UrgencyLevel,
+        subject: r.subject,
+        senderOrSource: r.sender_or_source,
+        targetUrlOrHash: r.target_url_or_hash ?? undefined,
+        details: r.details,
+        submittedAt: r.created_at,
+        status: r.status,
+        riskScore: r.risk_score,
+        socActions: Array.isArray(r.soc_actions) ? (r.soc_actions as string[]) : [],
+        containmentPlaybook: Array.isArray(r.containment_playbook) ? (r.containment_playbook as string[]) : [],
+        attachedFiles: r.attached_files ?? [],
+      }));
+
+      setHistory(formatted);
+      if (formatted.length > 0) {
+        setSelectedIncident((prev) => prev ?? formatted[0]);
+      }
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [profile?.id]);
 
   const activeCat = INCIDENT_CATEGORIES.find((c) => c.id === category) ?? INCIDENT_CATEGORIES[0];
 
@@ -306,8 +284,6 @@ export function ReportIncidentPage() {
     setSubmitting(true);
 
     try {
-      const reportId = `INC-2026-${Math.floor(10000 + Math.random() * 90000)}`;
-
       // Build honest Draft Incident Record actions & Containment Playbook based on category & urgency
       let riskScore = "HIGH RISK — THREAT RECORDED";
       let socActions: string[] = [
@@ -318,7 +294,6 @@ export function ReportIncidentPage() {
       let containmentPlaybook: string[] = [];
 
       if (category === "phish") {
-        riskScore = "HIGH RISK — SUSPECTED CREDENTIAL / MALWARE LURE";
         socActions = [
           `Draft Incident Record: Flagged phishing source '${source}'.`,
           "Educational containment playbook generated for fake email lures.",
@@ -403,8 +378,7 @@ export function ReportIncidentPage() {
         ];
       }
 
-      const newReport: IncidentReport = {
-        id: reportId,
+      const created = await incidentsApi.reportIncident({
         category: activeCat.label,
         categoryId: category,
         urgency,
@@ -412,61 +386,34 @@ export function ReportIncidentPage() {
         senderOrSource: source,
         targetUrlOrHash: targetUrl,
         details,
-        submittedAt: new Date().toISOString(),
-        status: "Triage Complete",
-        riskScore,
-        socActions,
-        containmentPlaybook,
-        attachedFiles: [...attachedFiles],
-      };
-
-      // Check daily cap: max 3 incident reports earn XP per calendar day
-      const todayStr = new Date().toISOString().slice(0, 10);
-      let todayXpCount = 0;
-      try {
-        const { data: todayLogs } = await supabase
-          .from("activity_logs")
-          .select("id, created_at, points_earned")
-          .eq("user_id", profile.id)
-          .eq("action", "incident_reported");
-        todayXpCount = (todayLogs ?? []).filter((l) => {
-          const logDate = (l.created_at || "").slice(0, 10);
-          return logDate === todayStr && (l.points_earned ?? 0) > 0;
-        }).length;
-      } catch {}
-
-      const canAwardXp = todayXpCount < 3;
-      const pointsToAward = canAwardXp ? XP.INCIDENT_REPORT : 0;
-
-      await recordActivity({
-        userId: profile.id,
-        action: "incident_reported",
-        points: pointsToAward,
-        refId: reportId,
-        meta: {
-          incident_report: reportId,
-          category,
-          daily_index: todayXpCount + 1,
-          daily_cap_reached: !canAwardXp,
-        },
+        attachedFiles,
       });
+
+      const newReport: IncidentReport = {
+        id: created.id,
+        category: created.category,
+        categoryId: created.category_id,
+        urgency: created.urgency as UrgencyLevel,
+        subject: created.subject,
+        senderOrSource: created.sender_or_source,
+        targetUrlOrHash: created.target_url_or_hash ?? undefined,
+        details: created.details,
+        submittedAt: created.created_at,
+        status: created.status,
+        riskScore: created.risk_score || riskScore,
+        socActions: Array.isArray(created.soc_actions) ? (created.soc_actions as string[]) : socActions,
+        containmentPlaybook: Array.isArray(created.containment_playbook) ? (created.containment_playbook as string[]) : containmentPlaybook,
+        attachedFiles: created.attached_files ?? [],
+      };
 
       setHistory((prev) => [newReport, ...prev]);
       setSelectedIncident(newReport);
 
-      if (canAwardXp) {
-        toast({
-          title: "Incident Logged & XP Earned",
-          description: `Report ${reportId} created. +${pointsToAward} XP awarded (${todayXpCount + 1}/3 today).`,
-          variant: "success",
-        });
-      } else {
-        toast({
-          title: "Incident Logged",
-          description: `Report ${reportId} created. (Daily XP cap of 3 incident reports reached).`,
-          variant: "info",
-        });
-      }
+      toast({
+        title: "Incident Logged & Secured",
+        description: `Incident ${created.id} reported and verified in secure incident registry.`,
+        variant: "success",
+      });
 
       await refreshProfile();
 

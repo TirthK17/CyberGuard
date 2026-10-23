@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { supabase } from "@/lib/supabase";
+import { certificatesApi } from "@/lib/api/certificates";
 import { KavachLogoMark } from "@/components/ui/KavachLogo";
 import { Button } from "@/components/ui/Button";
 import { APP_NAME } from "@/lib/constants";
@@ -36,12 +36,9 @@ export function VerifyCertificatePage() {
       return;
     }
 
-    supabase
-      .from("certificates")
-      .select("*")
-      .eq("id", certId.toUpperCase())
-      .maybeSingle()
-      .then(async ({ data }) => {
+    certificatesApi
+      .verifyCertificate(certId)
+      .then(async (data) => {
         if (data) {
           const certRecord = data as CertRecord;
           setCert(certRecord);
@@ -51,6 +48,9 @@ export function VerifyCertificatePage() {
         } else {
           setStatus("not_found");
         }
+      })
+      .catch(() => {
+        setStatus("not_found");
       });
   }, [certId]);
 

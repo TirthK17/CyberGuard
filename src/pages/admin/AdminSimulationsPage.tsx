@@ -43,7 +43,7 @@ export function AdminSimulationsPage() {
   const loadSteps = async (sim: Simulation) => {
     setSelected(sim);
     const { data } = await supabase.from("simulation_steps").select("*").eq("simulation_id", sim.id).order("order_index");
-    setSteps(data as SimulationStep[]);
+    setSteps((data ?? []) as unknown as SimulationStep[]);
   };
 
   const create = async () => {
@@ -133,7 +133,7 @@ export function AdminSimulationsPage() {
       simulation_id: selected.id,
       order_index: (steps?.length ?? 0) + 1,
       prompt,
-      options,
+      options: options as unknown as import("@/types/database").Json,
       explanation,
     });
     if (error) {

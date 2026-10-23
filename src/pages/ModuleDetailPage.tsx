@@ -3,9 +3,7 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useModule, useLessons, useUserProgress } from "@/hooks/useContent";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/lib/supabase";
-import { recordActivity } from "@/lib/gamification";
-import { XP } from "@/lib/constants";
+import { drillsApi } from "@/lib/api/drills";
 import { celebrate } from "@/lib/celebrate";
 import { Button } from "@/components/ui/Button";
 import { Card, Pill, ProgressBar, PageSpinner, EmptyState } from "@/components/ui/primitives";
@@ -368,42 +366,12 @@ export function ModuleDetailPage() {
       const newCompleted = Array.from(new Set([...done, activeLesson.id]));
       const fullyDone = newCompleted.length === lessonList.length;
 
-      const { error } = await supabase.from("progress").upsert(
-        {
-          user_id: profile.id,
-          module_id: module.id,
-          completed_lessons: newCompleted,
-          is_completed: fullyDone,
-        },
-        { onConflict: "user_id,module_id" }
-      );
-
-      if (error) {
-        setSaveError("Couldn't save your progress. Please check your connection.");
-        return;
-      }
+      await drillsApi.recordLessonProgress(module.id, activeLesson.id);
 
       setCompletedIds(newCompleted);
 
-      await recordActivity({
-        userId: profile.id,
-        action: "lesson_completed",
-        points: XP.LESSON,
-        meta: { lesson_id: activeLesson.id, module_id: module.id },
-        refId: activeLesson.id,
-        awardOnce: true,
-      });
-
       if (fullyDone) {
         celebrate();
-        await recordActivity({
-          userId: profile.id,
-          action: "module_completed",
-          points: 50,
-          meta: { module_completed: module.id },
-          refId: module.id,
-          awardOnce: true,
-        });
       }
 
       await refreshProfile();

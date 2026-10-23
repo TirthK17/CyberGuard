@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { recordActivity } from "@/lib/gamification";
+import { drillsApi } from "@/lib/api/drills";
 import { celebrateBig } from "@/lib/celebrate";
 import { useAuth } from "@/context/AuthContext";
-import { PASS_MARK, PRO_MARK, XP } from "@/lib/constants";
+import { PASS_MARK, PRO_MARK } from "@/lib/constants";
 import { Button } from "@/components/ui/Button";
 import { Card, Pill, ProgressBar, PageSpinner, EmptyState } from "@/components/ui/primitives";
 
@@ -126,62 +126,7 @@ export function AssessmentPage() {
     setSaveError(null);
 
     try {
-      // 1. Fetch user's previous best score
-      const { data: previousResults } = await supabase
-        .from("assessment_results")
-        .select("score")
-        .eq("user_id", profile.id)
-        .order("score", { ascending: false })
-        .limit(1);
-
-      const prevBest = previousResults?.[0]?.score ?? 0;
-
-      // 2. Insert assessment result
-      const { error: resultError } = await supabase.from("assessment_results").insert({
-        user_id: profile.id,
-        assessment_id: assessmentId,
-        score,
-        band: band.toLowerCase(),
-      });
-      if (resultError) {
-        setSaveError("Your results weren't saved due to a connection issue. Please try again.");
-        return;
-      }
-
-      // 3. Update profile awareness_score (best score never degrades)
-      const newBestScore = Math.max(profile.awareness_score ?? 0, score);
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .update({ awareness_score: newBestScore })
-        .eq("id", profile.id);
-
-      if (profileError) {
-        setSaveError("Your awareness score couldn't be updated. Please try again.");
-        return;
-      }
-
-      // 4. Award XP: only on first pass, plus bonus for improving previous best
-      let pointsToAward = 0;
-      let refId = "assessment_pass";
-      if (score >= PASS_MARK && prevBest < PASS_MARK) {
-        pointsToAward = XP.ASSESSMENT_PASS;
-        refId = "assessment_first_pass";
-      } else if (score >= PASS_MARK && score > prevBest) {
-        pointsToAward = XP.ASSESSMENT_IMPROVEMENT;
-        refId = `assessment_improve_${score}`;
-      }
-
-      if (pointsToAward > 0) {
-        await recordActivity({
-          userId: profile.id,
-          action: "assessment_completed",
-          points: pointsToAward,
-          meta: { score, band, prevBest },
-          refId,
-          awardOnce: true,
-        });
-      }
-
+      await drillsApi.submitAssessment(assessmentId, score, band, answers);
       await refreshProfile();
     } catch {
       setSaveError("An unexpected error occurred while saving your results.");

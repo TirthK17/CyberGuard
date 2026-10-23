@@ -50,16 +50,18 @@ describe("Certificate System & Public Verification", () => {
     // User passes first attempt with 85%
     await supabase.from("assessment_results").insert({
       user_id: userId,
+      assessment_id: "00000000-0000-0000-0000-000000000001",
       score: 85,
-      passed: true,
+      band: "Advanced",
       completed_at: "2026-03-10T12:00:00.000Z",
     });
 
     // User later retakes and scores 45% (failed)
     await supabase.from("assessment_results").insert({
       user_id: userId,
+      assessment_id: "00000000-0000-0000-0000-000000000001",
       score: 45,
-      passed: false,
+      band: "Novice",
       completed_at: "2026-03-12T12:00:00.000Z",
     });
 

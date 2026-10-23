@@ -2,7 +2,7 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { recordActivity, simulationXp } from "@/lib/gamification";
+import { drillsApi } from "@/lib/api/drills";
 import { celebrate } from "@/lib/celebrate";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/ToastContext";
@@ -93,7 +93,7 @@ const SLUG_ALIASES: Record<string, string> = {
 export function SimulationPlayerPage() {
   const { slug } = useParams();
   const activeSlug = (slug && SLUG_ALIASES[slug]) || slug || "";
-  const { profile } = useAuth();
+  const { profile, refreshProfile } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
   const [simulation, setSimulation] = useState<Simulation | null>(null);
@@ -123,7 +123,7 @@ export function SimulationPlayerPage() {
         setLoadError("Failed to load simulation steps. Please try again.");
         return;
       }
-      setSteps(stepData as SimulationStep[]);
+      setSteps((stepData ?? []) as unknown as SimulationStep[]);
     })();
   }, [activeSlug]);
 
@@ -131,13 +131,17 @@ export function SimulationPlayerPage() {
     if (!profile || !simulation) return false;
     setSaving(true);
     setSaveError(null);
-    const pointsAwarded = simulationXp(finalScore);
-    const { error } = await supabase.from("simulation_results").insert({
-      user_id: profile.id,
-      simulation_id: simulation.id,
-      score: finalScore,
-    });
-    if (error) {
+    try {
+      await drillsApi.submitSimulationResult(profile.id, simulation.id, finalScore, meta);
+      await refreshProfile();
+      setSaving(false);
+      toast({
+        title: "Simulation Recorded",
+        description: `Completed with ${finalScore}/100`,
+        variant: "success",
+      });
+      return true;
+    } catch {
       setSaving(false);
       setSaveError("Your result could not be saved to the database. Please try again.");
       toast({
@@ -147,21 +151,6 @@ export function SimulationPlayerPage() {
       });
       return false;
     }
-    await recordActivity({
-      userId: profile.id,
-      action: "simulation_completed",
-      points: pointsAwarded,
-      refId: simulation.id,
-      awardOnce: true,
-      meta: { simulation_id: simulation.id, score: finalScore, ...(meta || {}) },
-    });
-    setSaving(false);
-    toast({
-      title: "Simulation Recorded",
-      description: `Completed with ${finalScore}/100 (+${pointsAwarded} XP)`,
-      variant: "success",
-    });
-    return true;
   };
 
   const handleSandboxComplete = async (score: number, meta: Record<string, unknown>) => {

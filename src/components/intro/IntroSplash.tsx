@@ -2,12 +2,11 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
-import { DEMO_PASSWORD } from "@/lib/localDb";
 import { useIntroSeen } from "./useIntroSeen";
 
 export function IntroSplash() {
   const { showIntro, markIntroSeen, dismissIntro } = useIntroSeen();
-  const { user, signIn } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
 
   const [isVideoReady, setIsVideoReady] = useState(false);
@@ -88,17 +87,12 @@ export function IntroSplash() {
     if (isExiting) return;
     setIsExiting(true);
 
-    // If user is not yet signed in, seamlessly sign in demo operator so /dashboard opens without interruption
+    // If user is not yet signed in, take them to the login screen for both user and admin access
     if (!user) {
-      try {
-        await signIn("operator@cyberguard.dev", DEMO_PASSWORD);
-      } catch {
-        // Ignore fallback
-      }
+      navigate("/login", { replace: true });
+    } else {
+      navigate(profile?.role === "admin" ? "/admin" : "/dashboard", { replace: true });
     }
-
-    // Pre-navigate to /dashboard so the dashboard layout mounts behind the fading overlay
-    navigate("/dashboard", { replace: true });
 
     // Remove introActive and inert immediately so underlying dashboard smoothly scales and fades up
     delete document.documentElement.dataset.introActive;
@@ -127,7 +121,7 @@ export function IntroSplash() {
     window.setTimeout(() => {
       dismissIntro();
     }, 920);
-  }, [isExiting, user, signIn, navigate, dismissIntro]);
+  }, [isExiting, user, profile, navigate, dismissIntro]);
 
   // Global unmuting helper to guarantee full unmuted audio playback
   const forceUnmute = useCallback(() => {

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { motion } from "framer-motion";
 import { KavachLogoMark } from "@/components/ui/KavachLogo";
 import { supabase } from "@/lib/supabase";
+import { certificatesApi } from "@/lib/api/certificates";
 import { PASS_MARK, APP_NAME } from "@/lib/constants";
 
 interface CertRecord {
@@ -16,28 +17,6 @@ interface CertRecord {
   full_name: string;
   score: number;
   issued_at: string;
-}
-
-/**
- * Generates an ultra-unique, cryptographic certificate ID in the format CG-YYYY-XXXXXXXX.
- * Uses Web Crypto getRandomValues to generate an 8-character hex token (4.29 billion combinations/yr).
- * Validates collision-resistance against the DB before returning.
- */
-async function generateCertId(): Promise<string> {
-  const year = new Date().getFullYear();
-  for (let attempt = 0; attempt < 10; attempt++) {
-    const arr = new Uint8Array(4);
-    crypto.getRandomValues(arr);
-    const suffix = Array.from(arr, (b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
-    const id = `KV-${year}-${suffix}`;
-    const { data } = await supabase.from("certificates").select("id").eq("id", id).maybeSingle();
-    if (!data) return id; // Guaranteed unique ID
-  }
-  // High-entropy fallback
-  const fallbackArr = new Uint8Array(4);
-  crypto.getRandomValues(fallbackArr);
-  const fallbackSuffix = Array.from(fallbackArr, (b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
-  return `KV-${year}-${fallbackSuffix}`;
 }
 
 /**
@@ -98,18 +77,10 @@ export function CertificatePage() {
         activeCert = existing as CertRecord;
         setCert(activeCert);
       } else {
-        // Issue a new certificate — store it permanently with guaranteed unique ID
-        const id = await generateCertId();
-        const newCert: CertRecord = {
-          id,
-          user_id: profile.id,
-          full_name: profile.full_name,
-          score: best,
-          issued_at: new Date().toISOString(),
-        };
-        await supabase.from("certificates").insert(newCert);
-        activeCert = newCert;
-        setCert(newCert);
+        // Issue a new certificate via server-authoritative RPC (format: CG-YYYY-XXXXX)
+        const issued = await certificatesApi.issueCertificate();
+        activeCert = issued as CertRecord;
+        setCert(issued as CertRecord);
       }
 
       // Compute cryptographic hash

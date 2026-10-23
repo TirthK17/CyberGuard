@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
-import { levelForPoints, XP } from "@/lib/constants";
+import { drillsApi } from "@/lib/api/drills";
+import { XP } from "@/lib/constants";
 
 /**
  * Action types for activity logging.
@@ -51,77 +52,21 @@ export async function recordActivity({
   meta,
   refId,
   awardOnce = false,
-}: ActivityInput): Promise<Awaited<ReturnType<typeof evaluateBadges>> | undefined> {
-  // ── Idempotency check ────────────────────────────────────────────────────────
-  if (awardOnce && refId) {
-    const { data: existing } = await supabase
-      .from("activity_logs")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("action", action);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- meta shape is dynamic
-    const alreadyDone = (existing as any[] | null)?.some(
-      (row: { meta?: Record<string, unknown> }) =>
-        row.meta?.ref_id === refId
+}: ActivityInput) {
+  void userId;
+  try {
+    const res = await drillsApi.awardXp(
+      action,
+      points,
+      meta as Record<string, unknown>,
+      refId,
+      awardOnce
     );
-    if (alreadyDone) return undefined; // Skip — already awarded
+    return res.badges_unlocked;
+  } catch (err) {
+    console.error("Error awarding XP:", err);
+    return [];
   }
-
-  // ── Log the activity ─────────────────────────────────────────────────────────
-  const { error: logError } = await supabase.from("activity_logs").insert({
-    user_id: userId,
-    action,
-    meta: { ...(meta ?? {}), ...(refId ? { ref_id: refId } : {}) },
-    points_earned: points,
-  });
-  if (logError) console.error("Failed to log activity:", logError.message);
-
-  if (points === 0) {
-    // No points to add — just log, then badge-check.
-    return evaluateBadges(userId);
-  }
-
-  // ── Update profile points + level ────────────────────────────────────────────
-  const { data: profile, error: profileFetchError } = await supabase
-    .from("profiles")
-    .select("points, level")
-    .eq("id", userId)
-    .single();
-
-  if (profileFetchError) {
-    console.error("Failed to fetch profile for points update:", profileFetchError.message);
-    return;
-  }
-
-  const oldLevel = profile?.level ?? levelForPoints(profile?.points ?? 0);
-  const newPoints = (profile?.points ?? 0) + points;
-  const newLevel = levelForPoints(newPoints);
-
-  const { error: updateError } = await supabase
-    .from("profiles")
-    .update({ points: newPoints, level: newLevel })
-    .eq("id", userId);
-  if (updateError) console.error("Failed to update points/level:", updateError.message);
-
-  if (typeof window !== "undefined" && newLevel > oldLevel) {
-    window.dispatchEvent(
-      new CustomEvent("cyberguard:level-up", {
-        detail: { oldLevel, newLevel, newPoints },
-      })
-    );
-  }
-
-  const newlyAwarded = await evaluateBadges(userId);
-  if (typeof window !== "undefined" && newlyAwarded.length > 0) {
-    window.dispatchEvent(
-      new CustomEvent("cyberguard:badges-unlocked", {
-        detail: { badges: newlyAwarded },
-      })
-    );
-  }
-
-  return newlyAwarded;
 }
 
 /**

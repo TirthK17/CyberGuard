@@ -8,8 +8,11 @@ export interface Profile {
   role: Role;
   avatar_url: string | null;
   points: number;
+  xp?: number;
   level: number;
+  tier?: string;
   awareness_score: number;
+  streak_days?: number;
   status: "active" | "disabled";
   created_at: string;
 }

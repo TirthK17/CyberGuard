@@ -5,6 +5,17 @@ import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
 import { KavachLogo } from "@/components/ui/KavachLogo";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
+import { z } from "zod";
+
+const registerSchema = z.object({
+  fullName: z.string().trim().min(2, "Full name must be at least 2 characters"),
+  email: z.string().trim().email("Please enter a valid email address"),
+  password: z.string().min(8, "Password must be at least 8 characters"),
+  confirm: z.string(),
+}).refine((data) => data.password === data.confirm, {
+  message: "Passwords do not match",
+  path: ["confirm"],
+});
 
 export function RegisterPage() {
   const { signUp } = useAuth();
@@ -20,8 +31,9 @@ export function RegisterPage() {
     e.preventDefault();
     setError(null);
 
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters.");
+    const validation = registerSchema.safeParse({ fullName, email, password, confirm });
+    if (!validation.success) {
+      setError(validation.error.issues[0]?.message || "Please check your input");
       return;
     }
     if (password !== confirm) {

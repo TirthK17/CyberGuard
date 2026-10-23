@@ -18,6 +18,10 @@ import { CelebrationModal } from "@/components/ui/CelebrationModal";
 import { PageSpinner } from "@/components/ui/primitives";
 import { userNav } from "@/lib/navigation";
 import { IntroSplash } from "@/components/intro/IntroSplash";
+import { QueryClientProvider } from "@tanstack/react-query";
+import { queryClient } from "@/lib/queryClient";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import { MissingEnvScreen } from "@/components/ui/MissingEnvScreen";
 import { APP_NAME } from "@/lib/constants";
 
 // ── CODE-SPLIT PAGE IMPORTS ──────────────────────────────────────────────────
@@ -103,13 +107,18 @@ function TopicsWrapper() {
 }
 
 function App() {
+  if (!isSupabaseConfigured) {
+    return <MissingEnvScreen />;
+  }
+
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <AccessibilityProvider>
-          <AuthProvider>
-            <ToastProvider>
-              <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <AccessibilityProvider>
+            <AuthProvider>
+              <ToastProvider>
+                <BrowserRouter>
                 <IntroSplash />
                 <div id="app-root-container">
                   <CommandPalette />
@@ -174,6 +183,7 @@ function App() {
       </AuthProvider>
     </AccessibilityProvider>
   </ThemeProvider>
+</QueryClientProvider>
 </ErrorBoundary>
   );
 }

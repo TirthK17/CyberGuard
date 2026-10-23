@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 import { useTheme } from "@/context/ThemeContext";
 import { useToast } from "@/context/ToastContext";
 import { useAccessibility } from "@/context/AccessibilityContext";
@@ -147,45 +148,54 @@ export function SettingsPage() {
     } catch {}
   }, [threatRadarAlerts]);
 
-  const handleExportData = () => {
+  const handleExportData = async () => {
+    if (!profile?.id) {
+      toast({
+        title: "Export Unavailable",
+        description: "Please sign in to export your training data.",
+        variant: "info",
+      });
+      return;
+    }
+
     try {
-      const dbRaw = localStorage.getItem("cyberguard_local_db_v4") || "{}";
-      const db = JSON.parse(dbRaw);
-      const currentUserId = profile?.id;
+      const [
+        { data: activityLogs },
+        { data: quizAttempts },
+        { data: simAttempts },
+        { data: certs },
+        { data: userBadges },
+        { data: incidents },
+      ] = await Promise.all([
+        supabase.from("activity_logs").select("*").eq("user_id", profile.id),
+        supabase.from("quiz_results").select("*").eq("user_id", profile.id),
+        supabase.from("simulation_results").select("*").eq("user_id", profile.id),
+        supabase.from("certificates").select("*").eq("user_id", profile.id),
+        supabase.from("user_badges").select("*, badges(*)").eq("user_id", profile.id),
+        supabase.from("incidents").select("*").eq("user_id", profile.id),
+      ]);
 
       const userData = {
         exported_at: new Date().toISOString(),
-        profile: profile || null,
-        activity_logs: Array.isArray(db.activity_logs)
-          ? db.activity_logs.filter((item: { user_id?: string }) => item.user_id === currentUserId)
-          : [],
-        quiz_attempts: Array.isArray(db.quiz_attempts)
-          ? db.quiz_attempts.filter((item: { user_id?: string }) => item.user_id === currentUserId)
-          : [],
-        assessment_results: Array.isArray(db.assessment_results)
-          ? db.assessment_results.filter((item: { user_id?: string }) => item.user_id === currentUserId)
-          : [],
-        simulation_results: Array.isArray(db.simulation_results)
-          ? db.simulation_results.filter((item: { user_id?: string }) => item.user_id === currentUserId)
-          : [],
-        user_badges: Array.isArray(db.user_badges)
-          ? db.user_badges.filter((item: { user_id?: string }) => item.user_id === currentUserId)
-          : [],
-        certificates: Array.isArray(db.certificates)
-          ? db.certificates.filter((item: { user_id?: string }) => item.user_id === currentUserId)
-          : [],
+        profile,
+        activity_logs: activityLogs ?? [],
+        quiz_attempts: quizAttempts ?? [],
+        simulation_attempts: simAttempts ?? [],
+        certificates: certs ?? [],
+        user_badges: userBadges ?? [],
+        incidents: incidents ?? [],
       };
 
       const blob = new Blob([JSON.stringify(userData, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `cyberguard_user_data_${currentUserId || "operator"}.json`;
+      a.download = `cyberguard_data_${profile.email.split("@")[0]}.json`;
       a.click();
       URL.revokeObjectURL(url);
       toast({
         title: "Data Export Complete",
-        description: "Your local training records were downloaded.",
+        description: "Your official training records were downloaded.",
         variant: "success",
       });
     } catch {
@@ -204,19 +214,22 @@ export function SettingsPage() {
   const handlePerformReset = () => {
     setShowResetConfirm(false);
     try {
-      localStorage.removeItem("cyberguard_local_db_v4");
+      localStorage.removeItem("settings_email_alerts");
+      localStorage.removeItem("settings_drill_reminders");
+      localStorage.removeItem("settings_threat_radar_alerts");
+      localStorage.removeItem("cyberguard_onboarding_completed");
       toast({
-        title: "System Cache Cleared",
-        description: "Reloading defaults...",
+        title: "Preferences Reset",
+        description: "Workspace preferences restored to defaults.",
         variant: "info",
       });
       setTimeout(() => {
         window.location.reload();
-      }, 600);
+      }, 500);
     } catch {
       toast({
         title: "Reset Failed",
-        description: "Could not reset local database.",
+        description: "Could not reset preferences.",
         variant: "error",
       });
     }

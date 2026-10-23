@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
-import { recordActivity } from "@/lib/gamification";
+import { drillsApi } from "@/lib/api/drills";
 import { celebrate } from "@/lib/celebrate";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/Button";
 import { Card, Pill, ProgressBar, PageSpinner, EmptyState } from "@/components/ui/primitives";
-import { QUIZ_PASS, XP } from "@/lib/constants";
+import { QUIZ_PASS } from "@/lib/constants";
 import type { Question } from "@/types";
 
 export function QuizTakingPage() {
@@ -36,27 +36,7 @@ export function QuizTakingPage() {
     setSaving(true);
     setSaveError(null);
     try {
-      const { error } = await supabase.from("quiz_results").insert({
-        user_id: profile.id,
-        quiz_id: id,
-        score,
-        total_questions: questions.length,
-        answers,
-      });
-      if (error) {
-        setSaveError("Your score wasn't saved due to a connection issue. Please try again.");
-        return;
-      }
-      const pct = Math.round((score / questions.length) * 100);
-      const passed = pct >= QUIZ_PASS;
-      await recordActivity({
-        userId: profile.id,
-        action: "quiz_completed",
-        points: passed ? XP.QUIZ_PASS : XP.QUIZ_COMPLETION,
-        meta: { quiz_id: id, score, total: questions.length, passed },
-        refId: id,
-        awardOnce: true,
-      });
+      await drillsApi.submitQuizResult(profile.id, id, score, questions.length, answers);
       await refreshProfile();
     } catch {
       setSaveError("An unexpected error occurred while saving your results.");
@@ -78,6 +58,7 @@ export function QuizTakingPage() {
   };
 
   useEffect(() => {
+    if (!id) return;
     supabase
       .from("questions")
       .select("*")

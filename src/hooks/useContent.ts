@@ -1,5 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { contentApi } from "@/lib/api/content";
 import type {
   Module,
   Lesson,
@@ -12,99 +14,189 @@ import type {
   UserSimulationResult,
 } from "@/types";
 
-function useSupabaseQuery<T>(
-  fn: () => PromiseLike<{ data: T | null; error: unknown }>,
-  deps: unknown[] = []
-) {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    setLoading(true);
-    setError(null);
-    Promise.resolve(fn()).then((res) => {
-      if (!active) return;
-      if (res.error) setError("Something went wrong loading this content.");
-      setData(res.data);
-      setLoading(false);
-    });
-    return () => {
-      active = false;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, deps);
-
-  return { data, loading, error };
-}
-
 export function useModules() {
-  return useSupabaseQuery<Module[]>(() =>
-    supabase.from("modules").select("*").eq("is_published", true).order("order_index")
-  );
+  const query = useQuery({
+    queryKey: ["modules"],
+    queryFn: () => contentApi.getModules(),
+  });
+  return {
+    data: (query.data as unknown as Module[]) ?? null,
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
 }
 
 export function useModule(slug: string | undefined) {
-  return useSupabaseQuery<Module>(
-    () => supabase.from("modules").select("*").eq("slug", slug).single(),
-    [slug]
-  );
+  const query = useQuery({
+    queryKey: ["module", slug],
+    queryFn: () => (slug ? contentApi.getModuleBySlug(slug) : Promise.resolve(null)),
+    enabled: Boolean(slug),
+  });
+  return {
+    data: (query.data as unknown as Module) ?? null,
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
 }
 
 export function useLessons(moduleId: string | undefined) {
-  return useSupabaseQuery<Lesson[]>(
-    () => supabase.from("lessons").select("*").eq("module_id", moduleId).order("order_index"),
-    [moduleId]
-  );
+  const query = useQuery({
+    queryKey: ["lessons", moduleId],
+    queryFn: () => (moduleId ? contentApi.getLessonsByModule(moduleId) : Promise.resolve([])),
+    enabled: Boolean(moduleId),
+  });
+  return {
+    data: (query.data as unknown as Lesson[]) ?? null,
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
 }
 
 export function useQuizzes() {
-  return useSupabaseQuery<Quiz[]>(() =>
-    supabase.from("quizzes").select("*").eq("is_published", true)
-  );
+  const query = useQuery({
+    queryKey: ["quizzes"],
+    queryFn: () => contentApi.getQuizzes(),
+  });
+  return {
+    data: (query.data as unknown as Quiz[]) ?? null,
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
 }
 
 export function useSimulations() {
-  return useSupabaseQuery<Simulation[]>(() =>
-    supabase.from("simulations").select("*").eq("is_published", true)
-  );
+  const query = useQuery({
+    queryKey: ["simulations"],
+    queryFn: () => contentApi.getSimulations(),
+  });
+  return {
+    data: (query.data as unknown as Simulation[]) ?? null,
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
 }
 
 export function useBadges() {
-  return useSupabaseQuery<Badge[]>(() => supabase.from("badges").select("*"));
+  const query = useQuery({
+    queryKey: ["badges"],
+    queryFn: () => contentApi.getBadges(),
+  });
+  return {
+    data: (query.data as unknown as Badge[]) ?? null,
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
 }
 
-export function useLeaderboard() {
-  return useSupabaseQuery<LeaderboardEntry[]>(() =>
-    supabase.from("leaderboard").select("*").limit(20)
-  );
+/**
+ * Hook for live community Leaderboard.
+ * Connects Supabase Realtime channel to automatically invalidate and refetch
+ * when any user gains XP or changes ranking.
+ */
+export function useLeaderboard(limit: number = 50) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("leaderboard-realtime-channel")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "profiles" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
+
+  const query = useQuery({
+    queryKey: ["leaderboard", limit],
+    queryFn: () => contentApi.getLeaderboard(limit),
+  });
+
+  return {
+    data: (query.data as unknown as LeaderboardEntry[]) ?? null,
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
 }
 
 export function useUserProgress(userId: string | undefined) {
-  return useSupabaseQuery<Progress[]>(
-    () => supabase.from("progress").select("*").eq("user_id", userId),
-    [userId]
-  );
+  const query = useQuery({
+    queryKey: ["user-progress", userId],
+    queryFn: () => (userId ? contentApi.getUserProgress(userId) : Promise.resolve([])),
+    enabled: Boolean(userId),
+  });
+  return {
+    data: (query.data as unknown as Progress[]) ?? null,
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
 }
 
 export function useUserBadges(userId: string | undefined) {
-  return useSupabaseQuery<{ badge_id: string }[]>(
-    () => supabase.from("user_badges").select("badge_id").eq("user_id", userId),
-    [userId]
-  );
+  const query = useQuery({
+    queryKey: ["user-badges", userId],
+    queryFn: () => (userId ? contentApi.getUserBadges(userId) : Promise.resolve([])),
+    enabled: Boolean(userId),
+  });
+  return {
+    data: (query.data as unknown as { badge_id: string; earned_at: string }[]) ?? null,
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
 }
 
 export function useUserQuizResults(userId: string | undefined) {
-  return useSupabaseQuery<UserQuizResult[]>(
-    () => supabase.from("quiz_results").select("quiz_id, score, total_questions").eq("user_id", userId),
-    [userId]
-  );
+  const query = useQuery({
+    queryKey: ["user-quiz-results", userId],
+    queryFn: () => (userId ? contentApi.getUserQuizResults(userId) : Promise.resolve([])),
+    enabled: Boolean(userId),
+  });
+  return {
+    data: (query.data as unknown as UserQuizResult[]) ?? null,
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
 }
 
 export function useUserSimulationResults(userId: string | undefined) {
-  return useSupabaseQuery<UserSimulationResult[]>(
-    () => supabase.from("simulation_results").select("simulation_id, score").eq("user_id", userId),
-    [userId]
-  );
+  const query = useQuery({
+    queryKey: ["user-sim-results", userId],
+    queryFn: () => (userId ? contentApi.getUserSimulationResults(userId) : Promise.resolve([])),
+    enabled: Boolean(userId),
+  });
+  return {
+    data: (query.data as unknown as UserSimulationResult[]) ?? null,
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
+}
+
+export function useThreatBulletins() {
+  const query = useQuery({
+    queryKey: ["threat-bulletins"],
+    queryFn: () => contentApi.getThreatBulletins(),
+  });
+  return {
+    data: query.data ?? [],
+    loading: query.isLoading,
+    error: query.error ? query.error.message : null,
+    refetch: query.refetch,
+  };
 }

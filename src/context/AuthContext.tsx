@@ -1,56 +1,74 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { localDb } from "@/lib/localDb";
+import type { User, Session } from "@supabase/supabase-js";
+import { authApi } from "@/lib/api/auth";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import type { Profile } from "@/types";
 
-export interface LocalAuthUser {
-  id: string;
-  email: string;
-}
-
 interface AuthContextValue {
-  user: LocalAuthUser | null;
-  session: { user: LocalAuthUser } | null;
+  user: User | null;
+  session: Session | null;
   profile: Profile | null;
   loading: boolean;
   isAdmin: boolean;
+  isConfigured: boolean;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: string | null }>;
-  signIn: (email: string, password?: string) => Promise<{ error: string | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signInWithGoogle: () => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
+  resetPassword: (email: string) => Promise<{ error: string | null }>;
   refreshProfile: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<LocalAuthUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   const loadProfile = async (userId: string) => {
-    const { data } = await localDb.from("profiles").select("*").eq("id", userId).single();
-    if (data) {
-      setProfile(data as Profile);
+    try {
+      const p = await authApi.getProfile(userId);
+      if (p) {
+        setProfile(p as unknown as Profile);
+      }
+    } catch (err) {
+      console.error("Failed to load user profile:", err);
     }
   };
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setLoading(false);
+      return;
+    }
+
     let active = true;
 
-    localDb.auth.getSession().then(async ({ data }) => {
+    // 1. Initial session check
+    authApi.getSession().then(async ({ data }) => {
       if (!active) return;
       if (data.session?.user) {
-        setUser({ id: data.session.user.id, email: data.session.user.email });
+        setSession(data.session);
+        setUser(data.session.user);
         await loadProfile(data.session.user.id);
       }
       setLoading(false);
+    }).catch((err) => {
+      console.error("Session restore error:", err);
+      if (active) setLoading(false);
     });
 
-    const { data: sub } = localDb.auth.onAuthStateChange(async (_event, newSession) => {
+    // 2. Realtime auth state listener
+    const { data: authListener } = authApi.onAuthStateChange(async (_event, newSession) => {
+      if (!active) return;
       if (newSession?.user) {
-        setUser({ id: newSession.user.id, email: newSession.user.email });
+        setSession(newSession);
+        setUser(newSession.user);
         await loadProfile(newSession.user.id);
       } else {
+        setSession(null);
         setUser(null);
         setProfile(null);
       }
@@ -59,49 +77,62 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => {
       active = false;
-      sub.subscription.unsubscribe();
+      authListener.subscription.unsubscribe();
     };
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    const { error } = await localDb.auth.signUp({
-      email,
-      password,
-      options: { data: { full_name: fullName } },
-    });
-    return { error: error ? error.message : null };
+    const res = await authApi.signUp(email, password, fullName);
+    return { error: res.error };
   };
 
-  const signIn = async (email: string, password?: string) => {
-    const { error } = await localDb.auth.signInWithPassword({ email, password });
-    return { error: error ? error.message : null };
+  const signIn = async (email: string, password: string) => {
+    const res = await authApi.signIn(email, password);
+    if (!res.error && res.data?.user) {
+      setUser(res.data.user);
+      setSession(res.data.session);
+      await loadProfile(res.data.user.id);
+    }
+    return { error: res.error };
   };
 
   const signInWithGoogle = async () => {
-    const { error } = await localDb.auth.signInWithOAuth({ provider: "google" });
-    return { error: error ? error.message : null };
+    const res = await authApi.signInWithGoogle();
+    return { error: res.error };
   };
 
   const signOut = async () => {
-    await localDb.auth.signOut();
+    await authApi.signOut();
+    setUser(null);
+    setSession(null);
+    setProfile(null);
+  };
+
+  const resetPassword = async (email: string) => {
+    const res = await authApi.resetPassword(email);
+    return { error: res.error };
   };
 
   const refreshProfile = async () => {
-    if (user) await loadProfile(user.id);
+    if (user?.id) {
+      await loadProfile(user.id);
+    }
   };
 
   return (
     <AuthContext.Provider
       value={{
         user,
-        session: user ? { user } : null,
+        session,
         profile,
         loading,
         isAdmin: profile?.role === "admin",
+        isConfigured: isSupabaseConfigured,
         signUp,
         signIn,
         signInWithGoogle,
         signOut,
+        resetPassword,
         refreshProfile,
       }}
     >
