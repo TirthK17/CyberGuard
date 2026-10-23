@@ -18,7 +18,7 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
-const STORAGE_KEY = "cyberguard-theme";
+const STORAGE_KEY = "cyberguard-theme-v2";
 const ACCENT_STORAGE_KEY = "cyberguard-accent";
 const HACKER_MODE_STORAGE_KEY = "cyberguard-hacker-mode";
 

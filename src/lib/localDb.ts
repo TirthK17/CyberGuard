@@ -54,35 +54,35 @@ const DEFAULT_PROFILES: Profile[] = [
   },
   {
     id: "user-demo-lead-1",
-    full_name: "Sarah Chen (Security Lead)",
-    email: "sarah.chen@cyberguard.dev",
-    role: "admin",
+    full_name: "Tirth Bariya",
+    email: "tirth.b@cyberguard.dev",
+    role: "user",
     avatar_url: null,
-    points: 1480,
+    points: 1250,
     level: 5,
-    awareness_score: 99,
+    awareness_score: 98,
     status: "active",
-    created_at: new Date(Date.now() - 60 * 86400000).toISOString(),
+    created_at: new Date(Date.now() - 50 * 86400000).toISOString(),
   },
   {
     id: "user-demo-lead-2",
-    full_name: "Marcus Vance",
-    email: "marcus.v@cyberguard.dev",
+    full_name: "Aarav Sharma",
+    email: "aarav.s@cyberguard.dev",
     role: "user",
     avatar_url: null,
-    points: 1220,
+    points: 980,
     level: 4,
-    awareness_score: 96,
+    awareness_score: 95,
     status: "active",
     created_at: new Date(Date.now() - 45 * 86400000).toISOString(),
   },
   {
     id: "user-demo-lead-3",
-    full_name: "Elena Rostova",
-    email: "elena.r@cyberguard.dev",
+    full_name: "Kriti Patel",
+    email: "kriti.p@cyberguard.dev",
     role: "user",
     avatar_url: null,
-    points: 980,
+    points: 860,
     level: 4,
     awareness_score: 94,
     status: "active",
@@ -90,39 +90,87 @@ const DEFAULT_PROFILES: Profile[] = [
   },
   {
     id: "user-demo-lead-4",
-    full_name: "Aisha Patel",
-    email: "aisha.p@cyberguard.dev",
+    full_name: "Rohan Mehta",
+    email: "rohan.m@cyberguard.dev",
     role: "user",
     avatar_url: null,
-    points: 750,
-    level: 3,
-    awareness_score: 91,
+    points: 780,
+    level: 4,
+    awareness_score: 92,
+    status: "active",
+    created_at: new Date(Date.now() - 30 * 86400000).toISOString(),
+  },
+  {
+    id: "user-demo-lead-5",
+    full_name: "Isha Verma",
+    email: "isha.v@cyberguard.dev",
+    role: "user",
+    avatar_url: null,
+    points: 700,
+    level: 4,
+    awareness_score: 90,
     status: "active",
     created_at: new Date(Date.now() - 25 * 86400000).toISOString(),
   },
   {
-    id: "user-demo-lead-5",
-    full_name: "David Kim",
-    email: "david.k@cyberguard.dev",
+    id: "user-demo-lead-6",
+    full_name: "Dhruv Singh",
+    email: "dhruv.s@cyberguard.dev",
     role: "user",
     avatar_url: null,
-    points: 540,
+    points: 660,
     level: 3,
     awareness_score: 88,
     status: "active",
     created_at: new Date(Date.now() - 20 * 86400000).toISOString(),
   },
   {
-    id: "user-demo-lead-6",
-    full_name: "Priya Sharma",
-    email: "priya.s@cyberguard.dev",
+    id: "user-demo-lead-7",
+    full_name: "Sneha Joshi",
+    email: "sneha.j@cyberguard.dev",
     role: "user",
     avatar_url: null,
-    points: 410,
-    level: 2,
-    awareness_score: 86,
+    points: 620,
+    level: 3,
+    awareness_score: 87,
+    status: "active",
+    created_at: new Date(Date.now() - 16 * 86400000).toISOString(),
+  },
+  {
+    id: "user-demo-lead-8",
+    full_name: "Manav Trivedi",
+    email: "manav.t@cyberguard.dev",
+    role: "user",
+    avatar_url: null,
+    points: 580,
+    level: 3,
+    awareness_score: 85,
     status: "active",
     created_at: new Date(Date.now() - 14 * 86400000).toISOString(),
+  },
+  {
+    id: "user-demo-lead-9",
+    full_name: "Priya Shah",
+    email: "priya.shah@cyberguard.dev",
+    role: "user",
+    avatar_url: null,
+    points: 540,
+    level: 2,
+    awareness_score: 84,
+    status: "active",
+    created_at: new Date(Date.now() - 10 * 86400000).toISOString(),
+  },
+  {
+    id: "user-demo-lead-10",
+    full_name: "Harsh Patel",
+    email: "harsh.p@cyberguard.dev",
+    role: "user",
+    avatar_url: null,
+    points: 500,
+    level: 2,
+    awareness_score: 82,
+    status: "active",
+    created_at: new Date(Date.now() - 8 * 86400000).toISOString(),
   },
   {
     id: "user-demo-operator",
@@ -130,14 +178,14 @@ const DEFAULT_PROFILES: Profile[] = [
     email: "operator@cyberguard.dev",
     role: "user",
     avatar_url: null,
-    points: 320,
+    points: 460,
     level: 2,
-    awareness_score: 84,
+    awareness_score: 80,
     status: "active",
     created_at: new Date(Date.now() - 7 * 86400000).toISOString(),
   },
   {
-    id: "user-demo-lead-7",
+    id: "user-demo-lead-11",
     full_name: "Liam O'Connor",
     email: "liam.o@cyberguard.dev",
     role: "user",
@@ -1347,7 +1395,7 @@ export interface DatabaseTableMap {
   certificates: { id: string; user_id: string; full_name: string; score: number; issued_at: string };
 }
 
-const STORAGE_KEY = "cyberguard_local_db_v5";
+const STORAGE_KEY = "cyberguard_local_db_v6";
 
 interface DatabaseState {
   profiles: Profile[];
@@ -1605,6 +1653,7 @@ export class LocalQueryBuilder<T = any> implements PromiseLike<{ data: T; error:
     // Virtual Leaderboard view
     if (this.tableName === "leaderboard") {
       const lb = db.profiles
+        .filter((p) => p.role !== "admin")
         .map((p, idx) => ({
           rank: idx + 1,
           id: p.id,
@@ -1613,7 +1662,7 @@ export class LocalQueryBuilder<T = any> implements PromiseLike<{ data: T; error:
           avatar_url: p.avatar_url,
           points: p.points,
           level: p.level,
-          badges_count: db.user_badges.filter((ub) => ub.user_id === p.id).length || 2,
+          badges_count: db.user_badges.filter((ub) => ub.user_id === p.id).length || 3,
         }))
         .sort((a, b) => b.points - a.points)
         .map((p, i) => ({ ...p, rank: i + 1 }));
@@ -1725,14 +1774,18 @@ const AUTH_USER_KEY = "cyberguard_active_user";
 /** Demo accounts: seeded with known password on first load */
 const DEMO_ACCOUNTS = [
   { email: "admin@cyberguard.dev",      userId: "user-demo-admin" },
-  { email: "sarah.chen@cyberguard.dev", userId: "user-demo-lead-1" },
   { email: "operator@cyberguard.dev",   userId: "user-demo-operator" },
-  { email: "marcus.v@cyberguard.dev",  userId: "user-demo-lead-2" },
-  { email: "elena.r@cyberguard.dev",   userId: "user-demo-lead-3" },
-  { email: "aisha.p@cyberguard.dev",   userId: "user-demo-lead-4" },
-  { email: "david.k@cyberguard.dev",   userId: "user-demo-lead-5" },
-  { email: "priya.s@cyberguard.dev",   userId: "user-demo-lead-6" },
-  { email: "liam.o@cyberguard.dev",    userId: "user-demo-lead-7" },
+  { email: "tirth.b@cyberguard.dev",    userId: "user-demo-lead-1" },
+  { email: "aarav.s@cyberguard.dev",    userId: "user-demo-lead-2" },
+  { email: "kriti.p@cyberguard.dev",    userId: "user-demo-lead-3" },
+  { email: "rohan.m@cyberguard.dev",    userId: "user-demo-lead-4" },
+  { email: "isha.v@cyberguard.dev",     userId: "user-demo-lead-5" },
+  { email: "dhruv.s@cyberguard.dev",    userId: "user-demo-lead-6" },
+  { email: "sneha.j@cyberguard.dev",    userId: "user-demo-lead-7" },
+  { email: "manav.t@cyberguard.dev",    userId: "user-demo-lead-8" },
+  { email: "priya.shah@cyberguard.dev", userId: "user-demo-lead-9" },
+  { email: "harsh.p@cyberguard.dev",    userId: "user-demo-lead-10" },
+  { email: "liam.o@cyberguard.dev",     userId: "user-demo-lead-11" },
 ];
 
 /**
@@ -1886,6 +1939,10 @@ class LocalAuthClient {
 
   async updateUser({ password: _pw }: { password?: string }): Promise<{ error: null | { message: string } }> {
     // Password change not yet implemented for localDb mode.
+    return { error: null };
+  }
+
+  async resetPasswordForEmail(_email: string, _options?: unknown): Promise<{ error: null | { message: string } }> {
     return { error: null };
   }
 

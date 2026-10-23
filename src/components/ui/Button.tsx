@@ -57,23 +57,24 @@ export function Button({
 
   const variants: Record<string, string> = {
     primary:
-      "rounded-xl bg-primary text-white font-semibold border border-white/20 " +
-      "shadow-[0_1px_2px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] " +
-      "hover:bg-primary-hover active:scale-[0.98]",
+      "rounded-xl bg-primary text-white dark:bg-gradient-to-r dark:from-sky-500 dark:to-blue-600 dark:text-white dark:border-sky-400/30 font-semibold border border-white/20 " +
+      "shadow-[0_1px_2px_rgba(0,0,0,0.12),inset_0_1px_0_rgba(255,255,255,0.2)] dark:shadow-[0_4px_16px_rgba(56,189,248,0.25)] " +
+      "hover:bg-primary-hover active:scale-[0.98] dark:hover:from-sky-400 dark:hover:to-blue-500",
     secondary:
       "rounded-xl bg-surface-elevated border border-border text-text-pure font-semibold " +
       "shadow-[0_1px_2px_rgba(0,0,0,0.04)] " +
-      "hover:bg-surface-hover hover:border-border-strong active:scale-[0.98]",
+      "hover:bg-surface-hover hover:border-border-strong active:scale-[0.98] " +
+      "dark:bg-white/[0.07] dark:border-white/15 dark:text-white dark:hover:bg-white/[0.14] dark:hover:border-white/25",
     ghost:
-      "rounded-xl text-text-fog hover:text-text-pure hover:bg-surface-elevated font-semibold border border-transparent",
+      "rounded-xl text-text-fog hover:text-text-pure hover:bg-surface-elevated font-semibold border border-transparent dark:text-slate-300 dark:hover:text-white dark:hover:bg-white/[0.08]",
     danger:
-      "rounded-xl bg-danger/10 text-danger border border-danger/25 hover:bg-danger/20 font-semibold active:scale-[0.98]",
+      "rounded-xl bg-danger/10 text-danger border border-danger/25 hover:bg-danger/20 font-semibold active:scale-[0.98] dark:bg-rose-500/15 dark:text-rose-400 dark:border-rose-500/30 dark:hover:bg-rose-500/25",
     google:
       "rounded-xl bg-surface border border-border-strong text-text-pure font-semibold " +
-      "shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-surface-hover",
+      "shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:bg-surface-hover dark:bg-white/[0.07] dark:border-white/15 dark:text-white dark:hover:bg-white/[0.14]",
     success:
       "rounded-xl bg-emerald-600 text-white font-semibold border border-emerald-500/30 " +
-      "shadow-[0_1px_2px_rgba(0,0,0,0.12)] hover:bg-emerald-500 active:scale-[0.98]",
+      "shadow-[0_1px_2px_rgba(0,0,0,0.12)] hover:bg-emerald-500 active:scale-[0.98] dark:shadow-[0_4px_16px_rgba(16,185,129,0.25)]",
   };
 
   const sizes: Record<string, string> = {

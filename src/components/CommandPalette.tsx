@@ -32,7 +32,6 @@ const STATIC_USER_PAGES: SearchItem[] = [
   { id: "badges", label: "Badges", icon: "ti-award", to: "/badges", category: "nav" },
   { id: "leaderboard", label: "Leaderboard", icon: "ti-trophy", to: "/leaderboard", category: "nav" },
   { id: "certificate", label: "Certificate", icon: "ti-certificate", to: "/certificate", category: "nav" },
-  { id: "guide", label: "Security Guide Playbook", icon: "ti-shield-check", to: "/guide", category: "nav" },
   { id: "glossary", label: "Glossary", icon: "ti-book", to: "/glossary", category: "nav" },
   { id: "profile", label: "Profile", icon: "ti-user", to: "/profile", category: "nav" },
   { id: "settings", label: "Settings", icon: "ti-settings", to: "/settings", category: "nav" },

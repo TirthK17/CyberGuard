@@ -9,44 +9,64 @@ import { Button } from "@/components/ui/Button";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
 import { motion } from "framer-motion";
+import {
+  Sun,
+  Moon,
+  Monitor,
+  Volume2,
+  VolumeX,
+  Compass,
+  Download,
+  RotateCcw,
+  Palette,
+  Bell,
+  Sliders,
+  Database,
+  Check,
+} from "lucide-react";
 
-interface ShortcutRow {
-  keys: string[];
-  description: string;
-}
-
-const SHORTCUTS: ShortcutRow[] = [
-  { keys: ["⌘", "K"],   description: "Open Spotlight command palette" },
-  { keys: ["Esc"],       description: "Dismiss active modal or palette" },
-  { keys: ["↑", "↓"],   description: "Navigate list items or search results" },
-  { keys: ["↵"],         description: "Confirm or launch selected item" },
-];
-
-function SettingSection({ title, description, children }: {
+function SettingCard({
+  icon: Icon,
+  title,
+  description,
+  children,
+}: {
+  icon?: React.ElementType;
   title: string;
   description?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="glass rounded-2xl p-6">
-      <div className="mb-4">
-        <h2 className="font-display text-sm font-semibold text-text-pure">{title}</h2>
-        {description && <p className="mt-0.5 text-xs text-text-fog">{description}</p>}
+    <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6 space-y-4">
+      <div className="flex items-center gap-2.5 pb-3 border-b border-border">
+        {Icon && (
+          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <Icon className="h-4 w-4" />
+          </div>
+        )}
+        <div>
+          <h2 className="text-sm font-semibold text-text-pure">{title}</h2>
+          {description && <p className="text-xs text-text-fog mt-0.5">{description}</p>}
+        </div>
       </div>
-      {children}
+      <div className="space-y-3">{children}</div>
     </div>
   );
 }
 
-function SettingRow({ label, description, children }: {
+function SettingRow({
+  label,
+  description,
+  children,
+}: {
   label: string;
   description?: string;
   children?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between gap-4 py-3 border-b border-border last:border-0">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-2.5 border-b border-border/50 last:border-0">
       <div>
-        <p className="text-sm font-medium text-text-pure">{label}</p>
+        <p className="text-xs sm:text-sm font-medium text-text-pure">{label}</p>
         {description && <p className="text-xs text-text-ash mt-0.5">{description}</p>}
       </div>
       <div className="shrink-0">{children}</div>
@@ -56,7 +76,7 @@ function SettingRow({ label, description, children }: {
 
 export function SettingsPage() {
   const { t } = useTranslation();
-  const { user, profile } = useAuth();
+  const { profile } = useAuth();
   const {
     theme,
     setTheme,
@@ -66,7 +86,7 @@ export function SettingsPage() {
     toggleHackerMode,
   } = useTheme();
   const { isMuted, toggleMute, playSfx } = useSfx();
-  const { reducedMotion, setReducedMotion, isMotionReduced } = useAccessibility();
+  const { reducedMotion, setReducedMotion } = useAccessibility();
   const toast = useToast();
 
   const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -122,7 +142,6 @@ export function SettingsPage() {
       const db = JSON.parse(dbRaw);
       const currentUserId = profile?.id;
 
-      // Extract only current user's profile and records
       const userData = {
         exported_at: new Date().toISOString(),
         profile: profile || null,
@@ -154,8 +173,8 @@ export function SettingsPage() {
       a.click();
       URL.revokeObjectURL(url);
       toast({
-        title: "User Data Export Complete",
-        description: "Your local training, scorecards, and incident logs were downloaded.",
+        title: "Data Export Complete",
+        description: "Your local training records were downloaded.",
         variant: "success",
       });
     } catch {
@@ -177,7 +196,7 @@ export function SettingsPage() {
       localStorage.removeItem("cyberguard_local_db_v4");
       toast({
         title: "System Cache Cleared",
-        description: "Reloading clean telemetry...",
+        description: "Reloading defaults...",
         variant: "info",
       });
       setTimeout(() => {
@@ -198,133 +217,59 @@ export function SettingsPage() {
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-        className="pb-2 border-b border-border"
+        transition={{ duration: 0.25 }}
+        className="pb-3 border-b border-border"
       >
-        <p className="text-xs font-semibold uppercase tracking-wider text-primary">{t("settings.title", "Preferences")}</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-primary">Preferences</p>
         <h1 className="font-display text-2xl font-bold tracking-tight text-text-pure sm:text-3xl mt-0.5">
           {t("nav.settings", "Settings")}
         </h1>
-        <p className="mt-1 text-sm text-text-fog">
-          {t("settings.subtitle", "Customize your workspace appearance, language, audio, and accessibility settings.")}
+        <p className="mt-1 text-xs text-text-fog">
+          Customize workspace appearance, audio feedback, alerts, and local data.
         </p>
       </motion.div>
 
-      {/* Language Section */}
-      <SettingSection
-        title={t("settings.languageTitle", "Display Language")}
-        description={t("settings.languageDesc", "Choose your preferred language for interfaces, scam warnings, and guidance.")}
-      >
-        <div className="pt-2">
+      {/* 1. Appearance & Language */}
+      <SettingCard icon={Palette} title="Appearance &amp; Language" description="Theme mode, accent colors, and display language">
+        <SettingRow label="Language" description="Select interface language">
           <LanguageSwitcher variant="segmented" />
-          <p className="mt-3 text-xs text-text-ash italic">
-            {t("settings.todoReviewNotice", "Translations for Hindi and Gujarati are validated for Indian cybersecurity context. (TODO: Continuous community peer-review).")}
-          </p>
-        </div>
-      </SettingSection>
+        </SettingRow>
 
-      {/* Appearance: Theme Switcher */}
-      <SettingSection
-        title={t("settings.themeTitle", "Appearance & Theme")}
-        description={t("settings.themeDesc", "Choose light, dark, or automatic system theme.")}
-      >
-        <div className="grid gap-3 sm:grid-cols-3 pt-2">
-          {/* Light Theme Card */}
-          <button
-            type="button"
-            onClick={() => setTheme("light")}
-            className={`flex flex-col items-center gap-2.5 rounded-xl border p-3 text-left transition-all ${
-              theme === "light"
-                ? "border-primary bg-primary-subtle ring-2 ring-primary/20"
-                : "border-border bg-surface hover:bg-surface-elevated"
-            }`}
-          >
-            <div className="w-full h-16 rounded-lg border border-black/10 bg-[#fbfbfd] p-2 flex flex-col justify-between shadow-xs">
-              <div className="flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#ff5f56]" />
-                <span className="h-1.5 w-1.5 rounded-full bg-[#ffbd2e]" />
-                <span className="h-1.5 w-1.5 rounded-full bg-[#27c93f]" />
-              </div>
-              <div className="space-y-1">
-                <div className="h-1.5 w-3/4 rounded bg-neutral-300" />
-                <div className="h-1.5 w-1/2 rounded bg-[#0071e3]" />
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-semibold text-text-pure">Light</span>
-              {theme === "light" && <i className="ti ti-check text-xs text-primary" />}
-            </div>
-          </button>
-
-          {/* Dark Theme Card */}
-          <button
-            type="button"
-            onClick={() => setTheme("dark")}
-            className={`flex flex-col items-center gap-2.5 rounded-xl border p-3 text-left transition-all ${
-              theme === "dark"
-                ? "border-primary bg-primary-subtle ring-2 ring-primary/20"
-                : "border-border bg-surface hover:bg-surface-elevated"
-            }`}
-          >
-            <div className="w-full h-16 rounded-lg border border-white/10 bg-[#09090b] p-2 flex flex-col justify-between shadow-xs">
-              <div className="flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#ff5f56]" />
-                <span className="h-1.5 w-1.5 rounded-full bg-[#ffbd2e]" />
-                <span className="h-1.5 w-1.5 rounded-full bg-[#27c93f]" />
-              </div>
-              <div className="space-y-1">
-                <div className="h-1.5 w-3/4 rounded bg-neutral-700" />
-                <div className="h-1.5 w-1/2 rounded bg-[#0071e3]" />
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-semibold text-text-pure">Dark</span>
-              {theme === "dark" && <i className="ti ti-check text-xs text-primary" />}
-            </div>
-          </button>
-
-          {/* Auto / System Theme Card */}
-          <button
-            type="button"
-            onClick={() => setTheme("system")}
-            className={`flex flex-col items-center gap-2.5 rounded-xl border p-3 text-left transition-all ${
-              theme === "system"
-                ? "border-primary bg-primary-subtle ring-2 ring-primary/20"
-                : "border-border bg-surface hover:bg-surface-elevated"
-            }`}
-          >
-            <div className="w-full h-16 rounded-lg border border-neutral-300 dark:border-neutral-700 bg-gradient-to-r from-[#fbfbfd] to-[#09090b] p-2 flex flex-col justify-between shadow-xs">
-              <div className="flex items-center gap-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#ff5f56]" />
-                <span className="h-1.5 w-1.5 rounded-full bg-[#ffbd2e]" />
-                <span className="h-1.5 w-1.5 rounded-full bg-[#27c93f]" />
-              </div>
-              <div className="space-y-1">
-                <div className="h-1.5 w-3/4 rounded bg-neutral-400" />
-                <div className="h-1.5 w-1/2 rounded bg-[#0071e3]" />
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-semibold text-text-pure">Auto (System)</span>
-              {theme === "system" && <i className="ti ti-check text-xs text-primary" />}
-            </div>
-          </button>
-        </div>
-
-        {/* Accent Color Palette */}
-        <div className="mt-5 pt-4 border-t border-border flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-semibold text-text-pure">Signature Accent</p>
-            <p className="text-[11px] text-text-fog">
-              Personalize primary buttons, badge highlights, and security metrics.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 pt-1 sm:pt-0">
+        <SettingRow label="Theme" description="Switch between light, dark, and system default">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-surface-elevated border border-border">
             {[
-              { id: "blue", label: "Precision Blue", color: "#0071e3" },
-              { id: "emerald", label: "Emerald Terminal", color: "#10b981" },
-              { id: "violet", label: "Void Violet", color: "#8b5cf6" },
-              { id: "amber", label: "Cyberpunk Amber", color: "#f59e0b" },
+              { id: "light", label: "Light", icon: Sun },
+              { id: "dark", label: "Dark", icon: Moon },
+              { id: "system", label: "Auto", icon: Monitor },
+            ].map((item) => {
+              const Icon = item.icon;
+              const active = theme === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setTheme(item.id as "light" | "dark" | "system")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                    active
+                      ? "bg-primary text-white shadow-xs"
+                      : "text-text-fog hover:text-text-pure hover:bg-surface"
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  <span>{item.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </SettingRow>
+
+        <SettingRow label="Accent Color" description="Highlights, buttons, and progress meters">
+          <div className="flex items-center gap-2">
+            {[
+              { id: "blue", label: "Blue", color: "#0071e3" },
+              { id: "emerald", label: "Emerald", color: "#10b981" },
+              { id: "violet", label: "Violet", color: "#8b5cf6" },
+              { id: "amber", label: "Amber", color: "#f59e0b" },
             ].map((item) => (
               <button
                 key={item.id}
@@ -336,34 +281,27 @@ export function SettingsPage() {
                 }}
                 title={item.label}
                 aria-label={item.label}
-                className={`h-7 w-7 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                className={`h-6 w-6 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
                   accent === item.id
                     ? "ring-2 ring-primary ring-offset-2 scale-110 border-white/60"
                     : "border-border hover:scale-105"
                 }`}
                 style={{ backgroundColor: item.color }}
               >
-                {accent === item.id && <i className="ti ti-check text-white text-xs font-bold" />}
+                {accent === item.id && <Check className="h-3 w-3 text-white stroke-[3]" />}
               </button>
             ))}
           </div>
-        </div>
+        </SettingRow>
 
-        {/* Hacker Terminal Mode */}
-        <div className="mt-4 pt-4 border-t border-border flex items-center justify-between">
-          <div>
-            <p className="text-xs font-semibold text-text-pure">Hacker Terminal Mode</p>
-            <p className="text-[11px] text-text-fog">
-              Monospace typography, green phosphor CRT aesthetic, and scanline overlay.
-            </p>
-          </div>
+        <SettingRow label="Terminal Mode" description="Monospace aesthetic and scanline overlay">
           <button
             type="button"
             onClick={() => {
               toggleHackerMode();
               playSfx("alert");
               toast({
-                title: !hackerMode ? "Hacker Terminal Mode Activated" : "Hacker Terminal Mode Deactivated",
+                title: !hackerMode ? "Terminal Mode Activated" : "Terminal Mode Deactivated",
                 variant: "info",
               });
             }}
@@ -373,174 +311,64 @@ export function SettingsPage() {
                 : "bg-surface-elevated text-text-fog border-border hover:text-text-pure"
             }`}
           >
-            {hackerMode ? "Terminal Mode: ACTIVE" : "Terminal Mode: OFF"}
+            {hackerMode ? "Active" : "Off"}
           </button>
-        </div>
-      </SettingSection>
-
-      {/* Sound & Audio Effects */}
-      <SettingSection
-        title="Sound &amp; Audio Effects"
-        description="Synthesized client-side audio via Web Audio API. Zero external audio assets."
-      >
-        <SettingRow
-          label="Interface Sound Effects"
-          description="Tactile audio feedback for clicks, simulation terminal events, and success chimes."
-        >
-          <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-1 mr-1">
-              <Button
-                size="xs"
-                variant="ghost"
-                onClick={() => playSfx("click")}
-                title="Preview Click Sound"
-              >
-                Click
-              </Button>
-              <Button
-                size="xs"
-                variant="ghost"
-                onClick={() => playSfx("success")}
-                title="Preview Success Chime"
-              >
-                Chime
-              </Button>
-              <Button
-                size="xs"
-                variant="ghost"
-                onClick={() => playSfx("alert")}
-                title="Preview Alert"
-              >
-                Alert
-              </Button>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => {
-                toggleMute();
-                toast({
-                  title: isMuted ? "Sound Effects Enabled" : "Sound Effects Muted",
-                  variant: "info",
-                });
-              }}
-              className={`px-3 py-1.5 text-xs font-semibold rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer ${
-                !isMuted
-                  ? "border-primary bg-primary text-white shadow-xs"
-                  : "border-border bg-surface-elevated text-text-fog hover:text-text-pure"
-              }`}
-            >
-              <i className={`ti ${isMuted ? "ti-volume-off" : "ti-volume"} text-sm`} />
-              <span>{isMuted ? "Muted" : "Enabled"}</span>
-            </button>
-          </div>
         </SettingRow>
-      </SettingSection>
+      </SettingCard>
 
-      {/* Accessibility & Motion */}
-      <SettingSection
-        title="Accessibility &amp; Motion"
-        description="Configure animation preferences and accessibility settings to reduce discomfort."
-      >
-        <SettingRow
-          label="Reduced Motion Mode"
-          description="Limits background animations, pulsing orbs, radar sweeps, and floating transitions across all pages."
-        >
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-surface-elevated border border-border">
-            <button
-              type="button"
-              onClick={() => {
-                setReducedMotion("auto");
-                toast({ title: "Motion set to System Default", variant: "info" });
-              }}
-              className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                reducedMotion === "auto"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-text-fog hover:text-text-pure"
-              }`}
-            >
-              Auto (OS)
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setReducedMotion("reduce");
-                toast({ title: "Reduced Motion Enabled", variant: "info" });
-              }}
-              className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                reducedMotion === "reduce"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-text-fog hover:text-text-pure"
-              }`}
-            >
-              Reduce
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setReducedMotion("no-preference");
-                toast({ title: "Standard Motion Enabled", variant: "info" });
-              }}
-              className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
-                reducedMotion === "no-preference"
-                  ? "bg-primary text-white shadow-xs"
-                  : "text-text-fog hover:text-text-pure"
-              }`}
-            >
-              Normal
-            </button>
-          </div>
-        </SettingRow>
-
-        <SettingRow
-          label="Current Motion Status"
-          description={
-            isMotionReduced
-              ? "All fluid animations, particle sweeps, and decorative transitions are currently suppressed."
-              : "Standard fluid spring animations and transitions are active."
-          }
-        >
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-              isMotionReduced
-                ? "bg-amber-500/10 text-amber-500 border border-amber-500/25"
-                : "bg-success/10 text-success border border-success/20"
+      {/* 2. Audio & Accessibility */}
+      <SettingCard icon={Sliders} title="Audio &amp; Accessibility" description="Sound feedback and animation controls">
+        <SettingRow label="Interface Audio" description="Tactile sound effects for interactions">
+          <button
+            type="button"
+            onClick={() => {
+              toggleMute();
+              toast({
+                title: isMuted ? "Sound Effects Enabled" : "Sound Effects Muted",
+                variant: "info",
+              });
+            }}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer ${
+              !isMuted
+                ? "border-primary bg-primary text-white shadow-xs"
+                : "border-border bg-surface-elevated text-text-fog hover:text-text-pure"
             }`}
           >
-            <i className={`ti ${isMotionReduced ? "ti-player-pause" : "ti-player-play"} text-xs`} />
-            {isMotionReduced ? "Reduced Motion Active" : "Full Motion Active"}
-          </span>
+            {!isMuted ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+            <span>{!isMuted ? "Enabled" : "Muted"}</span>
+          </button>
         </SettingRow>
-      </SettingSection>
 
-      {/* Account Info */}
-      <SettingSection title="Account Information" description="Your login email and account level.">
-        <SettingRow label="Account Email" description="Email used to sign in.">
-          <span className="text-xs font-medium text-text-pure">{user?.email ?? "user@cyberguard.dev"}</span>
+        <SettingRow label="Reduced Motion" description="Suppress fluid sweeps and floating animations">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-surface-elevated border border-border">
+            {[
+              { id: "auto", label: "Auto" },
+              { id: "reduce", label: "Reduce" },
+              { id: "no-preference", label: "Normal" },
+            ].map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => {
+                  setReducedMotion(opt.id as "auto" | "reduce" | "no-preference");
+                  toast({ title: `Motion set to ${opt.label}`, variant: "info" });
+                }}
+                className={`px-2.5 py-1 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
+                  reducedMotion === opt.id
+                    ? "bg-primary text-white shadow-xs"
+                    : "text-text-fog hover:text-text-pure"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
         </SettingRow>
-        <SettingRow label="Role">
-          <span className="rounded-full bg-surface-elevated border border-border px-2.5 py-0.5 text-xs font-semibold uppercase text-text-pure">
-            {profile?.role ?? "Learner"}
-          </span>
-        </SettingRow>
-        <SettingRow label="Account Level">
-          <span className="rounded-full bg-success/10 border border-success/20 px-2.5 py-0.5 text-xs font-semibold text-success">
-            Active • Level {profile?.level ?? 1}
-          </span>
-        </SettingRow>
-        <div className="pt-3">
-          <Button to="/profile" variant="secondary" size="sm" icon={<i className="ti ti-user-edit" />}>
-            Edit Profile &amp; Settings
-          </Button>
-        </div>
-      </SettingSection>
+      </SettingCard>
 
-      {/* Security Alerts */}
-      <SettingSection title="Notifications &amp; Alerts" description="Choose what notifications you want to receive.">
-        <SettingRow
-          label="Simulation Reminders"
-          description="Receive reminders to practice new scam simulations."
-        >
+      {/* 3. Notifications */}
+      <SettingCard icon={Bell} title="Notifications &amp; Alerts" description="Practice reminders and scam advisory updates">
+        <SettingRow label="Simulation Reminders" description="Periodic prompts to test defense sandboxes">
           <input
             type="checkbox"
             checked={drillReminders}
@@ -551,10 +379,8 @@ export function SettingsPage() {
             className="h-4 w-4 rounded border-border text-primary focus:ring-primary accent-primary cursor-pointer"
           />
         </SettingRow>
-        <SettingRow
-          label="Scam Report Updates"
-          description="Get notified when there are updates on your reported incident."
-        >
+
+        <SettingRow label="Scam Report Updates" description="Status updates on submitted incident records">
           <input
             type="checkbox"
             checked={emailAlerts}
@@ -565,32 +391,27 @@ export function SettingsPage() {
             className="h-4 w-4 rounded border-border text-primary focus:ring-primary accent-primary cursor-pointer"
           />
         </SettingRow>
-        <SettingRow
-          label="Urgent Scam Alerts"
-          description="Get alerted when widespread new online scams are detected in your area."
-        >
+
+        <SettingRow label="Critical Threat Advisories" description="Immediate alerts for high-severity vulnerabilities">
           <input
             type="checkbox"
             checked={threatRadarAlerts}
             onChange={(e) => {
               setThreatRadarAlerts(e.target.checked);
-              toast({ title: "Scam alerts preference saved", variant: "info" });
+              toast({ title: "Threat alerts preference saved", variant: "info" });
             }}
             className="h-4 w-4 rounded border-border text-primary focus:ring-primary accent-primary cursor-pointer"
           />
         </SettingRow>
-      </SettingSection>
+      </SettingCard>
 
-      {/* Local Data & Storage */}
-      <SettingSection title="Data &amp; Storage" description="Export your progress or reset your local data.">
-        <SettingRow
-          label="Onboarding Tour"
-          description="Re-launch the interactive walkthrough guide of CyberGuard."
-        >
+      {/* 4. Data & Storage */}
+      <SettingCard icon={Database} title="Data &amp; Maintenance" description="Manage local storage, walkthrough tour, and data exports">
+        <SettingRow label="Onboarding Tour" description="Walkthrough of CyberGuard core features and tools">
           <Button
             variant="secondary"
             size="sm"
-            icon={<i className="ti ti-compass" />}
+            icon={<Compass className="h-3.5 w-3.5" />}
             onClick={() => {
               window.dispatchEvent(new CustomEvent("cyberguard:start-onboarding"));
               toast({ title: "Launching Onboarding Tour", variant: "info" });
@@ -601,58 +422,34 @@ export function SettingsPage() {
           </Button>
         </SettingRow>
 
-        <SettingRow
-          label="Export My Data"
-          description="Download a copy of your completed lessons, badges, and quiz scores."
-        >
+        <SettingRow label="Export My Data" description="Download a JSON copy of your progress and scores">
           <Button
             variant="secondary"
             size="sm"
-            icon={<i className="ti ti-download" />}
+            icon={<Download className="h-3.5 w-3.5" />}
             onClick={handleExportData}
             className="text-xs"
           >
-            Download Data (JSON)
+            Export JSON
           </Button>
         </SettingRow>
 
-        <SettingRow
-          label="Reset Local Data"
-          description="Press and hold to reset your locally saved progress and restore defaults."
-        >
+        <SettingRow label="Reset Local Data" description="Restore local state to default demo profile">
           <Button
             variant="danger"
             size="sm"
             holdToConfirm
             holdDurationMs={1200}
-            icon={<i className="ti ti-refresh" />}
+            icon={<RotateCcw className="h-3.5 w-3.5" />}
             onHoldComplete={handleResetTelemetry}
             className="text-xs"
           >
             Hold to Reset
           </Button>
         </SettingRow>
-      </SettingSection>
+      </SettingCard>
 
-      {/* Keyboard Shortcuts */}
-      <SettingSection title="Keyboard Shortcuts" description="Quick keyboard shortcuts for easy navigation.">
-        <div className="space-y-2 pt-1">
-          {SHORTCUTS.map((s) => (
-            <div key={s.description} className="flex items-center justify-between text-xs sm:text-sm py-2 border-b border-border last:border-0">
-              <span className="text-text-fog">{s.description}</span>
-              <div className="flex items-center gap-1">
-                {s.keys.map((k) => (
-                  <kbd key={k} className="rounded border border-border bg-surface-elevated px-2 py-0.5 font-medium text-xs text-text-pure shadow-xs">
-                    {k}
-                  </kbd>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </SettingSection>
-
-      {/* Confirm Reset Telemetry Dialog */}
+      {/* Reset Confirmation Dialog */}
       <ConfirmDialog
         isOpen={showResetConfirm}
         title="Reset Local Telemetry &amp; Training"

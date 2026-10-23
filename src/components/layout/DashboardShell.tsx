@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Drawer } from "@/components/ui/primitives";
 import { CyberGuardLogo, CyberGuardLogoMark } from "@/components/ui/CyberGuardLogo";
 import { LanguageSwitcher } from "@/components/ui/LanguageSwitcher";
+import { ChevronLeft, ChevronRight, Maximize2, Minimize2 } from "lucide-react";
 
 export interface NavItem {
   to: string;
@@ -35,7 +36,7 @@ function groupUserNav(items: NavItem[]): NavSection[] {
     {
       label: "Defense & Intel",
       items: items.filter((i) =>
-        ["/tools", "/threats", "/report", "/guide", "/glossary"].includes(i.to)
+        ["/tools", "/threats", "/report", "/glossary"].includes(i.to)
       ),
     },
     {
@@ -94,7 +95,6 @@ const NAV_KEY_MAP: Record<string, string> = {
   "/simulations": "nav.simulations",
   "/tools": "nav.tools",
   "/topics": "nav.topics",
-  "/guide": "nav.guide",
   "/threats": "nav.threats",
   "/report": "nav.report",
   "/leaderboard": "nav.leaderboard",
@@ -214,10 +214,27 @@ export function DashboardShell({
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     setMobileOpen(false);
   }, [location.pathname]);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
+
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      document.exitFullscreen().catch(() => {});
+    }
+  };
 
   const handleLogout = async () => {
     await signOut();
@@ -240,15 +257,40 @@ export function DashboardShell({
       <div className={cn("mb-4 flex items-center justify-between px-2 pt-1")}>
         <div className="flex items-center gap-2">
           <div className="macos-traffic-lights">
-            <span className="macos-dot macos-dot-close" />
-            <span className="macos-dot macos-dot-minimize" />
-            <span className="macos-dot macos-dot-expand" />
+            <span className="macos-dot macos-dot-close" title="CyberGuard OS" />
+            <button
+              type="button"
+              onClick={() => setCollapsed((c) => !c)}
+              className="macos-dot macos-dot-minimize cursor-pointer border-none p-0"
+              title={collapsed ? "Expand sidebar (pull screen)" : "Collapse sidebar (full screen)"}
+              aria-label={collapsed ? "Expand sidebar (pull screen)" : "Collapse sidebar (full screen)"}
+            />
+            <button
+              type="button"
+              onClick={toggleFullscreen}
+              className="macos-dot macos-dot-expand cursor-pointer border-none p-0"
+              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+              aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            />
           </div>
         </div>
 
-        {/* Controls: Language and Theme quick toggles */}
+        {/* Controls: Language, Fullscreen, and Theme quick toggles */}
         <div className="flex items-center gap-1.5">
           {!collapsed && <LanguageSwitcher variant="compact" />}
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+            aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            className="flex h-7 w-7 items-center justify-center rounded-lg border border-border bg-surface-elevated text-text-fog hover:text-text-pure transition-colors cursor-pointer"
+          >
+            {isFullscreen ? (
+              <Minimize2 className="h-3 w-3 text-primary" />
+            ) : (
+              <Maximize2 className="h-3 w-3" />
+            )}
+          </button>
           <button
             type="button"
             onClick={toggleTheme}
@@ -366,21 +408,30 @@ export function DashboardShell({
         animate={{ width: collapsed ? 64 : 240 }}
         transition={{ type: "spring", stiffness: 400, damping: 36 }}
         className={cn(
-          "hidden lg:flex flex-col shrink-0 border-r border-border bg-surface/75 backdrop-blur-xl px-3 py-4 overflow-hidden sticky top-0 h-screen",
+          "relative hidden lg:flex flex-col shrink-0 border-r border-border bg-surface/75 backdrop-blur-xl px-3 py-4 sticky top-0 h-screen z-20",
           collapsed ? "sidebar-collapsed" : ""
         )}
       >
-        {/* Collapse toggle */}
-        <div className="absolute -right-3 top-16 z-50 hidden lg:block">
+        {/* Collapse / Pull Screen Toggle Button on Sidebar Border - fully visible, not clipped */}
+        <div className="absolute -right-3.5 top-14 z-50 hidden lg:block">
           <button
             onClick={() => setCollapsed((c) => !c)}
-            className="flex h-6 w-6 items-center justify-center rounded-full border border-border bg-surface text-text-ash shadow-sm transition-colors hover:text-text-pure hover:border-border-strong cursor-pointer"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            className="flex h-7 w-7 items-center justify-center rounded-full border border-border bg-surface-elevated text-text-fog shadow-lg transition-all duration-200 hover:text-text-pure hover:border-primary/60 hover:bg-surface hover:scale-110 active:scale-95 cursor-pointer ring-2 ring-canvas/80"
+            aria-label={collapsed ? "Expand sidebar (pull screen)" : "Collapse sidebar (full screen)"}
+            title={collapsed ? "Expand sidebar (pull screen)" : "Collapse sidebar (full screen)"}
           >
-            <i className={`ti ${collapsed ? "ti-chevron-right" : "ti-chevron-left"} text-[10px]`} aria-hidden="true" />
+            {collapsed ? (
+              <ChevronRight className="h-3.5 w-3.5 text-primary" />
+            ) : (
+              <ChevronLeft className="h-3.5 w-3.5 text-text-ash" />
+            )}
           </button>
         </div>
-        {SidebarContent}
+
+        {/* Content wrapper with overflow-hidden to prevent horizontal text spilling when collapsed */}
+        <div className="flex h-full w-full flex-col overflow-hidden">
+          {SidebarContent}
+        </div>
       </motion.aside>
 
       {/* Accessible Mobile Drawer */}
@@ -426,6 +477,18 @@ export function DashboardShell({
               className="rounded-lg p-2 text-text-fog hover:bg-surface-elevated hover:text-text-pure transition-colors cursor-pointer"
             >
               <i className={`ti ${resolvedTheme === "dark" ? "ti-sun" : "ti-moon"} text-base`} aria-hidden="true" />
+            </button>
+            <button
+              onClick={toggleFullscreen}
+              aria-label={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+              className="rounded-lg p-2 text-text-fog hover:bg-surface-elevated hover:text-text-pure transition-colors cursor-pointer"
+            >
+              {isFullscreen ? (
+                <Minimize2 className="h-4 w-4 text-primary" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
             </button>
             <button
               onClick={() => setMobileOpen(true)}

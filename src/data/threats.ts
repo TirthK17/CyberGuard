@@ -54,6 +54,32 @@ export interface LiveAttackEvent {
 
 export const ADVISORIES: ThreatAdvisory[] = [
   {
+    id: "ADV-2026-PHP2SHELL",
+    cve: "CVE-2026-109618",
+    title: "PHP2Shell: 10-Year-Old Critical Remote Code Execution Flaw in Core PHP Engine Discovered by AI",
+    category: "AI & Emerging",
+    severity: "critical",
+    date: "Last week (October 2026)",
+    timestamp: Date.now() - 1000 * 60 * 60 * 12,
+    originRegion: "Global Open-Source / PHP Core Engine",
+    targetSectors: ["Global Web (70% of Internet)", "WordPress Portals", "Government Backends", "Cloud Servers"],
+    summary: "Frontier AI vulnerability discovery agents (Calif & Wiz security models) discovered 'php2shell'—uncovering two critical, decade-old remote code execution (RCE) flaws hidden inside the core PHP engine since 2016 (CVE-2026-109618 & CVE-2026-109619). The AI autonomously mapped complex execution paths that human security audits and classical static analyzers missed for 10 years, triggering an emergency worldwide patching wave.",
+    attackVector: "Deep logic corruption and input parsing flaws in PHP's core engine allow unauthenticated remote attackers to execute arbitrary shell commands on any server running unpatched PHP.",
+    mitigation: "Immediately upgrade PHP to patched releases (PHP 8.3.13+, 8.2.25+, or 8.1.30+). Apply emergency WAF virtual patches, isolate exposed PHP-FPM / CGI processes, and verify server integrity per CISA & CERT-EU emergency directives.",
+    mitre: [
+      { tactic: "Initial Access", techniqueId: "T1190", techniqueName: "Exploit Public-Facing Application" },
+      { tactic: "Execution", techniqueId: "T1059", techniqueName: "Command and Scripting Interpreter (PHP)" },
+      { tactic: "Defense Evasion", techniqueId: "T1203", techniqueName: "Exploitation for Client/Server Execution" },
+    ],
+    iocs: {
+      domains: ["php2shell-cve-exploit-scanner.io", "php-vulnerability-probe.net"],
+      ips: ["194.38.20.15", "185.196.10.42", "45.154.255.88"],
+      hashes: ["e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "7d4b9a1e2f3c4d5e6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f"],
+    },
+    simulationUrl: "/tools",
+    simulationLabel: "Analyze Server Exposure in Tools",
+  },
+  {
     id: "ADV-2025-104",
     cve: "CVE-2025-21298",
     title: "Global Phishing Surge Exploiting Microsoft Teams & SharePoint Guest Invites",

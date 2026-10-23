@@ -374,6 +374,50 @@ export function ThreatIntelligencePage() {
         </div>
       </motion.div>
 
+      {/* ── BREAKING ZERO-DAY SPOTLIGHT: PHP2SHELL (AI-DISCOVERED) ── */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl border border-rose-500/40 bg-gradient-to-r from-rose-500/15 via-surface to-surface p-5 shadow-lg relative overflow-hidden"
+      >
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
+          <div className="space-y-2 max-w-3xl">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-mono text-[11px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-white animate-ping" />
+                CRITICAL ZERO-DAY
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-300 font-mono text-[11px] font-bold">
+                🤖 AI-Discovered Vulnerability
+              </span>
+              <span className="text-xs text-text-ash font-mono">• October 2026 Emergency Advisory</span>
+            </div>
+
+            <h2 className="font-display text-base sm:text-lg font-bold text-text-pure">
+              PHP2Shell: 10-Year-Old Remote Code Execution in PHP Core (CVE-2026-109618 / 19)
+            </h2>
+
+            <p className="text-xs sm:text-sm text-text-fog leading-relaxed">
+              Autonomous AI vulnerability agents (Calif &amp; Wiz) uncovered two critical flaws dormant inside the core PHP engine since 2016. Because PHP powers ~70% of global web servers (including WordPress and government portals), this triggered global emergency directives from CISA and CERT-EU.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2.5 shrink-0 self-start lg:self-center">
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => {
+                const phpAdv = ADVISORIES.find((a) => a.id === "ADV-2026-PHP2SHELL") || ADVISORIES[0];
+                setSelectedAdvisory(phpAdv);
+              }}
+              className="bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md"
+            >
+              Inspect IoCs &amp; Mitigations &rarr;
+            </Button>
+          </div>
+        </div>
+      </motion.div>
+
       {/* ── 2. RECHARTS ANALYTICS ROW ── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Chart 1: Top Vendors with Exploited CVEs */}

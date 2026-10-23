@@ -18,7 +18,6 @@ export const userNav: NavItem[] = [
   { to: "/badges",      label: "Badges & Ranks",      icon: "ti-award" },
   { to: "/leaderboard", label: "Leaderboard",         icon: "ti-trophy" },
   { to: "/certificate", label: "Certificate",         icon: "ti-file-certificate" },
-  { to: "/guide",       label: "Safety Playbook",     icon: "ti-shield" },
   { to: "/glossary",    label: "Glossary",            icon: "ti-vocabulary" },
   { to: "/profile",     label: "Profile",             icon: "ti-user" },
   { to: "/settings",    label: "Settings",            icon: "ti-settings" },

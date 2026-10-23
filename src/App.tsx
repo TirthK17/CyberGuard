@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
@@ -43,7 +43,6 @@ const ProgressPage = lazy(() => import("@/pages/ProgressPage").then((m) => ({ de
 const BadgesPage = lazy(() => import("@/pages/BadgesPage").then((m) => ({ default: m.BadgesPage })));
 const LeaderboardPage = lazy(() => import("@/pages/LeaderboardPage").then((m) => ({ default: m.LeaderboardPage })));
 const CertificatePage = lazy(() => import("@/pages/CertificatePage").then((m) => ({ default: m.CertificatePage })));
-const SecurityGuidePage = lazy(() => import("@/pages/SecurityGuidePage").then((m) => ({ default: m.SecurityGuidePage })));
 const GlossaryPage = lazy(() => import("@/pages/GlossaryPage").then((m) => ({ default: m.GlossaryPage })));
 const ProfilePage = lazy(() => import("@/pages/ProfilePage").then((m) => ({ default: m.ProfilePage })));
 const SettingsPage = lazy(() => import("@/pages/SettingsPage").then((m) => ({ default: m.SettingsPage })));
@@ -142,7 +141,7 @@ function App() {
                     <Route path="/certificate" element={<CertificatePage />} />
                     <Route path="/progress" element={<ProgressPage />} />
                     <Route path="/threats" element={<ThreatIntelligencePage />} />
-                    <Route path="/guide" element={<SecurityGuidePage />} />
+                    <Route path="/guide" element={<Navigate to="/dashboard" replace />} />
                     <Route path="/glossary" element={<GlossaryPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/settings" element={<SettingsPage />} />
