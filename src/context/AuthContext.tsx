@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import type { User, Session } from "@supabase/supabase-js";
 import { authApi } from "@/lib/api/auth";
-import { isSupabaseConfigured } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import type { Profile } from "@/types";
 
 interface AuthContextValue {
@@ -75,11 +75,43 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false);
     });
 
+    // 3. Global real-time event listener for instant XP & profile syncing
+    const handleProgressUpdate = () => {
+      if (user?.id) {
+        loadProfile(user.id);
+      }
+    };
+
+    window.addEventListener("cyberguard:progress-updated", handleProgressUpdate);
+    window.addEventListener("cyberguard:activity-logged", handleProgressUpdate);
+
+    // 4. Supabase Postgres Realtime for Profile Table
+    const profileChannel = supabase
+      .channel("auth-profile-realtime-channel")
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "profiles" },
+        (payload) => {
+          if (payload.new) {
+            setProfile((prev) => {
+              if (prev && prev.id === payload.new.id) {
+                return { ...prev, ...(payload.new as Profile) };
+              }
+              return prev;
+            });
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       active = false;
       authListener.subscription.unsubscribe();
+      window.removeEventListener("cyberguard:progress-updated", handleProgressUpdate);
+      window.removeEventListener("cyberguard:activity-logged", handleProgressUpdate);
+      supabase.removeChannel(profileChannel);
     };
-  }, []);
+  }, [user?.id]);
 
   const signUp = async (email: string, password: string, fullName: string) => {
     const res = await authApi.signUp(email, password, fullName);

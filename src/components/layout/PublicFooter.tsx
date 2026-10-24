@@ -17,9 +17,6 @@ export function PublicFooter() {
           </div>
 
           <div className="flex flex-wrap items-center gap-6 text-xs text-text-fog">
-            <Link to="/topics" className="hover:text-text-pure transition-colors font-medium">
-              Topics
-            </Link>
             <Link to="/features" className="hover:text-text-pure transition-colors font-medium">
               Features
             </Link>

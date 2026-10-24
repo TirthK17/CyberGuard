@@ -30,7 +30,7 @@ export const adminNav: NavItem[] = [
   { to: "/admin/lessons",     label: "Lessons",        icon: "ti-notebook" },
   { to: "/admin/quizzes",     label: "Quizzes",        icon: "ti-help" },
   { to: "/admin/simulations", label: "Simulations",    icon: "ti-target" },
-  { to: "/admin/badges",      label: "Badges",         icon: "ti-award" },
-  { to: "/admin/reports",     label: "Incident Desk",  icon: "ti-alert-circle" },
-  { to: "/admin/settings",    label: "System Settings",icon: "ti-settings" },
+  { to: "/admin/badges",      label: "Badges",                 icon: "ti-award" },
+  { to: "/admin/reports",     label: "Feedback & Bug Desk",    icon: "ti-inbox" },
+  { to: "/admin/settings",    label: "System Settings",        icon: "ti-settings" },
 ];

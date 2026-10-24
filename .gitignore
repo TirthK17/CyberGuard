@@ -46,3 +46,10 @@ appsettings.Development.json
 
 # Intro video source assets
 public/intro/source/
+
+# Local Netlify folder
+.netlify
+
+# Supabase CLI temp files
+supabase/.temp/
+.temp/

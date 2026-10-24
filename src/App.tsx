@@ -17,7 +17,6 @@ import { ShortcutsModal } from "@/components/ui/ShortcutsModal";
 import { CelebrationModal } from "@/components/ui/CelebrationModal";
 import { PageSpinner } from "@/components/ui/primitives";
 import { userNav } from "@/lib/navigation";
-import { IntroSplash } from "@/components/intro/IntroSplash";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -88,24 +87,6 @@ function PublicLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-function TopicsWrapper() {
-  const { user } = useAuth();
-  if (user) {
-    return (
-      <ProtectedRoute>
-        <DashboardShell navItems={userNav} brandLabel={APP_NAME}>
-          <TopicsPage />
-        </DashboardShell>
-      </ProtectedRoute>
-    );
-  }
-  return (
-    <PublicLayout>
-      <TopicsPage />
-    </PublicLayout>
-  );
-}
-
 function App() {
   if (!isSupabaseConfigured) {
     return <MissingEnvScreen />;
@@ -119,7 +100,6 @@ function App() {
             <AuthProvider>
               <ToastProvider>
                 <BrowserRouter>
-                <IntroSplash />
                 <div id="app-root-container">
                   <CommandPalette />
                   <ShortcutsModal />
@@ -130,10 +110,10 @@ function App() {
                   <Route path="/" element={<PublicLayout><LandingPage /></PublicLayout>} />
                   <Route path="/about" element={<PublicLayout><AboutPage /></PublicLayout>} />
                   <Route path="/features" element={<PublicLayout><FeaturesPage /></PublicLayout>} />
-                  <Route path="/topics" element={<TopicsWrapper />} />
                   <Route path="/how-it-works" element={<PublicLayout><HowItWorksPage /></PublicLayout>} />
                   <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
                   <Route path="/login" element={<PublicLayout><LoginPage /></PublicLayout>} />
+                  <Route path="/admin/login" element={<PublicLayout><LoginPage defaultAdmin={true} /></PublicLayout>} />
                   <Route path="/register" element={<PublicLayout><RegisterPage /></PublicLayout>} />
                   <Route path="/verify/:certId" element={<VerifyCertificatePage />} />
 
@@ -156,6 +136,7 @@ function App() {
                     <Route path="/threats" element={<ThreatIntelligencePage />} />
                     <Route path="/guide" element={<Navigate to="/dashboard" replace />} />
                     <Route path="/glossary" element={<GlossaryPage />} />
+                    <Route path="/topics" element={<TopicsPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
                     <Route path="/settings" element={<SettingsPage />} />
                   </Route>

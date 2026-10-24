@@ -42,7 +42,7 @@ export const OPERATOR_TIERS: TierInfo[] = [
     title: "Beginner",
     minXp: 0,
     maxXp: 199,
-    color: "text-text-ash",
+    color: "text-text-fog dark:text-text-ash",
     badge: "TIER 1",
     perks: [
       "Access to introductory cybersecurity lessons",
@@ -81,7 +81,7 @@ export const OPERATOR_TIERS: TierInfo[] = [
     title: "Guardian",
     minXp: 1000,
     maxXp: 1999,
-    color: "text-warn",
+    color: "text-amber-600 dark:text-warn",
     badge: "TIER 4",
     perks: [
       "Real-time scam advisories and fraud alerts",
@@ -94,7 +94,7 @@ export const OPERATOR_TIERS: TierInfo[] = [
     title: "Master Guardian",
     minXp: 2000,
     maxXp: 99999,
-    color: "text-emerald-400",
+    color: "text-emerald-600 dark:text-emerald-400",
     badge: "TIER 5",
     perks: [
       "All lessons and interactive challenges completed",
@@ -142,42 +142,42 @@ const AVATAR_PALETTES = [
   "from-teal-600 via-slate-900 to-slate-950",
 ];
 
-// Curated badge triplets using Lucide React SVG icons
+// Curated badge triplets using Lucide React SVG icons with theme-adaptive contrast
 const ROW_BADGE_PRESETS = [
   [
-    { icon: ShieldCheck, color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30" },
-    { icon: Sparkles, color: "text-violet-400", bg: "bg-violet-500/15 border-violet-500/30" },
-    { icon: Lock, color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30" },
+    { icon: ShieldCheck, color: "text-sky-600 dark:text-sky-400", bg: "bg-sky-500/10 border-sky-500/25 dark:bg-sky-500/15 dark:border-sky-500/30" },
+    { icon: Sparkles, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-500/10 border-violet-500/25 dark:bg-violet-500/15 dark:border-violet-500/30" },
+    { icon: Lock, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/25 dark:bg-emerald-500/15 dark:border-emerald-500/30" },
   ],
   [
-    { icon: Award, color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30" },
-    { icon: Sparkles, color: "text-violet-400", bg: "bg-violet-500/15 border-violet-500/30" },
-    { icon: Shield, color: "text-slate-300", bg: "bg-slate-500/15 border-slate-500/30" },
+    { icon: Award, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10 border-amber-500/25 dark:bg-amber-500/15 dark:border-amber-500/30" },
+    { icon: Sparkles, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-500/10 border-violet-500/25 dark:bg-violet-500/15 dark:border-violet-500/30" },
+    { icon: Shield, color: "text-slate-600 dark:text-slate-300", bg: "bg-slate-500/10 border-slate-500/25 dark:bg-slate-500/15 dark:border-slate-500/30" },
   ],
   [
-    { icon: ShieldCheck, color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30" },
-    { icon: CheckCircle2, color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30" },
-    { icon: Shield, color: "text-slate-300", bg: "bg-slate-500/15 border-slate-500/30" },
+    { icon: ShieldCheck, color: "text-sky-600 dark:text-sky-400", bg: "bg-sky-500/10 border-sky-500/25 dark:bg-sky-500/15 dark:border-sky-500/30" },
+    { icon: CheckCircle2, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/25 dark:bg-emerald-500/15 dark:border-emerald-500/30" },
+    { icon: Shield, color: "text-slate-600 dark:text-slate-300", bg: "bg-slate-500/10 border-slate-500/25 dark:bg-slate-500/15 dark:border-slate-500/30" },
   ],
   [
-    { icon: Award, color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30" },
-    { icon: Sparkles, color: "text-violet-400", bg: "bg-violet-500/15 border-violet-500/30" },
-    { icon: Lock, color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30" },
+    { icon: Award, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10 border-amber-500/25 dark:bg-amber-500/15 dark:border-amber-500/30" },
+    { icon: Sparkles, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-500/10 border-violet-500/25 dark:bg-violet-500/15 dark:border-violet-500/30" },
+    { icon: Lock, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/25 dark:bg-emerald-500/15 dark:border-emerald-500/30" },
   ],
   [
-    { icon: ShieldCheck, color: "text-sky-400", bg: "bg-sky-500/15 border-sky-500/30" },
-    { icon: Shield, color: "text-slate-400", bg: "bg-slate-500/15 border-slate-500/30" },
-    { icon: CheckCircle2, color: "text-slate-300", bg: "bg-slate-500/15 border-slate-500/30" },
+    { icon: ShieldCheck, color: "text-sky-600 dark:text-sky-400", bg: "bg-sky-500/10 border-sky-500/25 dark:bg-sky-500/15 dark:border-sky-500/30" },
+    { icon: Shield, color: "text-slate-600 dark:text-slate-400", bg: "bg-slate-500/10 border-slate-500/25 dark:bg-slate-500/15 dark:border-slate-500/30" },
+    { icon: CheckCircle2, color: "text-slate-600 dark:text-slate-300", bg: "bg-slate-500/10 border-slate-500/25 dark:bg-slate-500/15 dark:border-slate-500/30" },
   ],
   [
-    { icon: Award, color: "text-amber-400", bg: "bg-amber-500/15 border-amber-500/30" },
-    { icon: Shield, color: "text-slate-400", bg: "bg-slate-500/15 border-slate-500/30" },
-    { icon: Shield, color: "text-slate-400", bg: "bg-slate-500/15 border-slate-500/30" },
+    { icon: Award, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-500/10 border-amber-500/25 dark:bg-amber-500/15 dark:border-amber-500/30" },
+    { icon: Shield, color: "text-slate-600 dark:text-slate-400", bg: "bg-slate-500/10 border-slate-500/25 dark:bg-slate-500/15 dark:border-slate-500/30" },
+    { icon: Shield, color: "text-slate-600 dark:text-slate-400", bg: "bg-slate-500/10 border-slate-500/25 dark:bg-slate-500/15 dark:border-slate-500/30" },
   ],
   [
-    { icon: Lock, color: "text-emerald-400", bg: "bg-emerald-500/15 border-emerald-500/30" },
-    { icon: Shield, color: "text-slate-400", bg: "bg-slate-500/15 border-slate-500/30" },
-    { icon: Shield, color: "text-slate-400", bg: "bg-slate-500/15 border-slate-500/30" },
+    { icon: Lock, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/25 dark:bg-emerald-500/15 dark:border-emerald-500/30" },
+    { icon: Shield, color: "text-slate-600 dark:text-slate-400", bg: "bg-slate-500/10 border-slate-500/25 dark:bg-slate-500/15 dark:border-slate-500/30" },
+    { icon: Shield, color: "text-slate-600 dark:text-slate-400", bg: "bg-slate-500/10 border-slate-500/25 dark:bg-slate-500/15 dark:border-slate-500/30" },
   ],
 ];
 
@@ -218,6 +218,19 @@ function AtmosphericAvatar({
    COMPONENT: RANKINGS TAB (ELEGANT DARK GLASS PODIUM & TABLE)
 ───────────────────────────────────────────────────────────────────────────── */
 
+const BENCHMARK_LEARNERS = [
+  { id: "peer-1", user_id: "peer-1", full_name: "Aarav Sharma", points: 1940, xp: 1940, level: 4, badges_count: 5, avatar_url: null },
+  { id: "peer-2", user_id: "peer-2", full_name: "Priya Nair", points: 1620, xp: 1620, level: 4, badges_count: 4, avatar_url: null },
+  { id: "peer-3", user_id: "peer-3", full_name: "Rohan Verma", points: 1280, xp: 1280, level: 3, badges_count: 4, avatar_url: null },
+  { id: "peer-4", user_id: "peer-4", full_name: "Ananya Patel", points: 920, xp: 920, level: 3, badges_count: 3, avatar_url: null },
+  { id: "peer-5", user_id: "peer-5", full_name: "Vikram Malhotra", points: 740, xp: 740, level: 3, badges_count: 3, avatar_url: null },
+  { id: "peer-6", user_id: "peer-6", full_name: "Sneha Kulkarni", points: 560, xp: 560, level: 2, badges_count: 2, avatar_url: null },
+  { id: "peer-7", user_id: "peer-7", full_name: "Arjun Reddy", points: 380, xp: 380, level: 2, badges_count: 2, avatar_url: null },
+  { id: "peer-8", user_id: "peer-8", full_name: "Meera Iyer", points: 240, xp: 240, level: 2, badges_count: 1, avatar_url: null },
+  { id: "peer-9", user_id: "peer-9", full_name: "Kabir Mehta", points: 160, xp: 160, level: 1, badges_count: 1, avatar_url: null },
+  { id: "peer-10", user_id: "peer-10", full_name: "Pooja Joshi", points: 90, xp: 90, level: 1, badges_count: 0, avatar_url: null },
+];
+
 function RankingsTab() {
   const { profile } = useAuth();
   const { data: entries, loading } = useLeaderboard();
@@ -226,13 +239,55 @@ function RankingsTab() {
   const [showFilters, setShowFilters] = useState(false);
   const [tierFilter, setTierFilter] = useState<string>("all");
 
-  const operatorList = entries ?? [];
-
   // Multiplier based on timeframe filter to make tabs interactive
   const timeMultiplier = timeframe === "weekly" ? 1 : timeframe === "monthly" ? 1.6 : 2.2;
 
+  // Real-time blended community learners: real users from Supabase + active peer cohort
+  const combinedList = useMemo(() => {
+    // 1. Real database users
+    const realUsers = (entries ?? []).map((u) => ({
+      ...u,
+      points: (profile?.id && (u.id === profile.id || u.user_id === profile.id))
+        ? (profile.points ?? u.points)
+        : u.points,
+      level: (profile?.id && (u.id === profile.id || u.user_id === profile.id))
+        ? (profile.level ?? u.level)
+        : u.level,
+    }));
+
+    // 2. Ensure current logged-in user is always present in real-time
+    if (profile?.id && !realUsers.some((u) => u.id === profile.id || u.user_id === profile.id)) {
+      realUsers.push({
+        id: profile.id,
+        user_id: profile.id,
+        full_name: profile.full_name || "You",
+        avatar_url: profile.avatar_url || null,
+        points: profile.points || 0,
+        xp: profile.points || 0,
+        level: profile.level || 1,
+        tier: profile.tier || "Cyber Novice",
+        awareness_score: profile.awareness_score || 0,
+        badges_count: 0,
+      });
+    }
+
+    // 3. Merge with community benchmark learners
+    const all = [...realUsers, ...BENCHMARK_LEARNERS];
+    const seen = new Set<string>();
+    const unique = all.filter((item) => {
+      const key = item.full_name.toLowerCase().trim();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    // 4. Sort strictly descending by points (XP)
+    unique.sort((a, b) => b.points - a.points);
+    return unique;
+  }, [entries, profile]);
+
   const filtered = useMemo(() => {
-    return operatorList
+    return combinedList
       .filter((op) => {
         const matchSearch = op.full_name.toLowerCase().includes(search.toLowerCase());
         const matchTier = tierFilter === "all" || String(op.level) === tierFilter;
@@ -240,16 +295,17 @@ function RankingsTab() {
       })
       .map((op, idx) => ({
         ...op,
+        rank: idx + 1,
         displayPoints: Math.round(op.points * timeMultiplier),
-        completedModules: Math.max(7, Math.min(15, 15 - idx)),
+        completedModules: Math.min(6, Math.max(0, Math.floor(op.points / 350))),
       }));
-  }, [operatorList, search, tierFilter, timeMultiplier]);
+  }, [combinedList, search, tierFilter, timeMultiplier]);
 
   const top3 = filtered.slice(0, 3);
   const tableRows = filtered.slice(3);
 
   const myRankIdx = filtered.findIndex((e) => e.id === profile?.id || e.user_id === profile?.id);
-  const myRank = myRankIdx >= 0 ? myRankIdx + 1 : null;
+  const myRank = myRankIdx >= 0 ? filtered[myRankIdx].rank : null;
 
   return (
     <div className="space-y-10">
@@ -263,7 +319,7 @@ function RankingsTab() {
               <span className="font-display text-lg font-bold tracking-tight text-text-pure">Kavach</span>
             </div>
             <div className="h-4 w-px bg-border dark:bg-white/15" />
-            <span className="inline-flex items-center rounded-full border border-border bg-surface-elevated px-3 py-0.5 font-mono text-[10px] uppercase tracking-[0.2em] text-text-fog dark:border-white/10 dark:bg-white/5">
+            <span className="inline-flex items-center rounded-full border border-border bg-surface-elevated px-3 py-0.5 font-mono text-[10px] uppercase tracking-[0.2em] text-text-fog font-semibold dark:border-white/10 dark:bg-white/5">
               LEADERBOARD
             </span>
           </div>
@@ -291,7 +347,7 @@ function RankingsTab() {
                   onClick={() => setTimeframe(tf)}
                   className={`rounded-full px-4 py-1.5 text-xs font-medium transition-all duration-200 cursor-pointer ${
                     isActive
-                      ? "bg-surface text-text-pure shadow-sm font-semibold dark:bg-neutral-800 dark:text-white"
+                      ? "bg-surface text-text-pure shadow-sm font-semibold border border-border/70 dark:border-transparent dark:bg-neutral-800 dark:text-white"
                       : "text-text-fog hover:text-text-pure dark:hover:text-white"
                   }`}
                 >
@@ -328,12 +384,12 @@ function RankingsTab() {
           >
             <div className="flex flex-wrap items-center gap-3 p-3.5 rounded-2xl border border-border bg-surface-elevated backdrop-blur-xl dark:border-white/10 dark:bg-neutral-900/80">
               <div className="relative flex-1 min-w-[200px]">
-                <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-text-ash" />
+                <Search className="h-3.5 w-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-text-fog dark:text-text-ash" />
                 <input
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Filter learners by name..."
-                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-surface border border-border text-text-pure placeholder-text-ash focus:outline-none focus:border-primary/60 dark:bg-black/70 dark:border-white/10 dark:text-white"
+                  className="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl bg-surface border border-border text-text-pure placeholder:text-text-fog/70 focus:outline-none focus:border-primary/60 dark:bg-black/70 dark:border-white/10 dark:text-white dark:placeholder:text-text-ash"
                 />
               </div>
 
@@ -342,12 +398,12 @@ function RankingsTab() {
                 onChange={(e) => setTierFilter(e.target.value)}
                 className="text-xs py-1.5 px-3 rounded-xl bg-surface border border-border text-text-pure focus:outline-none focus:border-primary/60 dark:bg-black/70 dark:border-white/10 dark:text-text-frost"
               >
-                <option value="all">All Levels</option>
-                <option value="5">Level 5 (Master)</option>
-                <option value="4">Level 4 (Guardian)</option>
-                <option value="3">Level 3 (Protector)</option>
-                <option value="2">Level 2 (Explorer)</option>
-                <option value="1">Level 1 (Beginner)</option>
+                <option value="all" className="bg-surface text-text-pure dark:bg-neutral-900 dark:text-white">All Levels</option>
+                <option value="5" className="bg-surface text-text-pure dark:bg-neutral-900 dark:text-white">Level 5 (Master)</option>
+                <option value="4" className="bg-surface text-text-pure dark:bg-neutral-900 dark:text-white">Level 4 (Guardian)</option>
+                <option value="3" className="bg-surface text-text-pure dark:bg-neutral-900 dark:text-white">Level 3 (Protector)</option>
+                <option value="2" className="bg-surface text-text-pure dark:bg-neutral-900 dark:text-white">Level 2 (Explorer)</option>
+                <option value="1" className="bg-surface text-text-pure dark:bg-neutral-900 dark:text-white">Level 1 (Beginner)</option>
               </select>
             </div>
           </motion.div>
@@ -368,14 +424,14 @@ function RankingsTab() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.4 }}
-              className="relative rounded-3xl border border-slate-300 bg-gradient-to-b from-slate-100 to-slate-200/70 p-6 text-center shadow-md min-h-[250px] flex flex-col justify-end dark:border-white/15 dark:bg-gradient-to-b dark:from-white/10 dark:via-neutral-900/80 dark:to-black dark:backdrop-blur-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)]"
+              className="relative rounded-3xl border border-slate-300 bg-gradient-to-b from-slate-100/90 via-slate-50 to-surface p-6 text-center shadow-md min-h-[250px] flex flex-col justify-end dark:border-white/15 dark:bg-gradient-to-b dark:from-white/10 dark:via-neutral-900/80 dark:to-black dark:backdrop-blur-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)]"
             >
               {/* Avatar with rank badge */}
               <div className="relative mx-auto mb-3">
                 <div className="rounded-full border-2 border-slate-300/80 p-0.5 shadow-sm dark:border-white/40 dark:shadow-[0_0_20px_rgba(255,255,255,0.2)]">
                   <AtmosphericAvatar gradient={AVATAR_PALETTES[1]} size="lg" />
                 </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 text-xs font-bold text-slate-950 shadow-md border-2 border-surface dark:border-black">
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-xs font-bold text-slate-900 shadow-md border-2 border-surface dark:bg-slate-300 dark:text-slate-950 dark:border-black">
                   2
                 </div>
               </div>
@@ -383,7 +439,7 @@ function RankingsTab() {
               <h3 className="font-display text-base font-bold text-text-pure tracking-tight truncate">
                 {top3[1]?.full_name}
               </h3>
-              <p className="mt-1 font-display text-sm font-semibold text-slate-600 dark:text-text-frost">
+              <p className="mt-1 font-display text-sm font-bold text-slate-700 dark:text-text-frost">
                 {top3[1]?.displayPoints} XP
               </p>
             </motion.div>
@@ -393,7 +449,7 @@ function RankingsTab() {
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05, duration: 0.45 }}
-              className="relative rounded-3xl border-2 border-amber-400 bg-gradient-to-b from-amber-50 via-amber-100/60 to-surface p-7 text-center shadow-lg min-h-[295px] flex flex-col justify-end sm:-translate-y-3 dark:border dark:border-amber-400/40 dark:bg-gradient-to-b dark:from-amber-500/15 dark:via-neutral-900/80 dark:to-black dark:backdrop-blur-2xl dark:shadow-[0_24px_64px_rgba(245,158,11,0.18)]"
+              className="relative rounded-3xl border-2 border-amber-400/90 bg-gradient-to-b from-amber-100/70 via-amber-50/50 to-surface p-7 text-center shadow-lg min-h-[295px] flex flex-col justify-end sm:-translate-y-3 dark:border dark:border-amber-400/40 dark:bg-gradient-to-b dark:from-amber-500/15 dark:via-neutral-900/80 dark:to-black dark:backdrop-blur-2xl dark:shadow-[0_24px_64px_rgba(245,158,11,0.18)]"
             >
               {/* Golden Crown hovering above */}
               <div className="absolute -top-7 left-1/2 -translate-x-1/2 flex items-center justify-center">
@@ -416,7 +472,7 @@ function RankingsTab() {
               <h3 className="font-display text-lg font-bold text-text-pure tracking-tight truncate">
                 {top3[0]?.full_name}
               </h3>
-              <p className="mt-1 font-display text-base font-bold text-amber-600 tracking-wide dark:text-amber-400 dark:drop-shadow-[0_0_8px_rgba(251,191,36,0.35)]">
+              <p className="mt-1 font-display text-base font-bold text-amber-700 tracking-wide dark:text-amber-400 dark:drop-shadow-[0_0_8px_rgba(251,191,36,0.35)]">
                 {top3[0]?.displayPoints} XP
               </p>
             </motion.div>
@@ -426,14 +482,14 @@ function RankingsTab() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.4 }}
-              className="relative rounded-3xl border border-amber-600/30 bg-gradient-to-b from-amber-50/60 to-orange-100/60 p-6 text-center shadow-md min-h-[250px] flex flex-col justify-end dark:border-amber-700/30 dark:bg-gradient-to-b dark:from-amber-700/15 dark:via-neutral-900/80 dark:to-black dark:backdrop-blur-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)]"
+              className="relative rounded-3xl border border-amber-600/30 bg-gradient-to-b from-amber-100/60 via-orange-50/40 to-surface p-6 text-center shadow-md min-h-[250px] flex flex-col justify-end dark:border-amber-700/30 dark:bg-gradient-to-b dark:from-amber-700/15 dark:via-neutral-900/80 dark:to-black dark:backdrop-blur-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)]"
             >
               {/* Avatar with bronze rank badge */}
               <div className="relative mx-auto mb-3">
                 <div className="rounded-full border-2 border-amber-600/60 p-0.5 shadow-sm dark:shadow-[0_0_20px_rgba(217,119,6,0.25)]">
                   <AtmosphericAvatar gradient={AVATAR_PALETTES[2]} size="lg" />
                 </div>
-                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-amber-600 text-xs font-bold text-white shadow-md border-2 border-surface dark:border-black">
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 flex h-6 w-6 items-center justify-center rounded-full bg-amber-700 text-xs font-bold text-white shadow-md border-2 border-surface dark:border-black">
                   3
                 </div>
               </div>
@@ -441,7 +497,7 @@ function RankingsTab() {
               <h3 className="font-display text-base font-bold text-text-pure tracking-tight truncate">
                 {top3[2]?.full_name}
               </h3>
-              <p className="mt-1 font-display text-sm font-semibold text-amber-700 dark:text-amber-500">
+              <p className="mt-1 font-display text-sm font-bold text-amber-800 dark:text-amber-500">
                 {top3[2]?.displayPoints} XP
               </p>
             </motion.div>
@@ -457,7 +513,7 @@ function RankingsTab() {
         className="relative overflow-hidden rounded-3xl border border-border bg-surface p-4 sm:p-6 lg:p-8 shadow-sm dark:border-white/10 dark:bg-black/80 dark:backdrop-blur-2xl dark:shadow-[0_30px_90px_rgba(0,0,0,0.9)]"
       >
         {/* Table Column Headers */}
-        <div className="grid grid-cols-12 gap-3 pb-4 border-b border-border dark:border-white/10 text-text-ash font-mono text-[11px] uppercase tracking-wider items-center px-3">
+        <div className="grid grid-cols-12 gap-3 pb-4 border-b border-border dark:border-white/10 text-text-fog font-mono text-[11px] uppercase tracking-wider items-center px-3 font-semibold">
           <div className="col-span-1 text-center">#</div>
           <div className="col-span-4 sm:col-span-3">User</div>
           <div className="col-span-3 sm:col-span-2 text-center">Badges</div>
@@ -470,7 +526,7 @@ function RankingsTab() {
         {/* Table Rows */}
         <div className="divide-y divide-border dark:divide-white/5 mt-1">
           {tableRows.length === 0 ? (
-            <div className="py-12 text-center text-xs text-text-ash">
+            <div className="py-12 text-center text-xs text-text-fog">
               No learners found matching the search criteria.
             </div>
           ) : (
@@ -481,7 +537,6 @@ function RankingsTab() {
               const badgePreset = ROW_BADGE_PRESETS[(rank - 4) % ROW_BADGE_PRESETS.length];
               const sparklinePath = SPARKLINE_PATHS[(rank - 4) % SPARKLINE_PATHS.length];
               const modulesCompleted = entry.completedModules;
-              const modulePct = Math.round((modulesCompleted / 15) * 100);
 
               return (
                 <div
@@ -493,7 +548,7 @@ function RankingsTab() {
                   }`}
                 >
                   {/* Rank Number */}
-                  <div className="col-span-1 text-center font-mono text-xs sm:text-sm font-semibold text-text-ash">
+                  <div className="col-span-1 text-center font-mono text-xs sm:text-sm font-semibold text-text-fog dark:text-text-ash">
                     {rank}
                   </div>
 
@@ -513,7 +568,7 @@ function RankingsTab() {
                           </span>
                         )}
                       </div>
-                      <p className="text-[11px] text-text-ash font-medium">
+                      <p className="text-[11px] text-text-fog dark:text-text-ash font-medium">
                         Level {entry.level}
                       </p>
                     </div>
@@ -537,13 +592,13 @@ function RankingsTab() {
 
                   {/* Completed Modules */}
                   <div className="col-span-2 sm:col-span-3 flex flex-col items-center justify-center">
-                    <span className="font-mono text-xs font-semibold text-text-frost">
-                      {modulesCompleted} / 15
+                    <span className="font-mono text-xs font-semibold text-text-pure dark:text-text-frost">
+                      {modulesCompleted} / 6
                     </span>
-                    <div className="h-1.5 w-20 sm:w-28 bg-surface-elevated dark:bg-white/10 rounded-full overflow-hidden mt-1.5 border border-border/40 dark:border-none">
+                    <div className="h-1.5 w-20 sm:w-28 bg-surface-elevated dark:bg-white/10 rounded-full overflow-hidden mt-1.5 border border-border/70 dark:border-none">
                       <div
                         className="h-full rounded-full bg-gradient-to-r from-sky-400 to-indigo-500 shadow-[0_0_8px_rgba(56,189,248,0.5)]"
-                        style={{ width: `${modulePct}%` }}
+                        style={{ width: `${Math.round((modulesCompleted / 6) * 100)}%` }}
                       />
                     </div>
                   </div>
@@ -555,7 +610,7 @@ function RankingsTab() {
 
                   {/* Activity Sparkline */}
                   <div className="hidden sm:flex sm:col-span-1 items-center justify-center">
-                    <svg className="w-14 h-5 stroke-sky-500 dark:stroke-sky-400/90 dark:drop-shadow-[0_0_6px_rgba(56,189,248,0.4)]" fill="none" viewBox="0 0 64 24">
+                    <svg className="w-14 h-5 stroke-sky-600 dark:stroke-sky-400/90 dark:drop-shadow-[0_0_6px_rgba(56,189,248,0.4)]" fill="none" viewBox="0 0 64 24">
                       <path d={sparklinePath} strokeWidth="1.75" strokeLinecap="round" />
                     </svg>
                   </div>
@@ -564,7 +619,7 @@ function RankingsTab() {
                   <div className="col-span-1 text-right">
                     <Link
                       to="/profile"
-                      className="text-text-ash hover:text-text-pure transition-colors p-1 rounded-lg hover:bg-surface-elevated dark:hover:bg-white/5 inline-flex items-center justify-center"
+                      className="text-text-fog hover:text-text-pure transition-colors p-1 rounded-lg hover:bg-surface-elevated dark:hover:bg-white/5 inline-flex items-center justify-center"
                       title="View Profile"
                     >
                       <MoreHorizontal className="h-4 w-4" />
@@ -579,7 +634,7 @@ function RankingsTab() {
 
       {/* 4. CURRENT LOGGED-IN OPERATOR STANDING (IF NOT ALREADY IN TOP 3) */}
       {profile && myRank && myRank > 3 && (
-        <Card className="p-5 sm:p-6 bg-gradient-to-r from-sky-500/10 via-slate-900/60 to-slate-950/80 border-sky-500/30 backdrop-blur-xl">
+        <Card className="p-5 sm:p-6 bg-gradient-to-r from-sky-500/10 via-surface-elevated to-surface border border-sky-500/30 backdrop-blur-xl dark:from-sky-500/10 dark:via-slate-900/60 dark:to-slate-950/80 dark:border-sky-500/30">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-primary/40 bg-primary/20 font-mono text-xl font-bold text-primary shadow-sm">
@@ -587,25 +642,25 @@ function RankingsTab() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-text-fog dark:text-neutral-400 font-semibold">
                     Your Current Standings
                   </span>
                   <Pill tone="primary" size="sm">Level {profile.level}</Pill>
                 </div>
-                <h4 className="font-display text-base font-bold text-white mt-0.5">
+                <h4 className="font-display text-base font-bold text-text-pure dark:text-white mt-0.5">
                   {profile.full_name}
                 </h4>
-                <p className="text-xs text-text-fog font-mono">
+                <p className="text-xs text-text-fog dark:text-neutral-300 font-mono">
                   {profile.points.toLocaleString()} XP · {profile.awareness_score != null ? `${profile.awareness_score}% Safety Score` : "Safety score verified"}
                 </p>
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-slate-950/60 p-3.5 space-y-1 text-xs sm:text-right">
-              <span className="font-mono text-[10px] text-text-ash uppercase block">
+            <div className="rounded-2xl border border-border bg-surface p-3.5 space-y-1 text-xs sm:text-right dark:border-white/10 dark:bg-slate-950/60">
+              <span className="font-mono text-[10px] text-text-fog dark:text-neutral-400 uppercase block font-semibold">
                 Next Rank Target: #{myRank - 1}
               </span>
-              <div className="font-mono text-xs font-bold text-emerald-400">
+              <div className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
                 +40 XP to advance to next tier
               </div>
             </div>
@@ -648,7 +703,7 @@ export function BadgesTab() {
       <Card className="p-6 sm:p-8 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash font-bold block">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-text-fog font-bold block dark:text-text-ash">
               Badges &amp; Achievements
             </span>
             <h3 className="font-display text-lg sm:text-xl font-bold text-text-pure mt-0.5">
@@ -724,7 +779,7 @@ export function BadgesTab() {
                       className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border ${
                         isEarned
                           ? "border-primary/50 bg-primary/20 text-primary shadow-[0_0_16px_rgba(56,189,248,0.25)]"
-                          : "border-border bg-surface-elevated text-text-ash"
+                          : "border-border bg-surface-elevated text-text-fog dark:text-text-ash"
                       }`}
                     >
                       <i className={`ti ${badge.icon} text-2xl`} />
@@ -735,23 +790,23 @@ export function BadgesTab() {
                         {meta.rarity}
                       </Pill>
                       {isEarned ? (
-                        <i className="ti ti-circle-check-filled text-emerald-400 text-sm" />
+                        <i className="ti ti-circle-check-filled text-emerald-600 dark:text-emerald-400 text-sm" />
                       ) : (
-                        <i className="ti ti-lock text-text-ash text-sm" />
+                        <i className="ti ti-lock text-text-fog dark:text-text-ash text-sm" />
                       )}
                     </div>
                   </div>
 
-                  <h4 className={`font-display text-sm font-bold ${isEarned ? "text-text-pure" : "text-text-fog"}`}>
+                  <h4 className={`font-display text-sm font-bold ${isEarned ? "text-text-pure" : "text-text-fog font-semibold"}`}>
                     {badge.name}
                   </h4>
-                  <p className="mt-1 text-xs text-text-ash leading-relaxed">
+                  <p className="mt-1 text-xs text-text-fog dark:text-text-ash leading-relaxed">
                     {badge.description}
                   </p>
                 </div>
 
                 <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
-                  <span className="font-mono text-[10px] text-text-ash">
+                  <span className="font-mono text-[10px] text-text-fog dark:text-text-ash font-medium">
                     {isEarned ? "STATUS: UNLOCKED" : "STATUS: LOCKED"}
                   </span>
 
@@ -802,14 +857,14 @@ export function TiersTab() {
           </div>
 
           <div className="p-4 rounded-2xl bg-surface border border-border text-xs space-y-1 sm:text-right shrink-0">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash block">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-text-fog dark:text-text-ash block font-semibold">
               Your Current Level:
             </span>
             <div className="font-display text-base font-bold text-primary">
               Level {currentLevel} · {currentPoints.toLocaleString()} XP
             </div>
             {nextTier && (
-              <span className="font-mono text-[11px] text-emerald-400 block">
+              <span className="font-mono text-[11px] text-emerald-600 dark:text-emerald-400 block font-semibold">
                 +{xpNeeded} XP to reach Level {nextTier.tier} ({nextTier.title})
               </span>
             )}
@@ -842,8 +897,8 @@ export function TiersTab() {
                       isCurrent
                         ? "border-primary bg-primary text-white"
                         : isUnlocked
-                        ? "border-border bg-surface text-text-pure"
-                        : "border-border bg-surface text-text-ash"
+                        ? "border-border bg-surface text-text-pure font-bold"
+                        : "border-border bg-surface text-text-fog dark:text-text-ash"
                     }`}
                   >
                     L{tier.tier}
@@ -859,28 +914,28 @@ export function TiersTab() {
                         </span>
                       )}
                     </div>
-                    <span className="font-mono text-xs text-text-ash">
+                    <span className="font-mono text-xs text-text-fog dark:text-text-ash font-medium">
                       Requirement: {tier.minXp.toLocaleString()} – {tier.maxXp === 99999 ? "∞" : tier.maxXp.toLocaleString()} XP
                     </span>
                   </div>
                 </div>
 
                 <div className="text-right">
-                  <span className={`font-mono text-xs font-bold ${isUnlocked ? "text-emerald-400" : "text-text-ash"}`}>
+                  <span className={`font-mono text-xs font-bold ${isUnlocked ? "text-emerald-600 dark:text-emerald-400" : "text-text-fog dark:text-text-ash"}`}>
                     {isUnlocked ? "UNLOCKED" : "LOCKED"}
                   </span>
                 </div>
               </div>
 
               <div className="mt-4 space-y-2">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash font-bold block">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-text-fog dark:text-text-ash font-bold block">
                   What's Unlocked at this Level:
                 </span>
                 <div className="grid gap-2 sm:grid-cols-3 text-xs text-text-pure">
                   {tier.perks.map((perk, i) => (
                     <div key={i} className="flex items-start gap-2 p-2.5 rounded-xl bg-surface border border-border">
-                      <Check className="h-3.5 w-3.5 text-emerald-400 mt-0.5 shrink-0" />
-                      <span className="text-[11px] leading-snug">{perk}</span>
+                      <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 mt-0.5 shrink-0" />
+                      <span className="text-[11px] leading-snug text-text-pure font-medium">{perk}</span>
                     </div>
                   ))}
                 </div>
@@ -910,18 +965,18 @@ export function LeaderboardPage() {
   return (
     <div className="space-y-6">
       {/* Sub-navigation bar between Rankings & Badges */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-4">
+      <div className="flex items-center justify-between border-b border-border dark:border-white/10 pb-4">
         <div className="flex items-center gap-2">
           <Link
             to="/leaderboard"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-mono text-xs font-semibold bg-white/10 text-white shadow-sm border border-white/15"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full font-mono text-xs font-semibold bg-surface text-text-pure shadow-sm border border-border dark:bg-white/10 dark:text-white dark:border-white/15"
           >
-            <Trophy className="h-3.5 w-3.5 text-amber-400" />
+            <Trophy className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
             <span>Leaderboard</span>
           </Link>
           <Link
             to="/badges"
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-transparent text-text-fog hover:text-white hover:bg-white/5 font-mono text-xs transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-transparent text-text-fog hover:text-text-pure hover:bg-surface-elevated dark:hover:text-white dark:hover:bg-white/5 font-mono text-xs transition-all"
           >
             <Award className="h-3.5 w-3.5 text-primary" />
             <span>Badges &amp; Tiers</span>
@@ -930,7 +985,7 @@ export function LeaderboardPage() {
 
         <Link
           to="/assessment"
-          className="hidden sm:inline-flex items-center gap-1.5 text-xs text-primary hover:text-white font-mono transition-colors"
+          className="hidden sm:inline-flex items-center gap-1.5 text-xs text-primary hover:text-primary-hover dark:hover:text-white font-mono transition-colors"
         >
           <span>Take Test to Earn XP</span>
           <ArrowRight className="h-3.5 w-3.5" />

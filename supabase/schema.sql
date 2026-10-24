@@ -336,7 +336,7 @@ begin
   end if;
 
   -- Designate admin for project owner emails or explicitly approved roles
-  if lower(new.email) in ('tirthbariya032@gmail.com', 'tirthk0717@gmail.com', 'admin@cyberguard.dev') then
+  if lower(new.email) in ('tirthbariya03@gmail.com', 'admin@cyberguard.dev') then
     assigned_role := 'admin';
   else
     assigned_role := 'user';
@@ -373,7 +373,7 @@ begin
   on conflict (id) do update set
     email = excluded.email,
     full_name = case when public.profiles.full_name = '' or public.profiles.full_name = 'New user' then excluded.full_name else public.profiles.full_name end,
-    role = case when lower(new.email) in ('tirthbariya032@gmail.com', 'tirthk0717@gmail.com') then 'admin' else public.profiles.role end;
+    role = case when lower(new.email) in ('tirthbariya03@gmail.com') then 'admin' else public.profiles.role end;
 
   return new;
 end;

@@ -79,8 +79,8 @@ export function VerifyCertificatePage() {
           <KavachLogoMark size={28} pulse={false} />
         </div>
         <div>
-          <span className="font-display text-xl font-extrabold text-white tracking-tight block">{APP_NAME}</span>
-          <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash">Public Verification Registry</span>
+          <span className="font-display text-xl font-extrabold text-text-pure tracking-tight block">{APP_NAME}</span>
+          <span className="font-mono text-[10px] uppercase tracking-widest text-text-fog">Public Verification Registry</span>
         </div>
       </motion.div>
 
@@ -107,20 +107,20 @@ export function VerifyCertificatePage() {
               <i className="ti ti-check" />
             </div>
             <div>
-              <p className="text-sm font-bold text-emerald-400">Authentic Certificate Verified</p>
-              <p className="text-xs text-text-frost mt-0.5">
+              <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400">Authentic Certificate Verified</p>
+              <p className="text-xs text-text-pure mt-0.5">
                 This credential is officially signed, cryptographically sealed, and registered on the Kavach Defense Council ledger.
               </p>
             </div>
           </div>
 
           {/* Details Card */}
-          <div className="rounded-3xl border border-white/10 bg-neutral-900/80 backdrop-blur-2xl p-7 space-y-4 shadow-[0_24px_64px_rgba(0,0,0,0.8)]">
-            <div className="border-b border-white/10 pb-4 mb-2">
-              <span className="font-mono text-[10px] uppercase tracking-widest text-amber-400 font-bold block">
+          <div className="rounded-3xl border border-border bg-surface p-7 space-y-4 shadow-xl dark:border-white/10 dark:bg-neutral-900/80">
+            <div className="border-b border-border dark:border-white/10 pb-4 mb-2">
+              <span className="font-mono text-[10px] uppercase tracking-widest text-amber-600 dark:text-amber-400 font-bold block">
                 ISSUED ACCREDITATION
               </span>
-              <h3 className="font-display text-lg font-bold text-white mt-0.5">
+              <h3 className="font-display text-lg font-bold text-text-pure mt-0.5">
                 Cybersecurity Awareness &amp; Defense Assessment
               </h3>
             </div>
@@ -132,11 +132,11 @@ export function VerifyCertificatePage() {
             <Row label="Issuing Authority" value="Kavach National Defense Council" />
 
             {fingerprint && (
-              <div className="mt-4 pt-4 border-t border-white/10">
-                <span className="font-mono text-[10px] uppercase tracking-widest text-text-ash font-bold block mb-1">
+              <div className="mt-4 pt-4 border-t border-border dark:border-white/10">
+                <span className="font-mono text-[10px] uppercase tracking-widest text-text-fog font-bold block mb-1">
                   Cryptographic Verification Fingerprint (SHA-256)
                 </span>
-                <p className="font-mono text-[11px] text-amber-300 break-all bg-black/40 p-2.5 rounded-xl border border-white/5">
+                <p className="font-mono text-[11px] text-amber-700 dark:text-amber-300 break-all bg-surface-elevated p-2.5 rounded-xl border border-border">
                   {fingerprint}
                 </p>
               </div>
@@ -176,9 +176,9 @@ export function VerifyCertificatePage() {
               <i className="ti ti-x" />
             </div>
             <div>
-              <p className="text-sm font-bold text-rose-400">Certificate Not Found</p>
-              <p className="text-xs text-text-frost mt-0.5">
-                No certificate matching ID <span className="font-mono text-white font-bold">{certId ?? "—"}</span> was found in the official registry.
+              <p className="text-sm font-bold text-rose-500 dark:text-rose-400">Certificate Not Found</p>
+              <p className="text-xs text-text-pure mt-0.5">
+                No certificate matching ID <span className="font-mono text-text-pure font-bold">{certId ?? "—"}</span> was found in the official registry.
               </p>
             </div>
           </div>
@@ -188,7 +188,7 @@ export function VerifyCertificatePage() {
 
           <Link
             to="/"
-            className="inline-block mt-8 text-xs text-primary hover:text-white font-mono transition-colors"
+            className="inline-block mt-8 text-xs text-primary hover:text-text-pure font-mono transition-colors"
           >
             ← Return to CyberGuard
           </Link>
@@ -213,10 +213,10 @@ function Row({
 }) {
   return (
     <div className="flex items-start justify-between gap-4 py-1">
-      <span className="text-xs font-medium text-text-ash flex-shrink-0 w-36">{label}</span>
+      <span className="text-xs font-medium text-text-fog flex-shrink-0 w-36">{label}</span>
       <span
-        className={`text-xs text-right ${mono ? "font-mono" : ""} ${bold ? "font-bold text-white text-sm" : ""} ${
-          highlight ? "text-amber-400 font-bold" : "text-text-frost"
+        className={`text-xs text-right ${mono ? "font-mono" : ""} ${bold ? "font-bold text-text-pure text-sm" : ""} ${
+          highlight ? "text-amber-600 dark:text-amber-400 font-bold" : "text-text-pure"
         }`}
       >
         {value}

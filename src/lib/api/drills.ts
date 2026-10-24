@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabase";
+import { queryClient } from "@/lib/queryClient";
 import type { Json } from "@/types/database";
 
 export interface AwardXpResult {
@@ -13,6 +14,18 @@ export interface AwardXpResult {
     description: string;
     icon: string;
   }>;
+}
+
+export function notifyDrillProgressUpdated() {
+  if (typeof window !== "undefined") {
+    queryClient.invalidateQueries({ queryKey: ["user-progress"] });
+    queryClient.invalidateQueries({ queryKey: ["user-quiz-results"] });
+    queryClient.invalidateQueries({ queryKey: ["user-sim-results"] });
+    queryClient.invalidateQueries({ queryKey: ["user-badges"] });
+    queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+    queryClient.invalidateQueries({ queryKey: ["activity_logs"] });
+    window.dispatchEvent(new CustomEvent("cyberguard:progress-updated"));
+  }
 }
 
 export const drillsApi = {
@@ -56,6 +69,7 @@ export const drillsApi = {
           })
         );
       }
+      notifyDrillProgressUpdated();
     }
 
     return res;
@@ -71,6 +85,7 @@ export const drillsApi = {
     });
 
     if (error) throw new Error(error.message);
+    notifyDrillProgressUpdated();
     return data;
   },
 
@@ -99,6 +114,7 @@ export const drillsApi = {
     const points = passed ? 30 : 5;
 
     await this.awardXp("quiz_completed", points, { quiz_id: quizId, score, total: totalQuestions, passed }, quizId, true);
+    notifyDrillProgressUpdated();
 
     return data;
   },
@@ -123,6 +139,7 @@ export const drillsApi = {
 
     const points = Math.round(score * 0.4);
     await this.awardXp("simulation_completed", points, { simulation_id: simulationId, score, ...answers }, simulationId, true);
+    notifyDrillProgressUpdated();
 
     return data;
   },
@@ -144,6 +161,7 @@ export const drillsApi = {
     });
 
     if (error) throw new Error(error.message);
+    notifyDrillProgressUpdated();
     return data;
   },
 

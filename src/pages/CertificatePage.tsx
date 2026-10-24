@@ -192,20 +192,20 @@ export function CertificatePage() {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-white/10 pb-5"
+        className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-5"
       >
         <div>
           <div className="flex items-center gap-2">
-            <span className="font-mono text-[10px] uppercase tracking-widest text-amber-400 font-bold">
+            <span className="font-mono text-[10px] uppercase tracking-widest text-amber-500 dark:text-amber-400 font-bold">
               VERIFIED CREDENTIAL
             </span>
-            <span className="h-1 w-1 rounded-full bg-emerald-400 animate-ping" />
+            <span className="h-1 w-1 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-ping" />
           </div>
-          <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-1">
+          <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-text-pure mt-1">
             Official Cyber Defense Certificate
           </h1>
           <p className="mt-1 text-xs text-text-fog max-w-xl leading-relaxed">
-            Cryptographically sealed and signed by the {APP_NAME} Defense Council. Scannable QR code guarantees permanent public verification for all employers and evaluators.
+            Cryptographically sealed and registered by the {APP_NAME} Defense Council. Scannable QR code guarantees permanent public verification for all employers and evaluators.
           </p>
         </div>
 
@@ -273,7 +273,7 @@ export function CertificatePage() {
             Certificate of Cyber Defense
           </h2>
 
-          <p className="mt-5 text-xs text-text-fog tracking-wide uppercase font-mono">
+          <p className="mt-5 text-xs text-amber-200/80 tracking-wide uppercase font-mono font-medium">
             This professional credential is conferred upon
           </p>
 
@@ -285,22 +285,22 @@ export function CertificatePage() {
             <i className="ti ti-rosette-discount-check-filled text-amber-400 text-2xl drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" title="Verified Operator" />
           </div>
 
-          <p className="mt-3.5 max-w-lg mx-auto text-xs leading-relaxed text-text-fog">
+          <p className="mt-3.5 max-w-lg mx-auto text-xs leading-relaxed text-neutral-300">
             for successfully passing the Comprehensive Cyber Safety Assessment, demonstrating verified competence in identifying social engineering attacks, safeguarding credentials, neutralizing malware threats, and maintaining active digital hygiene.
           </p>
 
           {/* Telemetry Row (Score, Date, Unique ID, Status) */}
-          <div className="relative mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 border-y border-amber-400/20 py-4 bg-white/[0.02] rounded-xl px-2">
+          <div className="relative mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 border-y border-amber-400/20 py-4 bg-white/[0.03] rounded-xl px-2">
             <div className="text-center">
               <div className="font-display text-xl sm:text-2xl font-extrabold text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.3)]">
                 {cert?.score}%
               </div>
-              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-text-ash font-bold">Safety Score</div>
+              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-neutral-400 font-bold">Safety Score</div>
             </div>
 
             <div className="text-center border-l border-white/10">
               <div className="font-mono text-xs sm:text-sm font-semibold text-white mt-1">{formattedDate}</div>
-              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-text-ash font-bold">Issued On</div>
+              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-neutral-400 font-bold">Issued On</div>
             </div>
 
             <div className="text-center border-l border-white/10">
@@ -311,7 +311,7 @@ export function CertificatePage() {
               >
                 {cert?.id}
               </div>
-              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-text-ash font-bold">Unique Cert ID</div>
+              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-neutral-400 font-bold">Unique Cert ID</div>
             </div>
 
             <div className="text-center border-l border-white/10">
@@ -319,67 +319,43 @@ export function CertificatePage() {
                 <i className="ti ti-shield-check text-sm" />
                 <span>VERIFIED</span>
               </div>
-              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-text-ash font-bold">Registry Status</div>
+              <div className="mt-0.5 font-mono text-[9px] uppercase tracking-widest text-neutral-400 font-bold">Registry Status</div>
             </div>
           </div>
 
           {/* Cryptographic Hash Strip */}
           {fingerprint && (
-            <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-mono text-text-ash bg-black/40 py-1.5 px-3 rounded-lg border border-white/5 max-w-xl mx-auto">
-              <i className="ti ti-lock text-amber-400/70" />
-              <span className="uppercase text-amber-400/80 font-bold">Digital Signature:</span>
-              <span className="truncate text-text-frost">{fingerprint}</span>
+            <div className="mt-4 flex items-center justify-center gap-2 text-[10px] font-mono text-neutral-300 bg-black/60 py-1.5 px-3 rounded-lg border border-white/10 max-w-xl mx-auto">
+              <i className="ti ti-lock text-amber-400/90" />
+              <span className="uppercase text-amber-400/90 font-bold">Digital Signature:</span>
+              <span className="truncate text-neutral-200">{fingerprint}</span>
             </div>
           )}
 
-          {/* Bottom Section: Dual Signatures & Scannable QR Code */}
-          <div className="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-6 items-center pt-4 border-t border-white/10">
-            {/* Signature 1 */}
-            <div className="text-center sm:text-left">
-              <div className="font-display italic text-base text-amber-200/90 tracking-wide font-serif">
-                Dr. Sarah Chen
+          {/* Bottom Section: Official Verification QR Code */}
+          <div className="mt-8 pt-6 border-t border-amber-400/20 flex flex-col items-center justify-center">
+            {qrDataUrl && (
+              <div className="rounded-2xl border-2 border-amber-400/50 bg-white p-2.5 shadow-[0_0_24px_rgba(245,158,11,0.25)]">
+                <img
+                  src={qrDataUrl}
+                  alt={`Verification QR Code for Certificate ${cert?.id}`}
+                  className="h-24 w-24"
+                />
               </div>
-              <div className="h-px w-28 bg-amber-400/40 my-1 mx-auto sm:mx-0" />
-              <p className="font-mono text-[9px] uppercase tracking-wider text-text-ash font-semibold">
-                Director of Cyber Defense
-              </p>
-              <p className="text-[9px] text-text-fog">Kavach Operations Center</p>
-            </div>
-
-            {/* QR Code (Centered with Scan Guide) */}
-            <div className="flex flex-col items-center justify-center">
-              {qrDataUrl && (
-                <div className="rounded-2xl border-2 border-amber-400/40 bg-white p-2 shadow-[0_0_20px_rgba(0,0,0,0.6)]">
-                  <img
-                    src={qrDataUrl}
-                    alt={`Verification QR Code for Certificate ${cert?.id}`}
-                    className="h-20 w-20"
-                  />
-                </div>
-              )}
-              <span className="mt-2 font-mono text-[9px] text-amber-400/90 font-bold tracking-widest uppercase">
-                Scan to Verify Online
-              </span>
-              <Link
-                to={`/verify/${cert?.id}`}
-                target="_blank"
-                className="font-mono text-[8px] text-text-ash hover:text-white mt-0.5 underline truncate max-w-[200px]"
-              >
-                /verify/{cert?.id}
-              </Link>
-            </div>
-
-            {/* Signature 2 */}
-            <div className="text-center sm:text-right">
-              <div className="font-display italic text-base text-amber-200/90 tracking-wide font-serif">
-                Marcus Vance, CISSP
-              </div>
-              <div className="h-px w-28 bg-amber-400/40 my-1 mx-auto sm:ml-auto sm:mr-0" />
-              <p className="font-mono text-[9px] uppercase tracking-wider text-text-ash font-semibold">
-                Chief Security Officer
-              </p>
-              <p className="text-[9px] text-text-fog">National Security Registry</p>
-            </div>
+            )}
+            <span className="mt-2.5 font-mono text-[10px] text-amber-300 font-bold tracking-widest uppercase">
+              Scan to Verify Online
+            </span>
+            <Link
+              to={`/verify/${cert?.id}`}
+              target="_blank"
+              className="font-mono text-[9px] text-neutral-300 hover:text-white mt-1 underline truncate max-w-xs transition-colors"
+            >
+              /verify/{cert?.id}
+            </Link>
+            <p className="mt-2 text-[10px] text-neutral-400 font-mono uppercase tracking-wider">
+              Cryptographically Registered · Kavach Defense Council
+            </p>
           </div>
         </div>
       </motion.div>

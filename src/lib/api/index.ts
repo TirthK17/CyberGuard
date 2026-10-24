@@ -4,3 +4,4 @@ export * from "./drills";
 export * from "./incidents";
 export * from "./certificates";
 export * from "./admin";
+export * from "./contact";

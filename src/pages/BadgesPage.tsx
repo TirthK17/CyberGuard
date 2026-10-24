@@ -76,7 +76,7 @@ export function BadgesPage() {
             to="/leaderboard"
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl border border-border bg-surface text-text-fog hover:text-text-pure hover:bg-surface-elevated font-mono text-xs transition-all"
           >
-            <Trophy className="h-3.5 w-3.5 text-amber-400" />
+            <Trophy className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
             <span>Leaderboard</span>
           </Link>
         </div>

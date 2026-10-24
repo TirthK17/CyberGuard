@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, type ReactNode } from "react";
+import { useState, useEffect, useMemo, useCallback, type ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@/context/AuthContext";
@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 import {
   useModules,
+  useQuizzes,
+  useSimulations,
   useUserProgress,
   useUserBadges,
   useUserQuizResults,
@@ -71,17 +73,18 @@ interface DefenseVector {
 
 export function UserDashboardPage() {
   const { t } = useTranslation();
-  const { profile } = useAuth();
-  const { data: modules } = useModules();
-  const { data: progress } = useUserProgress(profile?.id);
-  const { data: badges } = useUserBadges(profile?.id);
-  const { data: quizResults } = useUserQuizResults(profile?.id);
-  const { data: simResults } = useUserSimulationResults(profile?.id);
+  const { profile, refreshProfile } = useAuth();
+  const { data: modules, refetch: refetchModules } = useModules();
+  const { data: allQuizzes, refetch: refetchQuizzes } = useQuizzes();
+  const { data: allSimulations, refetch: refetchSimulations } = useSimulations();
+  const { data: progress, refetch: refetchProgress } = useUserProgress(profile?.id);
+  const { data: badges, refetch: refetchBadges } = useUserBadges(profile?.id);
+  const { data: quizResults, refetch: refetchQuizResults } = useUserQuizResults(profile?.id);
+  const { data: simResults, refetch: refetchSimResults } = useUserSimulationResults(profile?.id);
   const [recentActivity, setRecentActivity] = useState<RecentActivity[] | null>(null);
 
-  useEffect(() => {
+  const fetchRecentActivity = useCallback(() => {
     if (!profile?.id) return;
-    let active = true;
     supabase
       .from("activity_logs")
       .select("*")
@@ -89,12 +92,59 @@ export function UserDashboardPage() {
       .order("created_at", { ascending: false })
       .limit(5)
       .then(({ data }) => {
-        if (active) setRecentActivity((data as RecentActivity[]) ?? []);
+        setRecentActivity((data as RecentActivity[]) ?? []);
       });
-    return () => {
-      active = false;
-    };
   }, [profile?.id]);
+
+  useEffect(() => {
+    fetchRecentActivity();
+
+    const handleRealtimeUpdate = () => {
+      refetchModules();
+      refetchQuizzes();
+      refetchSimulations();
+      refetchProgress();
+      refetchBadges();
+      refetchQuizResults();
+      refetchSimResults();
+      refreshProfile();
+      fetchRecentActivity();
+    };
+
+    window.addEventListener("cyberguard:progress-updated", handleRealtimeUpdate);
+    window.addEventListener("cyberguard:activity-logged", handleRealtimeUpdate);
+    window.addEventListener("focus", handleRealtimeUpdate);
+
+    if (!profile?.id) return;
+    const channel = supabase
+      .channel(`dashboard-activity-channel-${profile.id}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "activity_logs" },
+        () => {
+          handleRealtimeUpdate();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      window.removeEventListener("cyberguard:progress-updated", handleRealtimeUpdate);
+      window.removeEventListener("cyberguard:activity-logged", handleRealtimeUpdate);
+      window.removeEventListener("focus", handleRealtimeUpdate);
+      supabase.removeChannel(channel);
+    };
+  }, [
+    profile?.id,
+    fetchRecentActivity,
+    refetchModules,
+    refetchQuizzes,
+    refetchSimulations,
+    refetchProgress,
+    refetchBadges,
+    refetchQuizResults,
+    refetchSimResults,
+    refreshProfile,
+  ]);
 
   const completedModules = progress?.filter((p) => p.is_completed).length ?? 0;
   const quizzesCompleted = new Set((quizResults ?? []).map((r) => r.quiz_id)).size;
@@ -105,11 +155,11 @@ export function UserDashboardPage() {
   const streakDays = useMemo(() => {
     try {
       const saved = localStorage.getItem(`cyberguard_streak_${profile?.id}`);
-      return saved ? parseInt(saved, 10) : 3;
+      return saved ? parseInt(saved, 10) : (profile?.streak_days ?? 1);
     } catch {
-      return 3;
+      return profile?.streak_days ?? 1;
     }
-  }, [profile?.id]);
+  }, [profile?.id, profile?.streak_days]);
 
   // Calculate Next Up / Resume Module
   const nextUp = useMemo(() => {
@@ -119,51 +169,171 @@ export function UserDashboardPage() {
     return nextMod || modules[0];
   }, [modules, progress]);
 
-  const score = profile?.awareness_score && profile.awareness_score > 0 ? profile.awareness_score : 84;
+  // Dynamic simulation score lookup map by slug
+  const simScoreBySlug = useMemo(() => {
+    const map = new Map<string, number>();
+    if (!allSimulations || !simResults) return map;
+    for (const res of simResults) {
+      const sim = allSimulations.find((s) => s.id === res.simulation_id);
+      if (sim?.slug) {
+        const cur = map.get(sim.slug) ?? 0;
+        map.set(sim.slug, Math.max(cur, res.score));
+      }
+    }
+    return map;
+  }, [allSimulations, simResults]);
+
+  // Dynamic quiz score lookup map by module_id
+  const quizScoreByModuleId = useMemo(() => {
+    const map = new Map<string, number>();
+    if (!allQuizzes || !quizResults) return map;
+    for (const res of quizResults) {
+      const quiz = allQuizzes.find((q) => q.id === res.quiz_id);
+      if (quiz?.module_id) {
+        const pct = Math.round((res.score / (res.total_questions || 1)) * 100);
+        const cur = map.get(quiz.module_id) ?? 0;
+        map.set(quiz.module_id, Math.max(cur, pct));
+      }
+    }
+    return map;
+  }, [allQuizzes, quizResults]);
+
+  // Dynamic Defense Vectors based on actual user progress, quiz scores, and simulation results
+  const DEFENSE_VECTORS: DefenseVector[] = useMemo(() => {
+    // 1. Phishing & Fake Links
+    const phishingMod = modules?.find(
+      (m) => m.slug === "phishing-awareness" || m.slug?.includes("phishing") || m.category?.toLowerCase().includes("social")
+    );
+    const phishingProg = progress?.find((p) => p.module_id === phishingMod?.id);
+    const phishingLessonsDone = phishingProg?.completed_lessons?.length ?? 0;
+    const phishingSimScore = Math.max(
+      simScoreBySlug.get("phishing-email") ?? 0,
+      simScoreBySlug.get("quishing") ?? 0
+    );
+    const phishingQuizScore = quizScoreByModuleId.get(phishingMod?.id ?? "") ?? 0;
+
+    let phishingScore = 0;
+    if (phishingSimScore > 0) phishingScore += Math.round((phishingSimScore / 100) * 50);
+    if (phishingProg?.is_completed) phishingScore += 35;
+    else if (phishingLessonsDone > 0) phishingScore += Math.min(30, phishingLessonsDone * 12);
+    if (phishingQuizScore > 0) phishingScore += Math.round((phishingQuizScore / 100) * 15);
+    phishingScore = Math.min(100, phishingScore);
+
+    // 2. Password Hygiene & MFA
+    const pwdMod = modules?.find(
+      (m) => m.slug === "password-account-security" || m.slug?.includes("password") || m.category?.toLowerCase().includes("auth")
+    );
+    const pwdProg = progress?.find((p) => p.module_id === pwdMod?.id);
+    const pwdLessonsDone = pwdProg?.completed_lessons?.length ?? 0;
+    const pwdQuizScore = quizScoreByModuleId.get(pwdMod?.id ?? "") ?? 0;
+
+    let pwdScore = 0;
+    if (pwdProg?.is_completed) pwdScore += 50;
+    else if (pwdLessonsDone > 0) pwdScore += Math.min(45, pwdLessonsDone * 20);
+    if (pwdQuizScore > 0) pwdScore += Math.round((pwdQuizScore / 100) * 50);
+    pwdScore = Math.min(100, pwdScore);
+
+    // 3. SMS & Call Scams
+    const callSimScore = Math.max(
+      simScoreBySlug.get("social-engineering-call") ?? 0,
+      simScoreBySlug.get("upi-collect") ?? 0
+    );
+    const incidentMod = modules?.find(
+      (m) => m.slug === "incident-response" || m.slug?.includes("incident") || m.category?.toLowerCase().includes("operations")
+    );
+    const incidentProg = progress?.find((p) => p.module_id === incidentMod?.id);
+    const incidentLessonsDone = incidentProg?.completed_lessons?.length ?? 0;
+
+    let smsScore = 0;
+    if (callSimScore > 0) smsScore += Math.round((callSimScore / 100) * 60);
+    if (incidentProg?.is_completed) smsScore += 40;
+    else if (incidentLessonsDone > 0) smsScore += Math.min(30, incidentLessonsDone * 15);
+    smsScore = Math.min(100, smsScore);
+
+    // 4. Social Engineering & AI / Malware
+    const threatSimScore = Math.max(
+      simScoreBySlug.get("ransomware-response") ?? 0,
+      simScoreBySlug.get("mitm-attack") ?? 0
+    );
+    const fundMod = modules?.find((m) => m.slug === "cybersecurity-fundamentals");
+    const fundProg = progress?.find((p) => p.module_id === fundMod?.id);
+    const fundLessonsDone = fundProg?.completed_lessons?.length ?? 0;
+
+    const malMod = modules?.find((m) => m.slug === "malware-ransomware" || m.slug?.includes("malware"));
+    const malProg = progress?.find((p) => p.module_id === malMod?.id);
+    const malLessonsDone = malProg?.completed_lessons?.length ?? 0;
+
+    const fundQuizScore = quizScoreByModuleId.get(fundMod?.id ?? "") ?? 0;
+
+    let socialScore = 0;
+    if (threatSimScore > 0) socialScore += Math.round((threatSimScore / 100) * 45);
+    if (malProg?.is_completed || fundProg?.is_completed) socialScore += 35;
+    else if ((malLessonsDone + fundLessonsDone) > 0) {
+      socialScore += Math.min(30, (malLessonsDone + fundLessonsDone) * 10);
+    }
+    if (fundQuizScore > 0) socialScore += Math.round((fundQuizScore / 100) * 20);
+    socialScore = Math.min(100, socialScore);
+
+    return [
+      {
+        id: "phishing",
+        name: "Phishing & Fake Links",
+        icon: <Mail className="h-4 w-4" />,
+        score: phishingScore,
+        status: phishingScore >= 80 ? "Fortified" : phishingScore >= 50 ? "Solid" : "Moderate",
+        tone: "cyan",
+        link: "/simulations/phishing-email",
+      },
+      {
+        id: "passwords",
+        name: "Password Hygiene & MFA",
+        icon: <Key className="h-4 w-4" />,
+        score: pwdScore,
+        status: pwdScore >= 80 ? "Fortified" : pwdScore >= 50 ? "Solid" : "Moderate",
+        tone: "emerald",
+        link: "/tools",
+      },
+      {
+        id: "smishing",
+        name: "SMS & Call Scams",
+        icon: <Smartphone className="h-4 w-4" />,
+        score: smsScore,
+        status: smsScore >= 80 ? "Fortified" : smsScore >= 50 ? "Solid" : "Moderate",
+        tone: "violet",
+        link: "/simulations/social-engineering-call",
+      },
+      {
+        id: "social_eng",
+        name: "Social Engineering & AI",
+        icon: <Bot className="h-4 w-4" />,
+        score: socialScore,
+        status: socialScore >= 80 ? "Fortified" : socialScore >= 50 ? "Solid" : "Moderate",
+        tone: "amber",
+        link: "/training",
+      },
+    ];
+  }, [modules, progress, quizScoreByModuleId, simScoreBySlug]);
+
+  // Dynamic Safety Score (0 for fresh accounts, calculated from vector preparedness + drill milestones)
+  const score = useMemo(() => {
+    if (profile?.awareness_score && profile.awareness_score > 0) {
+      return profile.awareness_score;
+    }
+    if (!DEFENSE_VECTORS || DEFENSE_VECTORS.length === 0) return 0;
+    const avgVectorScore = Math.round(
+      DEFENSE_VECTORS.reduce((acc, v) => acc + v.score, 0) / DEFENSE_VECTORS.length
+    );
+    const drillBonus = Math.min(20, drillsPassed * 5);
+    return Math.min(100, Math.round(avgVectorScore * 0.8 + drillBonus));
+  }, [profile?.awareness_score, DEFENSE_VECTORS, drillsPassed]);
+
   const totalModules = modules?.length || 6;
   const overallPct = Math.round((completedModules / totalModules) * 100);
 
-  const scoreTone: "emerald" | "amber" | "danger" = score >= 80 ? "emerald" : score >= 60 ? "amber" : "danger";
-  const scoreLabel = score >= 80 ? "Fortified" : score >= 60 ? "Solid" : "Needs Practice";
-
-  const DEFENSE_VECTORS: DefenseVector[] = [
-    {
-      id: "phishing",
-      name: "Phishing & Fake Links",
-      icon: <Mail className="h-4 w-4" />,
-      score: 92,
-      status: "Fortified",
-      tone: "cyan",
-      link: "/simulations/phishing-email",
-    },
-    {
-      id: "passwords",
-      name: "Password Hygiene & MFA",
-      icon: <Key className="h-4 w-4" />,
-      score: 88,
-      status: "Fortified",
-      tone: "emerald",
-      link: "/tools",
-    },
-    {
-      id: "smishing",
-      name: "SMS & Call Scams",
-      icon: <Smartphone className="h-4 w-4" />,
-      score: 75,
-      status: "Solid",
-      tone: "violet",
-      link: "/simulations/social-engineering-call",
-    },
-    {
-      id: "social_eng",
-      name: "Social Engineering & AI",
-      icon: <Bot className="h-4 w-4" />,
-      score: 64,
-      status: "Moderate",
-      tone: "amber",
-      link: "/training/social-engineering",
-    },
-  ];
+  const scoreTone: "emerald" | "amber" | "danger" =
+    score >= 80 ? "emerald" : score >= 50 ? "amber" : "danger";
+  const scoreLabel =
+    score >= 80 ? "Fortified" : score >= 50 ? "Solid" : score > 0 ? "Developing" : "Untrained";
 
   const QUICK_SHORTCUTS = [
     {
@@ -317,7 +487,9 @@ export function UserDashboardPage() {
             </span>
             <span className="text-xs text-text-ash font-mono font-medium">/ 100</span>
           </div>
-          <p className="mt-1 text-xs text-text-fog">Overall defense rating</p>
+          <p className="mt-1 text-xs text-text-fog">
+            {score === 0 ? "Complete lessons or drills to calibrate" : "Overall defense rating"}
+          </p>
         </Card>
 
         {/* Metric 2: Academy Progress */}
@@ -364,7 +536,7 @@ export function UserDashboardPage() {
           </div>
           <div className="mt-3 flex items-baseline gap-1.5">
             <span className="font-display text-2xl sm:text-3xl font-bold text-text-pure">
-              {profile?.points ?? 320}
+              {profile?.points ?? 0}
             </span>
             <span className="text-xs text-amber-500 dark:text-amber-400 font-mono font-medium">XP</span>
           </div>

@@ -13,7 +13,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 export function AdminRoute({ children }: { children: ReactNode }) {
   const { user, isAdmin, loading } = useAuth();
   if (loading) return <PageSpinner />;
-  if (!user) return <Navigate to="/login" replace />;
+  if (!user) return <Navigate to="/admin/login" replace />;
   if (!isAdmin) return <Navigate to="/dashboard" replace />;
   return <>{children}</>;
 }

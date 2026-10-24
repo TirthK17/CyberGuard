@@ -96,25 +96,37 @@ export function useBadges() {
 
 /**
  * Hook for live community Leaderboard.
- * Connects Supabase Realtime channel to automatically invalidate and refetch
- * when any user gains XP or changes ranking.
+ * Connects Supabase Realtime channel and window events to automatically invalidate and refetch
+ * in sub-second real time when any user gains XP or changes ranking.
  */
 export function useLeaderboard(limit: number = 50) {
   const queryClient = useQueryClient();
 
   useEffect(() => {
+    const handleUpdate = () => {
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+    };
+
+    window.addEventListener("cyberguard:progress-updated", handleUpdate);
+    window.addEventListener("cyberguard:activity-logged", handleUpdate);
+
     const channel = supabase
       .channel("leaderboard-realtime-channel")
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "profiles" },
-        () => {
-          queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
-        }
+        handleUpdate
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "activity_logs" },
+        handleUpdate
       )
       .subscribe();
 
     return () => {
+      window.removeEventListener("cyberguard:progress-updated", handleUpdate);
+      window.removeEventListener("cyberguard:activity-logged", handleUpdate);
       supabase.removeChannel(channel);
     };
   }, [queryClient]);
@@ -133,6 +145,26 @@ export function useLeaderboard(limit: number = 50) {
 }
 
 export function useUserProgress(userId: string | undefined) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel(`user-progress-channel-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "progress" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["user-progress", userId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient, userId]);
+
   const query = useQuery({
     queryKey: ["user-progress", userId],
     queryFn: () => (userId ? contentApi.getUserProgress(userId) : Promise.resolve([])),
@@ -147,6 +179,26 @@ export function useUserProgress(userId: string | undefined) {
 }
 
 export function useUserBadges(userId: string | undefined) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel(`user-badges-channel-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_badges" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["user-badges", userId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient, userId]);
+
   const query = useQuery({
     queryKey: ["user-badges", userId],
     queryFn: () => (userId ? contentApi.getUserBadges(userId) : Promise.resolve([])),
@@ -161,6 +213,26 @@ export function useUserBadges(userId: string | undefined) {
 }
 
 export function useUserQuizResults(userId: string | undefined) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel(`user-quiz-results-channel-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "quiz_results" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["user-quiz-results", userId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient, userId]);
+
   const query = useQuery({
     queryKey: ["user-quiz-results", userId],
     queryFn: () => (userId ? contentApi.getUserQuizResults(userId) : Promise.resolve([])),
@@ -175,6 +247,26 @@ export function useUserQuizResults(userId: string | undefined) {
 }
 
 export function useUserSimulationResults(userId: string | undefined) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!userId) return;
+    const channel = supabase
+      .channel(`user-sim-results-channel-${userId}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "simulation_results" },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ["user-sim-results", userId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient, userId]);
+
   const query = useQuery({
     queryKey: ["user-sim-results", userId],
     queryFn: () => (userId ? contentApi.getUserSimulationResults(userId) : Promise.resolve([])),

@@ -255,10 +255,10 @@ export function AdminDashboardPage() {
         <SectionHeader title="Console Shortcuts" description="Direct access to operational management panels." />
         <div className="mt-4 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
           {[
-            { to: "/admin/users",       label: "Manage Operators",   icon: "ti-users" },
-            { to: "/admin/courses",     label: "Manage Curriculum",  icon: "ti-book-2" },
-            { to: "/admin/quizzes",     label: "Manage Quizzes",     icon: "ti-clipboard-check" },
-            { to: "/admin/simulations", label: "Manage Sandboxes",   icon: "ti-flask" },
+            { to: "/admin/users",       label: "Manage Operators",     icon: "ti-users" },
+            { to: "/admin/courses",     label: "Manage Curriculum",    icon: "ti-book-2" },
+            { to: "/admin/quizzes",     label: "Manage Quizzes",       icon: "ti-clipboard-check" },
+            { to: "/admin/reports",     label: "Feedback & Bug Desk",  icon: "ti-inbox" },
           ].map((item) => (
             <Link key={item.to} to={item.to}>
               <div className="flex items-center gap-3 rounded-xl border border-glass-edge bg-carbon p-3.5 text-xs text-text-fog transition-all duration-150 hover:border-glass-edge-strong hover:text-text-pure hover:bg-obsidian">

@@ -10,7 +10,6 @@ import { APP_TAGLINE } from "@/lib/constants";
 const links = [
   { to: "/about", label: "About" },
   { to: "/features", label: "Features" },
-  { to: "/topics", label: "Topics" },
   { to: "/how-it-works", label: "How It Works" },
   { to: "/contact", label: "Contact" },
 ];
@@ -72,14 +71,9 @@ export function PublicNavbar() {
               {isAdmin ? "Admin Console" : "Dashboard"}
             </Button>
           ) : (
-            <>
-              <Button variant="ghost" size="sm" onClick={() => navigate("/login")}>
-                Log in
-              </Button>
-              <Button variant="primary" size="sm" onClick={() => navigate("/register")}>
-                Start Training
-              </Button>
-            </>
+            <Button variant="primary" size="sm" onClick={() => navigate("/register")}>
+              Start Training
+            </Button>
           )}
         </div>
 
@@ -130,14 +124,9 @@ export function PublicNavbar() {
                     {isAdmin ? "Admin Console" : "Dashboard"}
                   </Button>
                 ) : (
-                  <>
-                    <Button variant="secondary" size="sm" onClick={() => navigate("/login")}>
-                      Log in
-                    </Button>
-                    <Button variant="primary" size="sm" onClick={() => navigate("/register")}>
-                      Get Started
-                    </Button>
-                  </>
+                  <Button variant="primary" size="sm" onClick={() => navigate("/register")}>
+                    Get Started
+                  </Button>
                 )}
               </div>
             </div>
