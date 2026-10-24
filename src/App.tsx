@@ -1,27 +1,23 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { AuthProvider, useAuth } from "@/context/AuthContext";
+import { AuthProvider } from "@/context/AuthContext";
 import { ToastProvider } from "@/context/ToastContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { AccessibilityProvider } from "@/context/AccessibilityContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { ProtectedRoute } from "@/components/layout/RouteGuards";
 import { PublicNavbar } from "@/components/layout/PublicNavbar";
 import { PublicFooter } from "@/components/layout/PublicFooter";
-import { DashboardShell } from "@/components/layout/DashboardShell";
 import { UserLayout } from "@/components/layout/UserLayout";
 import { AdminLayout } from "@/components/layout/AdminLayout";
 import { CommandPalette } from "@/components/CommandPalette";
 import { ShortcutsModal } from "@/components/ui/ShortcutsModal";
 import { CelebrationModal } from "@/components/ui/CelebrationModal";
 import { PageSpinner } from "@/components/ui/primitives";
-import { userNav } from "@/lib/navigation";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { MissingEnvScreen } from "@/components/ui/MissingEnvScreen";
-import { APP_NAME } from "@/lib/constants";
 
 // ── CODE-SPLIT PAGE IMPORTS ──────────────────────────────────────────────────
 const LandingPage = lazy(() => import("@/pages/LandingPage").then((m) => ({ default: m.LandingPage })));

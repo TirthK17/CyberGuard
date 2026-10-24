@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useLeaderboard, useBadges, useUserBadges } from "@/hooks/useContent";
+import type { LeaderboardEntry } from "@/types";
 import { Card, Pill, SkeletonCard, ProgressBar } from "@/components/ui/primitives";
 import { Button } from "@/components/ui/Button";
 import { motion, AnimatePresence } from "framer-motion";
@@ -218,17 +219,17 @@ function AtmosphericAvatar({
    COMPONENT: RANKINGS TAB (ELEGANT DARK GLASS PODIUM & TABLE)
 ───────────────────────────────────────────────────────────────────────────── */
 
-const BENCHMARK_LEARNERS = [
-  { id: "peer-1", user_id: "peer-1", full_name: "Aarav Sharma", points: 1940, xp: 1940, level: 4, badges_count: 5, avatar_url: null },
-  { id: "peer-2", user_id: "peer-2", full_name: "Priya Nair", points: 1620, xp: 1620, level: 4, badges_count: 4, avatar_url: null },
-  { id: "peer-3", user_id: "peer-3", full_name: "Rohan Verma", points: 1280, xp: 1280, level: 3, badges_count: 4, avatar_url: null },
-  { id: "peer-4", user_id: "peer-4", full_name: "Ananya Patel", points: 920, xp: 920, level: 3, badges_count: 3, avatar_url: null },
-  { id: "peer-5", user_id: "peer-5", full_name: "Vikram Malhotra", points: 740, xp: 740, level: 3, badges_count: 3, avatar_url: null },
-  { id: "peer-6", user_id: "peer-6", full_name: "Sneha Kulkarni", points: 560, xp: 560, level: 2, badges_count: 2, avatar_url: null },
-  { id: "peer-7", user_id: "peer-7", full_name: "Arjun Reddy", points: 380, xp: 380, level: 2, badges_count: 2, avatar_url: null },
-  { id: "peer-8", user_id: "peer-8", full_name: "Meera Iyer", points: 240, xp: 240, level: 2, badges_count: 1, avatar_url: null },
-  { id: "peer-9", user_id: "peer-9", full_name: "Kabir Mehta", points: 160, xp: 160, level: 1, badges_count: 1, avatar_url: null },
-  { id: "peer-10", user_id: "peer-10", full_name: "Pooja Joshi", points: 90, xp: 90, level: 1, badges_count: 0, avatar_url: null },
+const BENCHMARK_LEARNERS: LeaderboardEntry[] = [
+  { id: "peer-1", user_id: "peer-1", full_name: "Aarav Sharma", points: 1940, level: 4, badges_count: 5, avatar_url: null },
+  { id: "peer-2", user_id: "peer-2", full_name: "Priya Nair", points: 1620, level: 4, badges_count: 4, avatar_url: null },
+  { id: "peer-3", user_id: "peer-3", full_name: "Rohan Verma", points: 1280, level: 3, badges_count: 4, avatar_url: null },
+  { id: "peer-4", user_id: "peer-4", full_name: "Ananya Patel", points: 920, level: 3, badges_count: 3, avatar_url: null },
+  { id: "peer-5", user_id: "peer-5", full_name: "Vikram Malhotra", points: 740, level: 3, badges_count: 3, avatar_url: null },
+  { id: "peer-6", user_id: "peer-6", full_name: "Sneha Kulkarni", points: 560, level: 2, badges_count: 2, avatar_url: null },
+  { id: "peer-7", user_id: "peer-7", full_name: "Arjun Reddy", points: 380, level: 2, badges_count: 2, avatar_url: null },
+  { id: "peer-8", user_id: "peer-8", full_name: "Meera Iyer", points: 240, level: 2, badges_count: 1, avatar_url: null },
+  { id: "peer-9", user_id: "peer-9", full_name: "Kabir Mehta", points: 160, level: 1, badges_count: 1, avatar_url: null },
+  { id: "peer-10", user_id: "peer-10", full_name: "Pooja Joshi", points: 90, level: 1, badges_count: 0, avatar_url: null },
 ];
 
 function RankingsTab() {
@@ -245,7 +246,7 @@ function RankingsTab() {
   // Real-time blended community learners: real users from Supabase + active peer cohort
   const combinedList = useMemo(() => {
     // 1. Real database users
-    const realUsers = (entries ?? []).map((u) => ({
+    const realUsers: LeaderboardEntry[] = (entries ?? []).map((u) => ({
       ...u,
       points: (profile?.id && (u.id === profile.id || u.user_id === profile.id))
         ? (profile.points ?? u.points)
@@ -263,10 +264,7 @@ function RankingsTab() {
         full_name: profile.full_name || "You",
         avatar_url: profile.avatar_url || null,
         points: profile.points || 0,
-        xp: profile.points || 0,
         level: profile.level || 1,
-        tier: profile.tier || "Cyber Novice",
-        awareness_score: profile.awareness_score || 0,
         badges_count: 0,
       });
     }

@@ -99,7 +99,7 @@ export function AdminReportsPage() {
       await contactApi.deleteMessage(id);
       const updated = await contactApi.getAllMessages();
       setMessages(updated);
-      toast({ title: "Report removed from desk", variant: "default" });
+      toast({ title: "Report removed from desk", variant: "info" });
     } catch {
       toast({ title: "Failed to delete message", variant: "error" });
     }
