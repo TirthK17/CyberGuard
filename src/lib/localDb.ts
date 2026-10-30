@@ -1839,6 +1839,11 @@ class LocalAuthClient {
     return { data: { session: user ? { user } : null }, error: null };
   }
 
+  async getUser(): Promise<{ data: { user: Profile | null }; error: null }> {
+    const user = this.getCurrentUser();
+    return { data: { user }, error: null };
+  }
+
   onAuthStateChange(callback: (event: string, session: { user: Profile } | null) => void) {
     this.listeners.push(callback);
     const user = this.getCurrentUser();
@@ -1974,6 +1979,12 @@ export interface LocalDbClient {
   from<T = any>(table: string): LocalQueryBuilder<T>;
   auth: LocalAuthClient;
   resetDatabase(): void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  rpc(fn: string, params?: Record<string, unknown>): Promise<{ data: any; error: null | { message: string } }>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  channel(name: string): any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  removeChannel(channel: any): Promise<string>;
 }
 
 export const localDb: LocalDbClient = {
@@ -1986,5 +1997,87 @@ export const localDb: LocalDbClient = {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem(AUTH_USER_KEY);
     this.auth.reset();
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async rpc(fn: string, params: Record<string, unknown> = {}): Promise<{ data: any; error: null | { message: string } }> {
+    if (fn === "award_xp") {
+      const p_action = (params.p_action as string) || "action";
+      const p_points = Number(params.p_points) || 0;
+      const p_ref_id = params.p_ref_id as string | undefined;
+      const p_award_once = Boolean(params.p_award_once);
+      const user = this.auth.getCurrentUser();
+      const userId = user?.id || "user-test-gamification";
+
+      const db = loadDb();
+      if (p_award_once && p_ref_id) {
+        const alreadyDone = (db.activity_logs || []).some(
+          (log) => log.user_id === userId && log.action === p_action && log.meta?.ref_id === p_ref_id
+        );
+        if (alreadyDone) {
+          const profile = (db.profiles || []).find((p) => p.id === userId);
+          return {
+            data: {
+              awarded: false,
+              points_earned: 0,
+              points: profile?.points ?? 0,
+              level: profile?.level ?? 1,
+              tier: "Novice",
+              badges_unlocked: [],
+            },
+            error: null,
+          };
+        }
+      }
+
+      db.activity_logs = db.activity_logs || [];
+      db.activity_logs.push({
+        id: `act-${Date.now()}`,
+        user_id: userId,
+        action: p_action,
+        meta: { ...((params.p_meta as Record<string, unknown>) || {}), ...(p_ref_id ? { ref_id: p_ref_id } : {}) },
+        points_earned: p_points,
+        created_at: new Date().toISOString(),
+      });
+
+      const profile = (db.profiles || []).find((p) => p.id === userId);
+      const oldLevel = profile?.level ?? 1;
+      const newPoints = (profile?.points ?? 0) + p_points;
+      const newLevel = newPoints >= 1000 ? 5 : newPoints >= 600 ? 4 : newPoints >= 300 ? 3 : newPoints >= 100 ? 2 : 1;
+      if (profile) {
+        profile.points = newPoints;
+        profile.level = newLevel;
+      }
+      saveDb(db);
+
+      if (typeof window !== "undefined" && newLevel > oldLevel) {
+        window.dispatchEvent(
+          new CustomEvent("cyberguard:level-up", {
+            detail: { oldLevel, newLevel, newPoints },
+          })
+        );
+      }
+
+      return {
+        data: {
+          awarded: true,
+          points_earned: p_points,
+          points: newPoints,
+          level: newLevel,
+          tier: "Operator",
+          badges_unlocked: [],
+        },
+        error: null,
+      };
+    }
+    return { data: null, error: null };
+  },
+  channel(_name: string) {
+    return {
+      on: () => ({ subscribe: () => ({}) }),
+      subscribe: () => ({}),
+    };
+  },
+  async removeChannel(_channel: unknown) {
+    return "ok";
   },
 };
